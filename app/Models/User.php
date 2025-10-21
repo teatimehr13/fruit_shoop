@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'address',
+        'phone',
+        'is_admin',
+        'provider',
+        'provider_id',
     ];
 
     /**
@@ -41,5 +46,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'phone_verified_at' => 'datetime',
+        'is_admin' => 'boolean',
     ];
 }
