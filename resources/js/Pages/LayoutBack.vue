@@ -5,7 +5,5 @@ import BackLayout from '@/Layouts/BackLayout.vue';
 </script>
 
 <template>
-    <BackLayout>
-        about
-    </BackLayout>
+    <BackLayout></BackLayout>
 </template>

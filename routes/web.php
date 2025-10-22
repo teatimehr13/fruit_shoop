@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
 
 
 Route::get('/back', function() {
-    return Inertia::render('LayoutTest');
+    return Inertia::render('LayoutBack');
 });
 
 

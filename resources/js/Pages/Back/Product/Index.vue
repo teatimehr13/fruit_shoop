@@ -1,6 +1,11 @@
 <script setup>
+import BackLayout from '@/Layouts/BackLayout.vue';
+
 </script>
 
 <template>
-    product
+    <BackLayout>
+        product
+    </BackLayout>
+    
 </template>

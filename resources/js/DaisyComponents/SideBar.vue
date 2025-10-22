@@ -7,18 +7,24 @@ import SideBarNavLink from './SideBarNavLink.vue';
     <div class="drawer lg:drawer-open">
         <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col items-center justify-center">
+            <slot name="drawer_content" />
         </div>
         <div class="drawer-side h-full ">
             <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
             <ul class="menu w-80 p-4 
            min-h-[calc(100vh-66px)] h-full overflow-y-auto
            bg-white border-e border-gray-200
-           dark:bg-neutral-800 dark:border-neutral-700">
+           dark:bg-neutral-800 dark:border-neutral-700" 
+           >
 
-                <SideBarNavLink :href="route('back.products.index')">產品</SideBarNavLink>
-                <SideBarNavLink :href="route('back.categories.index')">類別</SideBarNavLink>
-                <SideBarNavLink :href="route('back.orders.index')">訂單</SideBarNavLink>
-                <SideBarNavLink :href="route('back.about.index')">關於我們</SideBarNavLink>
+                <SideBarNavLink :href="route('back.products.index')" :active="route().current('back.products.index')">產品
+                </SideBarNavLink>
+                <SideBarNavLink :href="route('back.categories.index')"
+                    :active="route().current('back.categories.index')">類別</SideBarNavLink>
+                <SideBarNavLink :href="route('back.orders.index')" :active="route().current('back.orders.index')">訂單
+                </SideBarNavLink>
+                <SideBarNavLink :href="route('back.about.index')" :active="route().current('back.about.index')">關於我們
+                </SideBarNavLink>
             </ul>
         </div>
     </div>

@@ -1,4 +1,9 @@
 <script setup>
+import BackLayout from '@/Layouts/BackLayout.vue';
 </script>
 
-<template>category</template>
+<template>
+    <BackLayout>
+        category
+    </BackLayout>
+</template>
