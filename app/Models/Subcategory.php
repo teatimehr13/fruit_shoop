@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Subcategory extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'sort_order',
+        'is_enabled'
+    ];
+
+    protected $casts = ['is_enabled' => 'boolean'];
+
+    public function category() {
+        return $this->belongsTo(Category::class);
+    }
 }

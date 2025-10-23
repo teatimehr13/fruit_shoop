@@ -6,4 +6,6 @@ import BackLayout from '@/Layouts/BackLayout.vue';
 
 <template>
     <BackLayout></BackLayout>
+
+    
 </template>

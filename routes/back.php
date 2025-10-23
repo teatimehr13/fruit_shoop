@@ -10,9 +10,12 @@ use App\Http\Controllers\Back\AboutController as BackAboutController;
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('back')->name('back.')->group(function () {
+Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
     Route::resource('products', BackProductController::class);
     Route::resource('categories', BackCategoryController::class);
     Route::resource('orders', BackOrderController::class);
     Route::resource('about', BackAboutController::class);
 });
+
+Route::get('/back/categories.json', [BackCategoryController::class, 'indexJson'])
+    ->name('back.categories.index.json');
