@@ -8,4 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class ProductOption extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'product_id',
+        'option_text',
+        'original_price',
+        'price',
+        'inventory',
+        'image',
+        'sort_order',
+        'is_enabled',
+    ];
+
+
+
+    public function product(){
+        return $this->belongsTo(Product::class);
+    }
+
 }

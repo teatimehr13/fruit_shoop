@@ -36,7 +36,6 @@ const delCategory = async (id) => {
     console.log(res.status);
     const r = await axios.get(route('back.categories.index.json'));
     categories.value = r.data;
-
 }
 
 

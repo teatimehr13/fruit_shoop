@@ -1,0 +1,5 @@
+產品
+1. model關聯表做好，和productOtipns 及 productImages  -->OK
+2. 建factory + 用 tinker測寫入 看關聯表有無正確 -->OK
+3. 測試抓取
+4. 建 ProdcutRequest
