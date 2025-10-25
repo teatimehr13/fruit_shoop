@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers\Back;
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\ProductOptionRequest;
+use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+/** 
+ * back.products.options.index
+ * back.products.options.store
+ * back.options.destroy
+ * back.options.update
+*/
 
 class ProductOptionController extends Controller
 {
-        public function index(Request $request){
-
+    public function index(Product $product){
+        $productOptions = $product->productOptions()->get();
+        return response()->json($productOptions);
     }
 
     public function create()
@@ -16,8 +27,10 @@ class ProductOptionController extends Controller
         //
     }
 
-    public function store(Request $request){
-
+    public function store(ProductOptionRequest $request){
+        $validated = $request->validated();
+        $productOption = ProductOption::create($validated);
+        return response()->json($productOption, 201); //新增201
     }
 
     public function show(string $id)
@@ -38,5 +51,9 @@ class ProductOptionController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    private function fetchIndexData(Request $request){
+
     }
 }

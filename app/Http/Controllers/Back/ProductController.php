@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Back;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -45,9 +46,19 @@ class ProductController extends Controller
         //
     }
 
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-        //
+        $catId = $product->subcategory->category_id;
+        $subcategoriesSelect = Subcategory::query()
+        ->where('is_enabled', true)
+        ->where('category_id', $catId)
+        ->orderBy('sort_order')
+        ->get(['id','name']);
+
+        return Inertia::render('Back/Product/Edit', [
+            'product' => $product,
+            'subcategoriesSelect' => $subcategoriesSelect
+        ]);
     }
 
     public function update(ProductRequest $request, Product $product)

@@ -15,6 +15,10 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
     Route::resource('categories', BackCategoryController::class);
     Route::resource('orders', BackOrderController::class);
     Route::resource('about', BackAboutController::class);
+    // Route::resource('productOptions', BackProductOptionController::class)->except(['index']);
+    Route::resource('products.options', BackProductOptionController::class)
+        ->except(['create', 'edit', 'show'])
+        ->shallow();
 });
 
 Route::get('/back/categories.json', [BackCategoryController::class, 'indexJson'])

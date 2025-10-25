@@ -70,22 +70,61 @@ const delProduct = async (id) => {
     // categories.value = r.data;
 }
 
+const getOptions = async (id) => {
+    const res = await axios.get(route('back.products.options.index', id));
+    console.log(res.data);
+}
+
+const delOptions = async (proid) => {
+    const res = await axios.get(route('back.options.destroy', proid));
+    console.log(res.data);
+}
+
+const addOptions = async (id) => {
+    const fd = new FormData();
+    fd.append('product_id', id);
+    fd.append('option_text', 'option_text');
+    fd.append('original_price', 2500);
+    fd.append('price', 1999);
+    fd.append('inventory', 10);
+    fd.append('is_enabled', '1');
+
+    const res = await axios.post(route('back.products.options.store', id), fd, {
+        headers: { Accept: 'application/json' },
+        validateStatus: s => s < 500
+    });
+    console.log(res.data);
+}
+
+const updptions = async (proid) => {
+    const res = await axios.get(route('back.options.update', proid));
+    console.log(res.data);
+}
+
 </script>
 
 <template>
     <BackLayout>
         product
-        <button @click="addProduct">
+        <!-- <button @click="addProduct">
             addProduct
-        </button>
-        <button @click="updProduct('16')">
+        </button> -->
+        <!-- <button @click="updProduct('16')">
             updProduct
-        </button>
-        <button @click="delProduct('17')">
+        </button> -->
+        <!-- <button @click="delProduct('17')">
             delProduct
-        </button>
+        </button> -->
 
-        <input id="file" type="file" />
+        <!-- <input id="file" type="file" /> -->
+
+        <!-- <button @click="getOptions(21)">
+            getOptions
+        </button> -->
+
+        <button @click="addOptions(21)">
+            addOptions
+        </button>
     </BackLayout>
 
 </template>

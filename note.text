@@ -3,3 +3,22 @@
 2. 建factory + 用 tinker測寫入 看關聯表有無正確 -->OK
 3. 測試抓取
 4. 建 ProdcutRequest
+
+產品選項
+1. 用什麼layout呈現?
+
+
+#fafbfc;
+
+--tw-shadow
+0 1px 3px 0 #0000001a,0 1px 2px -1px #0000001a
+syntax: "*"
+inherits: false
+initial-value: 0 0 #0000
+查看已註冊的屬性
+: 0 1px 3px 0 var(--tw-shadow-color, #0000001a), 0 1px 2px -1px var(--tw-shadow-color, #0000001a);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+
+    background-color: var(--color-base-100)
+#fff
+;
