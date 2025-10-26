@@ -75,9 +75,9 @@ const getOptions = async (id) => {
     console.log(res.data);
 }
 
-const delOptions = async (proid) => {
-    const res = await axios.get(route('back.options.destroy', proid));
-    console.log(res.data);
+const delOptions = async (optId) => {
+    const res = await axios.delete(route('back.options.destroy', optId));
+    console.log(res);
 }
 
 const addOptions = async (id) => {
@@ -96,8 +96,19 @@ const addOptions = async (id) => {
     console.log(res.data);
 }
 
-const updptions = async (proid) => {
-    const res = await axios.get(route('back.options.update', proid));
+const updOptions = async (optId) => {
+    const fd = new FormData();
+    fd.append('option_text', 'option_text');
+    fd.append('original_price', 500);
+    fd.append('price', 999);
+    fd.append('inventory', 5);
+    fd.append('is_enabled', '1');
+    fd.append('_method', 'PUT')
+
+    const res = await axios.post(route('back.options.update', optId), fd, {
+        headers: { Accept: 'application/json' },
+        validateStatus: s => s < 500
+    });
     console.log(res.data);
 }
 
@@ -122,9 +133,16 @@ const updptions = async (proid) => {
             getOptions
         </button> -->
 
-        <button @click="addOptions(21)">
+        <!-- <button @click="addOptions(21)">
             addOptions
-        </button>
+        </button> -->
+
+        <!-- <button @click="updOptions(25)">
+            updOptions
+        </button> -->
+        <!-- <button @click="delOptions(25)">
+            delOptions
+        </button> -->
     </BackLayout>
 
 </template>

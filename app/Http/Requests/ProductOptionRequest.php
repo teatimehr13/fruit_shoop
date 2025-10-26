@@ -23,6 +23,7 @@ class ProductOptionRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = in_array($this->method(), ['PUT', 'PATCH']);
+        // $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
         $req = $isUpdate ? 'sometimes' : 'required';
 
         return [

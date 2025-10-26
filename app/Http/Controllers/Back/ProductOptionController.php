@@ -43,14 +43,17 @@ class ProductOptionController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(ProductOptionRequest $request, ProductOption $productOption)
     {
-        //
+        $validated = $request->validated();
+        $productOption->update($validated);
+        return response()->json($productOption, 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(ProductOption $productOption)
     {
-        //
+        $productOption->delete();
+        return response()->noContent();
     }
 
     private function fetchIndexData(Request $request){
