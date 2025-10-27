@@ -71,7 +71,7 @@ const delProduct = async (id) => {
 }
 
 const getOptions = async (id) => {
-    const res = await axios.get(route('back.products.options.index', id));
+    const res = await axios.get(route('back.product.options.index', id));
     console.log(res.data);
 }
 
@@ -89,7 +89,7 @@ const addOptions = async (id) => {
     fd.append('inventory', 10);
     fd.append('is_enabled', '1');
 
-    const res = await axios.post(route('back.products.options.store', id), fd, {
+    const res = await axios.post(route('back.product.options.store', id), fd, {
         headers: { Accept: 'application/json' },
         validateStatus: s => s < 500
     });
@@ -112,6 +112,34 @@ const updOptions = async (optId) => {
     console.log(res.data);
 }
 
+const getImages = async (id) => {
+    const res = await axios.get(route('back.product.images.index', id));
+    console.log(res.data);
+}
+
+const addImages = async (id) => {
+    const files = document.getElementById('file').files;
+    const fd = new FormData();
+    console.log(files);
+
+    Array.from(files).forEach((file, i) => {
+        fd.append(`productImages[${i}][product_id]`, id);
+        fd.append(`productImages[${i}][alt_text]`, file.name);
+        fd.append(`productImages[${i}][is_primary]`, '0');
+        if (file) fd.append(`productImages[${i}][image]`, file);
+    })
+
+    for (const[key, val] of fd) {
+        console.log(key, 'value =>', val);
+        
+    } 
+
+    const res = await axios.post(route('back.product.images.store', id), fd, {
+        headers: { Accept: 'application/json' },
+        validateStatus: s => s < 500
+    });
+    console.log(res.data);
+}
 </script>
 
 <template>
@@ -127,7 +155,7 @@ const updOptions = async (optId) => {
             delProduct
         </button> -->
 
-        <!-- <input id="file" type="file" /> -->
+        <input id="file" type="file" multiple />
 
         <!-- <button @click="getOptions(21)">
             getOptions
@@ -143,6 +171,14 @@ const updOptions = async (optId) => {
         <!-- <button @click="delOptions(25)">
             delOptions
         </button> -->
+
+        <!-- <button @click="getImages(23)">
+            getImages
+        </button> -->
+
+        <button @click="addImages(23)">
+            addImages
+        </button>
     </BackLayout>
 
 </template>
