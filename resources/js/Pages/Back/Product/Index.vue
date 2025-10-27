@@ -126,13 +126,14 @@ const addImages = async (id) => {
         fd.append(`productImages[${i}][product_id]`, id);
         fd.append(`productImages[${i}][alt_text]`, file.name);
         fd.append(`productImages[${i}][is_primary]`, '0');
+
         if (file) fd.append(`productImages[${i}][image]`, file);
     })
 
-    for (const[key, val] of fd) {
+    for (const [key, val] of fd) {
         console.log(key, 'value =>', val);
-        
-    } 
+
+    }
 
     const res = await axios.post(route('back.product.images.store', id), fd, {
         headers: { Accept: 'application/json' },
@@ -140,6 +141,33 @@ const addImages = async (id) => {
     });
     console.log(res.data);
 }
+
+const delImages = async () => {
+    const id_s = [18, 19, 20];
+    const res = await axios.post(route('back.product.images.destroymany'), { ids: id_s }, {
+        headers: { Accept: 'application/json' },
+        validateStatus: s => s < 500
+    });
+
+    console.log(res);
+}
+
+const updImageText = async (id) => {
+    const data = { alt_text: 'hello00' };
+    const res = await axios.patch(route('back.images.update', id), data, {
+        headers: { Accept: 'application/json' },
+        validateStatus: s => s < 500
+    })
+    console.log(res);
+}
+
+const setPrimary = async (id) => {
+    const res = await axios.patch(route('back.product.images.primary', id));
+
+    console.log(res);
+
+}
+
 </script>
 
 <template>
@@ -178,6 +206,18 @@ const addImages = async (id) => {
 
         <button @click="addImages(23)">
             addImages
+        </button>
+
+        <button @click="delImages()">
+            delImages
+        </button>
+
+        <button @click="updImageText(4)">
+            updImageText
+        </button>
+
+        <button @click="setPrimary(24)">
+            setPrimary
         </button>
     </BackLayout>
 

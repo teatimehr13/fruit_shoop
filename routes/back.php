@@ -31,6 +31,9 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
         ->parameters([
             'images' => 'productImage',
         ]);;
+
+    Route::post('product/images', [BackProductImageController::class, 'destroyMany'])->name('product.images.destroymany');
+    Route::patch('product/images/{productImage}/primary', [BackProductImageController::class, 'setPrimary'])->name('product.images.primary');
 });
 
 Route::get('/back/categories.json', [BackCategoryController::class, 'indexJson'])
