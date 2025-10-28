@@ -16,7 +16,9 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
     Route::resource('products', BackProductController::class);
     Route::resource('categories', BackCategoryController::class);
     Route::resource('orders', BackOrderController::class);
-    Route::resource('about', BackAboutController::class);
+    Route::get('about', [BackAboutController::class, 'index'])->name('about.index');
+    Route::post('about/save', [BackAboutController::class, 'save'])->name('about.save');
+    // Route::resource('about', BackAboutController::class);
     // Route::resource('productOptions', BackProductOptionController::class)->except(['index']);
     Route::resource('product.options', BackProductOptionController::class)
         ->except(['create', 'edit', 'show'])
