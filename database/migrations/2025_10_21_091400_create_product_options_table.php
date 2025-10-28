@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('original_price');
             $table->unsignedInteger('price');
             $table->unsignedInteger('inventory')->default(0);
-            $table->string('image')->nullable();
+            // $table->string('image')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_enabled')->default(true)->index();
             $table->timestamps();

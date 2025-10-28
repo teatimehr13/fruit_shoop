@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('name');
             $table->unsignedInteger('price')->nullable();
-            $table->string('image')->nullable();
+            // $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_enabled')->default(true)->index();
             $table->timestamps();

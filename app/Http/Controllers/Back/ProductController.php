@@ -30,13 +30,13 @@ class ProductController extends Controller
         $validated = $request->validated();
         $product = Product::create($validated);
 
-        if ($request->hasFile('image')) {
-            $dir = "products/{$product->id}";
-            $filename = $request->file('image')->hashName();
-            $relativePath = $request->file('image')->storeAs($dir, $filename, 'public');
-        }
+        // if ($request->hasFile('image')) {
+        //     $dir = "products/{$product->id}";
+        //     $filename = $request->file('image')->hashName();
+        //     $relativePath = $request->file('image')->storeAs($dir, $filename, 'public');
+        // }
 
-        $product->update(['image' => $relativePath]);
+        // $product->update(['image' => $relativePath]);
 
         return response()->json($product, 201); //新增201
     }
@@ -65,28 +65,28 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
 
-        $oldPath = $product->image;  // 相對路徑
-        $newPath = null;
+        // $oldPath = $product->image;  // 相對路徑
+        // $newPath = null;
 
-        // 有新檔才處理上傳
-        if ($request->hasFile('image')) {
-            $dir = "products/{$product->id}";
-            // hashName() 會自動產生檔名，store() 會自動建立資料夾
-            $newPath = $request->file('image')->store($dir, 'public');
-            $validated['image'] = $newPath;
-        }
+        // // 有新檔才處理上傳
+        // if ($request->hasFile('image')) {
+        //     $dir = "products/{$product->id}";
+        //     // hashName() 會自動產生檔名，store() 會自動建立資料夾
+        //     $newPath = $request->file('image')->store($dir, 'public');
+        //     $validated['image'] = $newPath;
+        // }
 
         $product->update($validated);
 
-        // 新檔成功且與舊檔不同 → 刪舊檔
-        if ($newPath && $oldPath && $oldPath !== $newPath && Storage::disk('public')->exists($oldPath)) {
-            Storage::disk('public')->delete($oldPath);
-        }
+        // // 新檔成功且與舊檔不同 → 刪舊檔
+        // if ($newPath && $oldPath && $oldPath !== $newPath && Storage::disk('public')->exists($oldPath)) {
+        //     Storage::disk('public')->delete($oldPath);
+        // }
 
-        if ($request->boolean('remove_image') && $oldPath) {
-            $product->update(['image' => null]);
-            Storage::disk('public')->delete($oldPath);
-        }
+        // if ($request->boolean('remove_image') && $oldPath) {
+        //     $product->update(['image' => null]);
+        //     Storage::disk('public')->delete($oldPath);
+        // }
 
         return response()->json($product->fresh(), 200);
     }

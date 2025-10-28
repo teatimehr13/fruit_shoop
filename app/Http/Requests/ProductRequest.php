@@ -30,7 +30,7 @@ class ProductRequest extends FormRequest
         return [
             'subcategory_id' => [$req, 'integer', 'exists:subcategories,id'],
             'slug' => [$req, 'string', 'max:255', Rule::unique('products', 'slug')->ignore($productId)],
-            'name' => [$req, 'string', 'max:255'],
+            // 'name' => [$req, 'string', 'max:255'],
             'price' => [$req, 'numeric', 'min:0',],
             'image' => ['image', 'nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'description' => ['nullable', 'string', 'max:2000'],
