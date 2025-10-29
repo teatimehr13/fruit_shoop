@@ -5,7 +5,7 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
 
-    <div class="navbar bg-base-100 border-b border-gray-200 lg:z-20">
+    <div class="navbar bg-base-100 border-b border-gray-200 lg:z-20 sticky top-0">
         <div class="navbar-start">
             <slot name="open_drawer"/>
             <a class="btn btn-ghost text-xl">後台LOGO</a>

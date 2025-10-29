@@ -19,6 +19,7 @@ class AboutController extends Controller
         $about = About::query()
             ->get(['id', 'title', 'content', 'image']);
 
+        
         return Inertia::render('Back/About/Index', ['about' => $about]);
     }
 
