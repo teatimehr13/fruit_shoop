@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
     Route::resource('products', BackProductController::class);
     Route::resource('categories', BackCategoryController::class);
+    Route::resource('categories.subcategories', BackSubcategoryController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
+    ->shallow();
     Route::resource('orders', BackOrderController::class);
     Route::get('about', [BackAboutController::class, 'index'])->name('about.index');
     Route::post('about/save', [BackAboutController::class, 'save'])->name('about.save');
