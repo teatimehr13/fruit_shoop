@@ -6,13 +6,13 @@ import SideBarNavLink from './SideBarNavLink.vue';
 <template>
     <div class="drawer lg:drawer-open">
         <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex flex-col h-[calc(100vh-66px)] overflow-y-auto">
+        <div class="drawer-content flex flex-col h-[calc(100vh-72px)] overflow-y-auto">
             <slot name="drawer_content" />
         </div>
         <div class="drawer-side h-full ">
             <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
             <ul class="menu w-80 p-4 
-           min-h-[calc(100vh-66px)] h-full overflow-y-auto
+           min-h-[calc(100vh-72px)] h-full overflow-y-auto
            bg-white border-e border-gray-200
            dark:bg-neutral-800 dark:border-neutral-700">
 
