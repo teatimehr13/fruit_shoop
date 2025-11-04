@@ -119,7 +119,7 @@ class ProductController extends Controller
         //     ->get();
 
         $query = Product::query()
-            ->select(['id', 'slug', 'name', 'price', 'image', 'description', 'is_enabled'])
+            ->select(['id', 'slug', 'name', 'price', 'description', 'is_enabled'])
             ->orderBy('created_at', 'asc')
             ->orderBy('id', 'asc'); // 讓分頁順序穩定
 

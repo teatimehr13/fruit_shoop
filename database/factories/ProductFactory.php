@@ -31,11 +31,11 @@ class ProductFactory extends Factory
         }
 
         return [
-            'subcategory_id' => 6,
+            'subcategory_id' => 31,
             'slug'        => $slug,
             'name'        => $name,
             'price'       => $this->faker->numberBetween(100, 9999),
-            'image'       => '/products/' . $name . $this->faker->uuid . '.jpg',
+            // 'image'       => '/products/' . $name . $this->faker->uuid . '.jpg',
             'description' => $this->faker->sentence(12),
             'is_enabled'  => $this->faker->boolean(90),
         ];

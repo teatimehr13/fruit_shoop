@@ -1,8 +1,7 @@
 <script setup>
 import BackLayout from '@/Layouts/BackLayout.vue';
 import axios from 'axios';
-import { ref, computed, watch } from 'vue';
-import { useFloating, offset, flip, shift } from '@floating-ui/vue'
+import { ref } from 'vue';
 
 const props = defineProps({
     products: Object
@@ -10,61 +9,8 @@ const props = defineProps({
 // console.log(props.products);
 const products = ref([...props.products.data]);
 console.log(products.value);
-const columns = [
-    { key: 'slug', label: 'Slug' },
-    { key: 'name', label: '產品名稱' },
-    { key: 'price', label: '價格' },
-    { key: 'description', label: '描述' },
-    { key: 'is_enabled', label: '狀態' },
-    //   { key: '', label: '操作' },
-]
 
 
-// ===== Floating UI =====
-const reference = ref(null)
-const floating = ref(null)
-const { floatingStyles, update } = useFloating(reference, floating, {
-    placement: 'bottom-start',
-    // middleware: [offset(-20), flip(), shift({ padding: 0 })],
-    middleware: [
-        offset(({ rects }) => ({
-            mainAxis: -rects.reference.height,
-            crossAxis: 0
-        })),
-        flip(),
-        shift({ padding: 0 })
-    ]
-})
-const currentContent = ref(null);
-let hoverTimer = null
-const openHover = (event, product) => {
-    reference.value = event.currentTarget
-    currentContent.value = product.description
-    update()
-
-}
-
-const closeHover = () => {
-    clearTimeout(hoverTimer)
-    currentContent.value = null;
-    reference.value = null;
-}
-
-// ===== 點擊外部關閉 =====
-const handleClickOutside = (event) => {
-    if (floating.value && !floating.value.contains(event.target) &&
-        !reference.value?.contains(event.target)) {
-        closeHover()
-    }
-}
-
-watch(() => currentContent.value, (val) => {
-    if (val) {
-        document.addEventListener('mousedown', handleClickOutside)
-    } else {
-        document.removeEventListener('mousedown', handleClickOutside)
-    }
-})
 
 const addProduct = async () => {
     const file = document.getElementById('file').files[0];
@@ -229,77 +175,7 @@ const setPrimary = async (id) => {
 
 <template>
     <BackLayout>
-        <p class="text-[#1E2328] text-lg font-semibold">
-            產品
-        </p>
-
-        <div class="shadow bg-base-100 mt-6 px-6 py-5">
-            <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th v-for="column in columns">
-                                {{ column.label }}
-                            </th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-
-                    <tbody v-if="products.length">
-                        <tr v-for="product in products" :key="product.id">
-                            <td v-for="col in columns" :key="col.key">
-                                <template v-if="col.key === 'enabled'">
-                                    <span :class="product.enabled ? 'text-green-600' : 'text-gray-400'">
-                                        {{ product.enabled ? '是' : '否' }}
-                                    </span>
-                                </template>
-                                <template v-if="col.key === 'description'">
-                                    <div class="line-clamp-1 lg:max-w-80 w-full hover:cursor-pointer"
-                                        @click="openHover($event, product)">
-                                        {{ product.description }}
-                                    </div>
-
-
-                                </template>
-                                <template v-else>
-                                    {{ product[col.key] }}
-                                </template>
-                            </td>
-                            <td class="space-x-2">
-                                <div class="flex gap-2">
-                                    <button class="btn btn-xs">編輯</button>
-                                    <button class="btn btn-xs btn-error text-base-200">刪除</button>
-                                    <div class="tooltip" data-tip="附圖及選項">
-                                        <button class="btn btn-xs btn-ghost">更多</button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-
-
-                    <!-- <tbody v-else>
-                        <tr>
-                            <td :colspan="columns.length + 1" class="text-center text-sm text-base-content/60 py-8">沒有資料
-                            </td>
-                        </tr>
-                    </tbody> -->
-                </table>
-            </div>
-        </div>
-
-        <Teleport to="body">
-            <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
-                enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
-                leave-from-class="opacity-100" leave-to-class="opacity-0">
-                <div v-if="currentContent" ref="floating" :style="floatingStyles" class="fixed z-50 max-w-[32rem] max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
-         leading-relaxed break-words whitespace-pre-line overflow-auto">
-                    <div class="max-w-100">
-                        {{ currentContent }}
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
+        product
         <!-- <button @click="addProduct">
             addProduct
         </button> -->
@@ -310,7 +186,7 @@ const setPrimary = async (id) => {
             delProduct
         </button> -->
 
-        <!-- <input id="file" type="file" multiple /> -->
+        <input id="file" type="file" multiple />
 
         <!-- <button @click="getOptions(21)">
             getOptions
@@ -330,7 +206,7 @@ const setPrimary = async (id) => {
         <!-- <button @click="getImages(23)">
             getImages
         </button> -->
-        <!-- 
+<!-- 
         <button @click="addImages(23)">
             addImages
         </button>
@@ -349,11 +225,3 @@ const setPrimary = async (id) => {
     </BackLayout>
 
 </template>
-
-<style>
-.text-chop {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-</style>
