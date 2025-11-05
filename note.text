@@ -22,3 +22,11 @@ initial-value: 0 0 #0000
     background-color: var(--color-base-100)
 #fff
 ;
+
+====
+11/5
+
+1.先把分頁和篩選做好
+2.再做crud
+3.再做附圖及選項 (父+子元件)的渲染 (用modal + tab)
+4.再做附圖及選項的crud

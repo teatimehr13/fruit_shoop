@@ -1,8 +1,10 @@
 <script setup>
 import BackLayout from '@/Layouts/BackLayout.vue';
+import { useFloatPop } from '@/Composables/useFloatPop';
 import axios from 'axios';
 import { ref, computed, watch } from 'vue';
-import { useFloating, offset, flip, shift } from '@floating-ui/vue'
+import Pagination from '@/DaisyComponents/Pagination.vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     products: Object
@@ -10,61 +12,39 @@ const props = defineProps({
 // console.log(props.products);
 const products = ref([...props.products.data]);
 console.log(products.value);
+console.log(props.products);
+
 const columns = [
-    { key: 'slug', label: 'Slug' },
-    { key: 'name', label: '產品名稱' },
-    { key: 'price', label: '價格' },
-    { key: 'description', label: '描述' },
-    { key: 'is_enabled', label: '狀態' },
-    //   { key: '', label: '操作' },
+    { key: 'slug', label: 'Slug', width: 'w-[15%]' },
+    { key: 'name', label: '產品名稱', width: 'w-[15%]' },
+    { key: 'price', label: '價格', width: 'w-[10%]' },
+    { key: 'description', label: '描述', width: 'w-[35%]' },
+    { key: 'is_enabled', label: '狀態', width: 'w-[5%]' },
+    { key: 'opt', label: '操作', width: 'w-auto' },
 ]
 
+const {
+    reference,
+    floating,
+    currentContent,
+    floatingStyles,
+    openHover,
+    closeHover
+} = useFloatPop()
 
-// ===== Floating UI =====
-const reference = ref(null)
-const floating = ref(null)
-const { floatingStyles, update } = useFloating(reference, floating, {
-    placement: 'bottom-start',
-    // middleware: [offset(-20), flip(), shift({ padding: 0 })],
-    middleware: [
-        offset(({ rects }) => ({
-            mainAxis: -rects.reference.height,
-            crossAxis: 0
-        })),
-        flip(),
-        shift({ padding: 0 })
-    ]
-})
-const currentContent = ref(null);
-let hoverTimer = null
-const openHover = (event, product) => {
-    reference.value = event.currentTarget
-    currentContent.value = product.description
-    update()
 
-}
+const handlePageChange = (page) => {
+    console.log(page);
 
-const closeHover = () => {
-    clearTimeout(hoverTimer)
-    currentContent.value = null;
-    reference.value = null;
-}
-
-// ===== 點擊外部關閉 =====
-const handleClickOutside = (event) => {
-    if (floating.value && !floating.value.contains(event.target) &&
-        !reference.value?.contains(event.target)) {
-        closeHover()
+    router.get(route('back.products.index'), {
+        page: page
+    }, {
+        // preserveState: true,
+        preserveScroll: true
     }
+    )
 }
 
-watch(() => currentContent.value, (val) => {
-    if (val) {
-        document.addEventListener('mousedown', handleClickOutside)
-    } else {
-        document.removeEventListener('mousedown', handleClickOutside)
-    }
-})
 
 const addProduct = async () => {
     const file = document.getElementById('file').files[0];
@@ -236,70 +216,94 @@ const setPrimary = async (id) => {
         <div class="shadow bg-base-100 mt-6 px-6 py-5">
             <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                 <table class="table w-full">
-                    <thead>
+                    <colgroup>
+                        <col v-for="c in columns" :key="c.key" :class="c.width" />
+                    </colgroup>
+
+                    <thead class="bg-[#fafbfc]">
                         <tr>
                             <th v-for="column in columns">
                                 {{ column.label }}
                             </th>
-                            <th>操作</th>
                         </tr>
                     </thead>
 
                     <tbody v-if="products.length">
                         <tr v-for="product in products" :key="product.id">
                             <td v-for="col in columns" :key="col.key">
-                                <template v-if="col.key === 'enabled'">
-                                    <span :class="product.enabled ? 'text-green-600' : 'text-gray-400'">
-                                        {{ product.enabled ? '是' : '否' }}
+                                <template v-if="col.key === 'is_enabled'">
+                                    <span :class="product.is_enabled ? 'text-600' : 'text-gray-400'">
+                                        <!-- {{ product.is_enabled == 1 ? '啟用' : '未啟用' }} -->
+                                        <label class="toggle toggle-xs text-base-content">
+                                            <input type="checkbox" disabled="true"
+                                                :checked="product?.is_enabled == 1" />
+                                            <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24">
+                                                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="4"
+                                                    fill="none" stroke="currentColor">
+                                                    <path d="M20 6 9 17l-5-5"></path>
+                                                </g>
+                                            </svg>
+                                            <svg aria-label="disabled" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M18 6 6 18" />
+                                                <path d="m6 6 12 12" />
+                                            </svg>
+                                        </label>
                                     </span>
                                 </template>
-                                <template v-if="col.key === 'description'">
-                                    <div class="line-clamp-1 lg:max-w-80 w-full hover:cursor-pointer"
-                                        @click="openHover($event, product)">
+                                <template v-else-if="col.key === 'description'">
+                                    <div class="line-clamp-1 hover:cursor-pointer" @click="openHover($event, product)">
                                         {{ product.description }}
                                     </div>
-
-
+                                </template>
+                                <template v-else-if="col.key === 'opt'">
+                                    <div class="flex gap-2">
+                                        <button class="btn btn-xs">編輯</button>
+                                        <button class="btn btn-xs text-red-600">刪除</button>
+                                        <div class="tooltip" data-tip="附圖及選項">
+                                            <button class="btn btn-xs text-blue-600 whitespace-nowrap">更多</button>
+                                        </div>
+                                    </div>
                                 </template>
                                 <template v-else>
                                     {{ product[col.key] }}
                                 </template>
                             </td>
-                            <td class="space-x-2">
-                                <div class="flex gap-2">
-                                    <button class="btn btn-xs">編輯</button>
-                                    <button class="btn btn-xs btn-error text-base-200">刪除</button>
-                                    <div class="tooltip" data-tip="附圖及選項">
-                                        <button class="btn btn-xs btn-ghost">更多</button>
-                                    </div>
-                                </div>
+                        </tr>
+                    </tbody>
+
+                    <tbody v-else>
+                        <tr>
+                            <td :colspan="columns.length + 1" class="text-center text-sm text-base-content/60 py-8">沒有資料
                             </td>
                         </tr>
                     </tbody>
 
 
-                    <!-- <tbody v-else>
-                        <tr>
-                            <td :colspan="columns.length + 1" class="text-center text-sm text-base-content/60 py-8">沒有資料
-                            </td>
-                        </tr>
-                    </tbody> -->
                 </table>
             </div>
         </div>
 
+        <!-- floating pop 顯示區域 -->
         <Teleport to="body">
             <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
                 enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
                 leave-from-class="opacity-100" leave-to-class="opacity-0">
-                <div v-if="currentContent" ref="floating" :style="floatingStyles" class="fixed z-50 max-w-[32rem] max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
+                <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
          leading-relaxed break-words whitespace-pre-line overflow-auto">
                     <div class="max-w-100">
-                        {{ currentContent }}
+                        {{ currentContent?.description }}
                     </div>
                 </div>
             </Transition>
         </Teleport>
+
+        <div class="mt-4">
+            <Pagination :pagination="props.products" @change="handlePageChange" />
+        </div>
+
         <!-- <button @click="addProduct">
             addProduct
         </button> -->
