@@ -15,8 +15,12 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = $this->fetchIndexData($request);
+        $subcategories = Subcategory::select('id', 'name')->get();
         return Inertia::render('Back/Product/Index', [
-            'products' => $products
+            'products' => $products,
+            'subcategories' => $subcategories,
+            'filters' => $request->only(['subcategory_id', 'name'])
+
         ]);
     }
 
@@ -50,10 +54,10 @@ class ProductController extends Controller
     {
         $catId = $product->subcategory->category_id;
         $subcategoriesSelect = Subcategory::query()
-        ->where('is_enabled', true)
-        ->where('category_id', $catId)
-        ->orderBy('sort_order')
-        ->get(['id','name']);
+            ->where('is_enabled', true)
+            ->where('category_id', $catId)
+            ->orderBy('sort_order')
+            ->get(['id', 'name']);
 
         return Inertia::render('Back/Product/Edit', [
             'product' => $product,

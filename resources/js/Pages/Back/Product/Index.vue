@@ -1,18 +1,39 @@
 <script setup>
 import BackLayout from '@/Layouts/BackLayout.vue';
+defineOptions({ layout: BackLayout })
+import { ref, computed, watch, reactive, inject } from 'vue';
+import { router } from '@inertiajs/vue3';
 import { useFloatPop } from '@/Composables/useFloatPop';
 import axios from 'axios';
-import { ref, computed, watch } from 'vue';
 import Pagination from '@/DaisyComponents/Pagination.vue';
-import { router } from '@inertiajs/vue3';
+import EditDrawer from '@/DaisyComponents/EditDrawer.vue';
+import HeadlessTab from '@/DaisyComponents/HeadlessTab.vue';
+
+
+
 
 const props = defineProps({
-    products: Object
+    products: Object,
+    subcategories: Array,
+    filters: Object
 })
-// console.log(props.products);
+// console.log(props.subcategories);
+console.log(props.filters);
+
+const filterForm = reactive(
+    {
+        subcategory_id: props.filters.subcategory_id ?? '',
+        name: props.filters.name ?? ''
+    }
+)
+
 const products = ref([...props.products.data]);
+const subSelects = computed(() => props.subcategories || [])
+
 console.log(products.value);
 console.log(props.products);
+console.log(subSelects.value);
+
 
 const columns = [
     { key: 'slug', label: 'Slug', width: 'w-[15%]' },
@@ -34,15 +55,14 @@ const {
 
 
 const handlePageChange = (page) => {
-    console.log(page);
-
+    const cleanFilters = Object.fromEntries(Object.entries(filterForm).filter(([_, v]) => v !== '' && v !== null));
     router.get(route('back.products.index'), {
-        page: page
+        page: page,
+        ...cleanFilters
     }, {
         // preserveState: true,
         preserveScroll: true
-    }
-    )
+    })
 }
 
 
@@ -205,136 +225,237 @@ const setPrimary = async (id) => {
 
 }
 
+// Edit Drawer
+const ui = inject('backUI')
+const showDrawer = ref(false)
+const editingProduct = ref(null)
+
+// 開啟新增
+const openAdd = () => {
+    editingProduct.value = {
+        slug: '',
+        name: '',
+        price: '',
+        description: '',
+        is_enabled: true
+    }
+    showDrawer.value = true
+}
+
+// 開啟編輯
+const openEdit = (product) => {
+    editingProduct.value = { ...product }
+    showDrawer.value = true
+}
+
+
+// 儲存
+const handleSave = async (formData) => {
+    try {
+        if (formData.id) {
+            // 編輯
+            await axios.put(route('back.products.update', formData.id), formData, {
+                headers: { Accept: 'application/json' },
+                validateStatus: s => s < 500
+            })
+        } else {
+            // 新增
+            await axios.post(route('back.products.store'), formData, {
+                headers: { Accept: 'application/json' },
+                validateStatus: s => s < 500
+            })
+        }
+
+        // 重新載入
+        router.reload({ only: ['products'] })
+        showDrawer.value = false
+    } catch (error) {
+        console.error(error)
+        alert('儲存失敗')
+    }
+}
+
+// 刪除
+const handleDelete = async (product) => {
+    if (!confirm(`確定要刪除「${product.name}」？`)) return
+
+    try {
+        await axios.delete(route('back.products.destroy', product.id))
+        router.reload({ only: ['products'] })
+    } catch (error) {
+        console.error(error)
+        alert('刪除失敗')
+    }
+}
+
+
+const editOpen = ref(false)
+watch(editOpen, (v) => {
+    if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+})
+
 </script>
 
 <template>
-    <BackLayout>
-        <p class="text-[#1E2328] text-lg font-semibold">
-            產品
-        </p>
+    <!-- <BackLayout> -->
+    <div class="flex">
+        <div>
+            <p class="text-[#1E2328] text-lg font-semibold">
+                產品
+            </p>
 
-        <div class="shadow bg-base-100 mt-6 px-6 py-5">
-            <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                <table class="table w-full">
-                    <colgroup>
-                        <col v-for="c in columns" :key="c.key" :class="c.width" />
-                    </colgroup>
+            <div class="shadow bg-base-100 mt-6 px-6 py-5">
+                <div class="my-4 flex gap-4 flex-wrap">
+                    <label class="input input-sm w-full sm:w-60 md:w-68 lg:w-76">
+                        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                                stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </g>
+                        </svg>
+                        <input type="search" required placeholder="搜尋產品" v-model="filterForm.name"
+                            @change="handlePageChange()" />
+                    </label>
 
-                    <thead class="bg-[#fafbfc]">
-                        <tr>
-                            <th v-for="column in columns">
-                                {{ column.label }}
-                            </th>
-                        </tr>
-                    </thead>
+                    <select v-model="filterForm.subcategory_id" @change="handlePageChange()"
+                        class="select select-sm w-full sm:w-40 md:w-48 lg:w-56">
+                        <option value="" selected>選擇子類別</option>
+                        <option v-for="sel in subSelects" :key="sel.id" :value="sel.id">
+                            {{ sel.name }}
+                        </option>
+                    </select>
+                </div>
 
-                    <tbody v-if="products.length">
-                        <tr v-for="product in products" :key="product.id">
-                            <td v-for="col in columns" :key="col.key">
-                                <template v-if="col.key === 'is_enabled'">
-                                    <span :class="product.is_enabled ? 'text-600' : 'text-gray-400'">
-                                        <!-- {{ product.is_enabled == 1 ? '啟用' : '未啟用' }} -->
-                                        <label class="toggle toggle-xs text-base-content">
-                                            <input type="checkbox" disabled="true"
-                                                :checked="product?.is_enabled == 1" />
-                                            <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24">
-                                                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="4"
-                                                    fill="none" stroke="currentColor">
-                                                    <path d="M20 6 9 17l-5-5"></path>
-                                                </g>
-                                            </svg>
-                                            <svg aria-label="disabled" xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M18 6 6 18" />
-                                                <path d="m6 6 12 12" />
-                                            </svg>
-                                        </label>
-                                    </span>
-                                </template>
-                                <template v-else-if="col.key === 'description'">
-                                    <div class="line-clamp-1 hover:cursor-pointer" @click="openHover($event, product)">
-                                        {{ product.description }}
-                                    </div>
-                                </template>
-                                <template v-else-if="col.key === 'opt'">
-                                    <div class="flex gap-2">
-                                        <button class="btn btn-xs">編輯</button>
-                                        <button class="btn btn-xs text-red-600">刪除</button>
-                                        <div class="tooltip" data-tip="附圖及選項">
-                                            <button class="btn btn-xs text-blue-600 whitespace-nowrap">更多</button>
+                <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                    <table class="table w-full">
+                        <colgroup>
+                            <col v-for="c in columns" :key="c.key" :class="c.width" />
+                        </colgroup>
+
+                        <thead class="bg-[#fafbfc]">
+                            <tr>
+                                <th v-for="column in columns">
+                                    {{ column.label }}
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody v-if="products.length">
+                            <tr v-for="product in products" :key="product.id">
+                                <td v-for="col in columns" :key="col.key">
+                                    <template v-if="col.key === 'is_enabled'">
+                                        <span :class="product.is_enabled ? 'text-600' : 'text-gray-400'">
+                                            <!-- {{ product.is_enabled == 1 ? '啟用' : '未啟用' }} -->
+                                            <label class="toggle toggle-xs text-base-content">
+                                                <input type="checkbox" disabled="true"
+                                                    :checked="product?.is_enabled == 1" />
+                                                <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24">
+                                                    <g stroke-linejoin="round" stroke-linecap="round" stroke-width="4"
+                                                        fill="none" stroke="currentColor">
+                                                        <path d="M20 6 9 17l-5-5"></path>
+                                                    </g>
+                                                </svg>
+                                                <svg aria-label="disabled" xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 6 6 18" />
+                                                    <path d="m6 6 12 12" />
+                                                </svg>
+                                            </label>
+                                        </span>
+                                    </template>
+                                    <template v-else-if="col.key === 'description'">
+                                        <div class="line-clamp-1 hover:cursor-pointer"
+                                            @click="openHover($event, product)">
+                                            {{ product.description }}
                                         </div>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    {{ product[col.key] }}
-                                </template>
-                            </td>
-                        </tr>
-                    </tbody>
+                                    </template>
+                                    <template v-else-if="col.key === 'opt'">
+                                        <div class="flex gap-2">
+                                            <button class="btn btn-xs" @click="editOpen = !editOpen , ui.toggleSidebar()">編輯</button>
+                                            <button class="btn btn-xs text-red-600">刪除</button>
+                                            <div class="tooltip" data-tip="附圖及選項">
+                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap">更多</button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        {{ product[col.key] }}
+                                    </template>
+                                </td>
+                            </tr>
+                        </tbody>
 
-                    <tbody v-else>
-                        <tr>
-                            <td :colspan="columns.length + 1" class="text-center text-sm text-base-content/60 py-8">沒有資料
-                            </td>
-                        </tr>
-                    </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td :colspan="columns.length + 1" class="text-center text-sm text-base-content/60 py-8">
+                                    沒有資料
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
-                </table>
+            <!-- floating pop 顯示區域 -->
+            <Teleport to="body">
+                <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
+                    enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
+                    leave-from-class="opacity-100" leave-to-class="opacity-0">
+                    <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
+             leading-relaxed break-words whitespace-pre-line overflow-auto">
+                        <div class="max-w-100">
+                            {{ currentContent?.description }}
+                        </div>
+                    </div>
+                </Transition>
+            </Teleport>
+
+            <div class="mt-4">
+                <Pagination :pagination="props.products" @change="handlePageChange" />
             </div>
         </div>
 
-        <!-- floating pop 顯示區域 -->
-        <Teleport to="body">
-            <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
-                enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
-                leave-from-class="opacity-100" leave-to-class="opacity-0">
-                <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
-         leading-relaxed break-words whitespace-pre-line overflow-auto">
-                    <div class="max-w-100">
-                        {{ currentContent?.description }}
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
+        <EditDrawer v-model:editOpen="editOpen">
+            <HeadlessTab></HeadlessTab>
+        </EditDrawer>
 
-        <div class="mt-4">
-            <Pagination :pagination="props.products" @change="handlePageChange" />
-        </div>
+    </div>
 
-        <!-- <button @click="addProduct">
+    <!-- <button @click="addProduct">
             addProduct
         </button> -->
-        <!-- <button @click="updProduct('16')">
+    <!-- <button @click="updProduct('16')">
             updProduct
         </button> -->
-        <!-- <button @click="delProduct('17')">
+    <!-- <button @click="delProduct('17')">
             delProduct
         </button> -->
 
-        <!-- <input id="file" type="file" multiple /> -->
+    <!-- <input id="file" type="file" multiple /> -->
 
-        <!-- <button @click="getOptions(21)">
+    <!-- <button @click="getOptions(21)">
             getOptions
         </button> -->
 
-        <!-- <button @click="addOptions(21)">
+    <!-- <button @click="addOptions(21)">
             addOptions
         </button> -->
 
-        <!-- <button @click="updOptions(25)">
+    <!-- <button @click="updOptions(25)">
             updOptions
         </button> -->
-        <!-- <button @click="delOptions(25)">
+    <!-- <button @click="delOptions(25)">
             delOptions
         </button> -->
 
-        <!-- <button @click="getImages(23)">
+    <!-- <button @click="getImages(23)">
             getImages
         </button> -->
-        <!-- 
+    <!-- 
         <button @click="addImages(23)">
             addImages
         </button>
@@ -350,7 +471,24 @@ const setPrimary = async (id) => {
         <button @click="setPrimary(24)">
             setPrimary
         </button> -->
-    </BackLayout>
+
+    <!-- <div class="drawer drawer-end drawer-open z-999">
+        <input id="Editdrawer" type="checkbox" class="drawer-toggle" v-model="editOpen" />
+        <div class="drawer-content">
+            <label for="Editdrawer" class="drawer-button btn btn-primary"
+                @click="ui?.toggleSidebar && ui.toggleSidebar()">Open drawer</label>
+        </div>
+        <div class="drawer-side">
+            <label for="Editdrawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <ul class="menu bg-base-200 min-h-full w-80 p-4">
+                <li><a>Sidebar Item 1</a></li>
+                <li><a>Sidebar Item 2</a></li>
+            </ul>
+        </div>
+    </div> -->
+
+
+    <!-- </BackLayout> -->
 
 </template>
 

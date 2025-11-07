@@ -1,7 +1,18 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { provide, ref } from 'vue';
 import Nav from '../DaisyComponents/Nav.vue';
 import SideBar from '@/DaisyComponents/SideBar.vue';
+
+//for 左欄位跨組件控制
+const drawerSideOpen = ref(true)
+const ui = {
+    drawerSideOpen,
+    openSidebar: () => (drawerSideOpen.value = true),
+    closeSidebar: () => (drawerSideOpen.value = false),
+    toggleSidebar: () => (drawerSideOpen.value = !drawerSideOpen.value),
+}
+provide('backUI', ui)
 
 
 </script>
@@ -19,7 +30,7 @@ import SideBar from '@/DaisyComponents/SideBar.vue';
         </template>
     </Nav>
 
-    <SideBar>
+    <SideBar v-model="drawerSideOpen">
         <template #drawer_content>
             <slot />
         </template>

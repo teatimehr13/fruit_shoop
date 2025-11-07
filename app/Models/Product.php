@@ -60,4 +60,11 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
+    public function siblingSubcategories()
+    {
+        return $this->subcategory
+            ? Subcategory::where('category_id', $this->subcategory->category_id)->get()
+            : collect();
+    }
 }

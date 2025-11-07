@@ -1,16 +1,26 @@
 <script setup>
+import { computed, ref, watch } from 'vue';
 import SideBarNavLink from './SideBarNavLink.vue';
+const props = defineProps({
+    modelValue: Boolean
+})
+const emit = defineEmits(['update:modelValue'])
+
+console.log(props.modelValue);
+
+watch(() => props.modelValue, v => console.log('drawer open =', v))
 
 </script>
 
 <template>
-    <div class="drawer lg:drawer-open">
-        <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
+    <div class="drawer" :class="{ 'lg:drawer-open': props.modelValue }">
+        <input id="my-drawer-3" type="checkbox" class="drawer-toggle" 
+            @change="emit('update:modelValue', $event.target.checked)" />
         <div class="drawer-content flex flex-col h-[calc(100vh-72px)] overflow-y-auto">
             <slot name="drawer_content" />
         </div>
         <div class="drawer-side h-full ">
-            <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
+            <label for="my-drawer-3" aria-label="close sidebar" class=""></label>
             <ul class="menu w-80 p-4 
            min-h-[calc(100vh-72px)] h-full overflow-y-auto
            bg-white border-e border-gray-200
