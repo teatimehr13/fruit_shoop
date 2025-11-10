@@ -8,7 +8,10 @@ import axios from 'axios';
 import Pagination from '@/DaisyComponents/Pagination.vue';
 import EditDrawer from '@/DaisyComponents/EditDrawer.vue';
 import HeadlessTab from '@/DaisyComponents/HeadlessTab.vue';
-
+import BasicForm from '@/Pages/Back/Product/_BasicForm.vue';
+import OptionsForm from '@/Pages/Back/Product/_OptionsForm.vue'
+import ImagesForm from '@/Pages/Back/Product/_ImagesForm.vue'
+import api from '@/Lib/apiFeedback';
 
 
 
@@ -242,10 +245,23 @@ const openAdd = () => {
     showDrawer.value = true
 }
 
+const loading = ref(false)
+
 // 開啟編輯
-const openEdit = (product) => {
-    editingProduct.value = { ...product }
-    showDrawer.value = true
+const openEdit = async (id) => {
+    loading.value = true
+    editOpen.value = !editOpen.value;
+    ui.toggleSidebar();
+    productDetails.value = null
+    try {
+        await getDetail(id)
+    } catch (error) {
+        console.error('載入失敗:', error)
+        alert('載入失敗')
+        loading.value = true 
+    } finally {
+        loading.value = false
+    }
 }
 
 
@@ -275,23 +291,76 @@ const handleSave = async (formData) => {
     }
 }
 
+const del = ref(false);
 // 刪除
 const handleDelete = async (product) => {
-    if (!confirm(`確定要刪除「${product.name}」？`)) return
+    del.value = !del.value;
+    // if (!confirm(`確定要刪除「${product.name}」？`)) return
 
-    try {
-        await axios.delete(route('back.products.destroy', product.id))
-        router.reload({ only: ['products'] })
-    } catch (error) {
-        console.error(error)
-        alert('刪除失敗')
-    }
+    // try {
+    //     await axios.delete(route('back.products.destroy', product.id))
+    //     router.reload({ only: ['products'] })
+    // } catch (error) {
+    //     console.error(error)
+    //     alert('刪除失敗')
+    // }
 }
 
 
 const editOpen = ref(false)
 watch(editOpen, (v) => {
     if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+})
+
+const productDetails = reactive({
+    basic: {},
+    images: [],
+    options: []
+})
+
+const tabs = [
+    { key: 'basic', label: '產品資料' },
+    { key: 'options', label: '規格選項' },
+    { key: 'images', label: '附圖管理' },
+]
+
+const getDetail = async (id) => {
+    const res = await axios.get(route('back.product.details', id));
+    // console.log(res.data);
+    productDetails.basic = res.data?.product || {};
+    productDetails.images = res.data?.images || [];
+    productDetails.options = res.data?.options || [];
+}
+
+const handleSaveBasic = async (formData) => {
+    console.log(formData);
+    const res = await api.put(route('back.products.update', formData.id), formData)
+    console.log(res.data);
+    if(res.status === 200){
+        const updated = products.value.find(e => e.id == formData.id);
+        Object.assign(updated, {
+            description: res.data.description,
+            name: res.data.name,
+            price: res.data.price,
+            slug: res.data.slug
+        })
+    }
+}
+
+const handleSaveOptions = async (options) => {
+    await axios.post(route('back.product.options.batch-update', productDetails.value.id), {
+        options
+    })
+    alert('選項已儲存')
+}
+
+const handleSaveImages = async (images) => {
+    // 處理圖片儲存
+    alert('圖片已儲存')
+}
+
+const deleteMessage = computed(() => {
+    return `確定要刪除嗎？`
 })
 
 </script>
@@ -374,10 +443,11 @@ watch(editOpen, (v) => {
                                     </template>
                                     <template v-else-if="col.key === 'opt'">
                                         <div class="flex gap-2">
-                                            <button class="btn btn-xs" @click="editOpen = !editOpen , ui.toggleSidebar()">編輯</button>
-                                            <button class="btn btn-xs text-red-600">刪除</button>
+                                            <button class="btn btn-xs" @click="openEdit(product.id)">編輯</button>
+                                            <button class="btn btn-xs text-red-600" @click="handleDelete(product.id)">刪除</button>
                                             <div class="tooltip" data-tip="附圖及選項">
-                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap">更多</button>
+                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap"
+                                                    @click="getDetail(product.id)">更多</button>
                                             </div>
                                         </div>
                                     </template>
@@ -411,6 +481,13 @@ watch(editOpen, (v) => {
                             {{ currentContent?.description }}
                         </div>
                     </div>
+
+                    <div v-else-if="del">
+                        <p class="text-sm text-base-content/70 mb-4">
+                              {{ deleteMessage }}
+                              <span class="block mt-2">此操作無法復原。</span>
+                          </p>
+                    </div>
                 </Transition>
             </Teleport>
 
@@ -420,7 +497,29 @@ watch(editOpen, (v) => {
         </div>
 
         <EditDrawer v-model:editOpen="editOpen">
-            <HeadlessTab></HeadlessTab>
+            <div v-if="loading" class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <span class="loading loading-spinner loading-lg"></span>
+                    <p class="mt-4 text-sm text-gray-500">載入中...</p>
+                </div>
+            </div>
+            <HeadlessTab v-else-if="productDetails" :data="productDetails" :tabs="tabs">
+                <!-- 基本資料 Tab -->
+                <!-- data為headless傳回來的值，再傳給basicForm -->
+                <template #basic="{ data }">
+                    <BasicForm :product="data.basic" @save="handleSaveBasic" />
+                </template>
+
+                <!-- 選項管理 Tab -->
+                <template #options="{ data }">
+                    <OptionsForm :options="data.options" @save="handleSaveOptions" />
+                </template>
+
+                <!-- 圖片管理 Tab -->
+                <template #images="{ data }">
+                    <ImagesForm :images="data.images" @save="handleSaveImages" />
+                </template>
+            </HeadlessTab>
         </EditDrawer>
 
     </div>

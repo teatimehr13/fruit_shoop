@@ -1,7 +1,7 @@
 import { ref, computed, watch } from 'vue';
 import { useFloating, offset, flip, shift, size } from '@floating-ui/vue'
 
-export function useFloatPop(options = {}) {
+function useFloatPop(options = {}) {
     const {
         placement = 'bottom-start',
         offsetValue = 0,
@@ -74,3 +74,5 @@ export function useFloatPop(options = {}) {
         update
     }
 }
+
+export { useFloatPop }
