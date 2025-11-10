@@ -8,7 +8,10 @@ import axios from 'axios';
 import Pagination from '@/DaisyComponents/Pagination.vue';
 import EditDrawer from '@/DaisyComponents/EditDrawer.vue';
 import HeadlessTab from '@/DaisyComponents/HeadlessTab.vue';
-
+import BasicForm from '@/Pages/Back/Product/_BasicForm.vue';
+import OptionsForm from '@/Pages/Back/Product/_OptionsForm.vue'
+import ImagesForm from '@/Pages/Back/Product/_ImagesForm.vue'
+import api from '@/Lib/apiFeedback';
 
 
 
@@ -45,14 +48,28 @@ const columns = [
 ]
 
 const {
-    reference,
-    floating,
-    currentContent,
-    floatingStyles,
-    openHover,
-    closeHover
+    reference: descRef,
+    floating: descFloating,
+    currentContent: descContent,
+    floatingStyles: descStyles,
+    openHover: openDesc,
+    closeHover: closeDesc
 } = useFloatPop()
 
+// Delete Confirmation Popover
+const {
+    reference: delRef,
+    floating: delFloating,
+    currentContent: delContent,
+    floatingStyles: delStyles,
+    openHover: openDel,
+    closeHover: closeDel
+} = useFloatPop({
+    placement: 'bottom-start',
+    offsetValue: 30,
+    enableWidth: true,
+    customWidth: 200  
+})
 
 const handlePageChange = (page) => {
     const cleanFilters = Object.fromEntries(Object.entries(filterForm).filter(([_, v]) => v !== '' && v !== null));
@@ -242,10 +259,23 @@ const openAdd = () => {
     showDrawer.value = true
 }
 
+const loading = ref(false)
+
 // 開啟編輯
-const openEdit = (product) => {
-    editingProduct.value = { ...product }
-    showDrawer.value = true
+const openEdit = async (id) => {
+    loading.value = true
+    editOpen.value = !editOpen.value;
+    ui.toggleSidebar();
+    productDetails.value = null
+    try {
+        await getDetail(id)
+    } catch (error) {
+        console.error('載入失敗:', error)
+        alert('載入失敗')
+        loading.value = true
+    } finally {
+        loading.value = false
+    }
 }
 
 
@@ -275,23 +305,76 @@ const handleSave = async (formData) => {
     }
 }
 
+const del = ref(false);
 // 刪除
 const handleDelete = async (product) => {
-    if (!confirm(`確定要刪除「${product.name}」？`)) return
+    del.value = !del.value;
+    // if (!confirm(`確定要刪除「${product.name}」？`)) return
 
-    try {
-        await axios.delete(route('back.products.destroy', product.id))
-        router.reload({ only: ['products'] })
-    } catch (error) {
-        console.error(error)
-        alert('刪除失敗')
-    }
+    // try {
+    //     await axios.delete(route('back.products.destroy', product.id))
+    //     router.reload({ only: ['products'] })
+    // } catch (error) {
+    //     console.error(error)
+    //     alert('刪除失敗')
+    // }
 }
 
 
 const editOpen = ref(false)
 watch(editOpen, (v) => {
     if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+})
+
+const productDetails = reactive({
+    basic: {},
+    images: [],
+    options: []
+})
+
+const tabs = [
+    { key: 'basic', label: '產品資料' },
+    { key: 'options', label: '規格選項' },
+    { key: 'images', label: '附圖管理' },
+]
+
+const getDetail = async (id) => {
+    const res = await axios.get(route('back.product.details', id));
+    // console.log(res.data);
+    productDetails.basic = res.data?.product || {};
+    productDetails.images = res.data?.images || [];
+    productDetails.options = res.data?.options || [];
+}
+
+const handleSaveBasic = async (formData) => {
+    console.log(formData);
+    const res = await api.put(route('back.products.update', formData.id), formData)
+    console.log(res.data);
+    if (res.status === 200) {
+        const updated = products.value.find(e => e.id == formData.id);
+        Object.assign(updated, {
+            description: res.data.description,
+            name: res.data.name,
+            price: res.data.price,
+            slug: res.data.slug
+        })
+    }
+}
+
+const handleSaveOptions = async (options) => {
+    await axios.post(route('back.product.options.batch-update', productDetails.value.id), {
+        options
+    })
+    alert('選項已儲存')
+}
+
+const handleSaveImages = async (images) => {
+    // 處理圖片儲存
+    alert('圖片已儲存')
+}
+
+const deleteMessage = computed(() => {
+    return `確定要刪除嗎？`
 })
 
 </script>
@@ -368,16 +451,18 @@ watch(editOpen, (v) => {
                                     </template>
                                     <template v-else-if="col.key === 'description'">
                                         <div class="line-clamp-1 hover:cursor-pointer"
-                                            @click="openHover($event, product)">
+                                            @click="openDesc($event, product)">
                                             {{ product.description }}
                                         </div>
                                     </template>
                                     <template v-else-if="col.key === 'opt'">
                                         <div class="flex gap-2">
-                                            <button class="btn btn-xs" @click="editOpen = !editOpen , ui.toggleSidebar()">編輯</button>
-                                            <button class="btn btn-xs text-red-600">刪除</button>
+                                            <button class="btn btn-xs" @click="openEdit(product.id)">編輯</button>
+                                            <button class="btn btn-xs text-red-600"
+                                                @click="openDel($event, product)">刪除</button>
                                             <div class="tooltip" data-tip="附圖及選項">
-                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap">更多</button>
+                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap"
+                                                    @click="getDetail(product.id)">更多</button>
                                             </div>
                                         </div>
                                     </template>
@@ -405,10 +490,38 @@ watch(editOpen, (v) => {
                 <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
                     enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
                     leave-from-class="opacity-100" leave-to-class="opacity-0">
-                    <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
+                    <!-- <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
              leading-relaxed break-words whitespace-pre-line overflow-auto">
                         <div class="max-w-100">
                             {{ currentContent?.description }}
+                        </div>
+                    </div>
+
+                    <div v-else-if="del">
+                        <p class="text-sm text-base-content/70 mb-4">
+                            {{ deleteMessage }}
+                            <span class="block mt-2">此操作無法復原。</span>
+                        </p>
+                    </div> -->
+                    <div v-if="descContent?.description" ref="descFloating" :style="descStyles"
+                        class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl leading-relaxed break-words whitespace-pre-line overflow-auto">
+                        <div class="max-w-100">
+                            {{ descContent.description }}
+                        </div>
+                    </div>
+                </Transition>
+
+                <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
+                    enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
+                    leave-from-class="opacity-100" leave-to-class="opacity-0">
+                    <div v-if="delContent" ref="delFloating" :style="delStyles"
+                        class="fixed z-50 p-4 rounded-xl bg-base-100 shadow-xl">
+                        <p class="text-sm text-base-content/70 mb-4">
+                            {{ deleteMessage }}
+                        </p>
+                        <div class="flex gap-2 justify-end">
+                            <button @click="closeDel" class="btn btn-sm">取消</button>
+                            <button @click="confirmDelete" class="btn btn-sm btn-error">確認刪除</button>
                         </div>
                     </div>
                 </Transition>
@@ -420,7 +533,29 @@ watch(editOpen, (v) => {
         </div>
 
         <EditDrawer v-model:editOpen="editOpen">
-            <HeadlessTab></HeadlessTab>
+            <div v-if="loading" class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <span class="loading loading-spinner loading-lg"></span>
+                    <p class="mt-4 text-sm text-gray-500">載入中...</p>
+                </div>
+            </div>
+            <HeadlessTab v-else-if="productDetails" :data="productDetails" :tabs="tabs">
+                <!-- 基本資料 Tab -->
+                <!-- data為headless傳回來的值，再傳給basicForm -->
+                <template #basic="{ data }">
+                    <BasicForm :product="data.basic" @save="handleSaveBasic" />
+                </template>
+
+                <!-- 選項管理 Tab -->
+                <template #options="{ data }">
+                    <OptionsForm :options="data.options" @save="handleSaveOptions" />
+                </template>
+
+                <!-- 圖片管理 Tab -->
+                <template #images="{ data }">
+                    <ImagesForm :images="data.images" @save="handleSaveImages" />
+                </template>
+            </HeadlessTab>
         </EditDrawer>
 
     </div>
@@ -471,22 +606,6 @@ watch(editOpen, (v) => {
         <button @click="setPrimary(24)">
             setPrimary
         </button> -->
-
-    <!-- <div class="drawer drawer-end drawer-open z-999">
-        <input id="Editdrawer" type="checkbox" class="drawer-toggle" v-model="editOpen" />
-        <div class="drawer-content">
-            <label for="Editdrawer" class="drawer-button btn btn-primary"
-                @click="ui?.toggleSidebar && ui.toggleSidebar()">Open drawer</label>
-        </div>
-        <div class="drawer-side">
-            <label for="Editdrawer" aria-label="close sidebar" class="drawer-overlay"></label>
-            <ul class="menu bg-base-200 min-h-full w-80 p-4">
-                <li><a>Sidebar Item 1</a></li>
-                <li><a>Sidebar Item 2</a></li>
-            </ul>
-        </div>
-    </div> -->
-
 
     <!-- </BackLayout> -->
 

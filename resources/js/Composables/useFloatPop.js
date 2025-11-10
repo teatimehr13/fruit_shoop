@@ -5,13 +5,16 @@ export function useFloatPop(options = {}) {
     const {
         placement = 'bottom-start',
         offsetValue = 0,
-        enableWidth = true
+        enableWidth = true,
+        customWidth = null, // 新增：自定義固定寬度
+        minWidth = null,    // 新增：最小寬度
+        maxWidth = null     // 新增：最大寬度
     } = options
-
+    
     const reference = ref(null)
     const floating = ref(null)
     const currentContent = ref(null)
-
+    
     const middleware = [
         offset(({ rects }) => ({
             mainAxis: -rects.reference.height + offsetValue,
@@ -20,42 +23,51 @@ export function useFloatPop(options = {}) {
         flip(),
         shift({ padding: 0 })
     ]
-
+    
     if (enableWidth) {
         middleware.splice(1, 0, size({
             apply({ rects, elements }) {
-                elements.floating.style.width = `${rects.reference.width}px`
+                // 如果指定了 customWidth，使用固定寬度
+                if (customWidth) {
+                    elements.floating.style.width = `${customWidth}px`
+                } else {
+                    // 否則使用 reference 的寬度
+                    let width = rects.reference.width
+                    
+                    // 應用最小/最大寬度限制
+                    if (minWidth && width < minWidth) width = minWidth
+                    if (maxWidth && width > maxWidth) width = maxWidth
+                    
+                    elements.floating.style.width = `${width}px`
+                }
             }
         }))
     }
-
+    
     const { floatingStyles, update } = useFloating(reference, floating, {
         placement,
         middleware
     })
-
+    
     const openHover = (event, content) => {
-        
         reference.value = event.currentTarget
         currentContent.value = content
         console.log(currentContent.value);
-        
         update()
     }
-
+    
     const closeHover = () => {
         currentContent.value = null
         reference.value = null
     }
-
-    // 點擊外部關閉
+    
     const handleClickOutside = (event) => {
         if (floating.value && !floating.value.contains(event.target) &&
             !reference.value?.contains(event.target)) {
             closeHover()
         }
     }
-
+    
     watch(() => currentContent.value, (val) => {
         if (val) {
             document.addEventListener('mousedown', handleClickOutside)
@@ -63,7 +75,7 @@ export function useFloatPop(options = {}) {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     })
-
+    
     return {
         reference,
         floating,

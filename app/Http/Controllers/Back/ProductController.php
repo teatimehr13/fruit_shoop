@@ -149,6 +149,28 @@ class ProductController extends Controller
         return $products;
     }
 
+    public function details(Product $product)
+    {
+        return response()->json([
+            'product' => $product->only([
+                'id',
+                'slug',
+                'name',
+                'description',
+                'price',
+                'is_enabled'
+            ]),
+
+            'images' => $product->productImages()
+                ->orderBy('sort_order')
+                ->get(['id', 'image', 'alt_text', 'is_primary', 'sort_order']),
+
+            'options' => $product->productOptions()
+                // ->with('values') // 如果你有 option values 關聯
+                ->get(),
+        ]);
+    }
+
     // public function indexJson()
     // {
     //     $products = $this->fetchIndexData();
