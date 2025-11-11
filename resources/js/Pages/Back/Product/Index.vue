@@ -1,7 +1,7 @@
 <script setup>
 import BackLayout from '@/Layouts/BackLayout.vue';
 defineOptions({ layout: BackLayout })
-import { ref, computed, watch, reactive, inject } from 'vue';
+import { ref, computed, watch, reactive, inject, provide } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useFloatPop } from '@/Composables/useFloatPop';
 import axios from 'axios';
@@ -30,7 +30,8 @@ const filterForm = reactive(
     }
 )
 
-const products = ref([...props.products.data]);
+// const products = ref([...props.products.data]);
+const products = computed(() => props.products.data);
 const subSelects = computed(() => props.subcategories || [])
 
 console.log(products.value);
@@ -68,8 +69,11 @@ const {
     placement: 'bottom-start',
     offsetValue: 30,
     enableWidth: true,
-    customWidth: 200  
+    customWidth: 200
 })
+
+const pop = useFloatPop()
+provide('descPop', pop)
 
 const handlePageChange = (page) => {
     const cleanFilters = Object.fromEntries(Object.entries(filterForm).filter(([_, v]) => v !== '' && v !== null));
@@ -304,20 +308,33 @@ const handleSave = async (formData) => {
         alert('儲存失敗')
     }
 }
-
-const del = ref(false);
 // 刪除
-const handleDelete = async (product) => {
-    del.value = !del.value;
-    // if (!confirm(`確定要刪除「${product.name}」？`)) return
+const handleDelete = async () => {
+    try {
+        const cur = props.products.current_page
+        const count = props.products.data.length
+        const target = (count === 1 && cur > 1) ? cur - 1 : cur
 
-    // try {
-    //     await axios.delete(route('back.products.destroy', product.id))
-    //     router.reload({ only: ['products'] })
-    // } catch (error) {
-    //     console.error(error)
-    //     alert('刪除失敗')
-    // }
+        const res = await api.delete(route('back.products.destroy', delContent.value.id))
+        console.log(res);
+
+        if (res.status === 204) {
+            const idx = products.value.findIndex(e => e.id == delContent.value.id);
+            if (idx !== -1) products.value.splice(idx, 1)
+        }
+
+        await router.visit(route('back.products.index', { page: target }), {
+            replace: true,
+            only: ['products'],
+            preserveState: true,
+            preserveScroll: true,
+        })
+
+        closeDel()
+    } catch (error) {
+        console.error(error)
+        alert('刪除失敗')
+    }
 }
 
 
@@ -374,7 +391,7 @@ const handleSaveImages = async (images) => {
 }
 
 const deleteMessage = computed(() => {
-    return `確定要刪除嗎？`
+    return `確定要刪除${delContent.value.name}嗎？`
 })
 
 </script>
@@ -521,7 +538,7 @@ const deleteMessage = computed(() => {
                         </p>
                         <div class="flex gap-2 justify-end">
                             <button @click="closeDel" class="btn btn-sm">取消</button>
-                            <button @click="confirmDelete" class="btn btn-sm btn-error">確認刪除</button>
+                            <button @click="handleDelete()" class="btn btn-sm btn-error text-base-200">確認刪除</button>
                         </div>
                     </div>
                 </Transition>

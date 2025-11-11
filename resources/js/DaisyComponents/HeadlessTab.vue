@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-md px-2 py-16 sm:px-0">
+  <div class="w-full  px-2 py-16 sm:px-0">
     <TabGroup>
       <TabList class="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
         <Tab v-for="tab in tabs" as="template" :key="tab.key" v-slot="{ selected }">

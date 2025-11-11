@@ -52,7 +52,8 @@ function useFloatPop(options = {}) {
     const openHover = (event, content) => {
         reference.value = event.currentTarget
         currentContent.value = content
-        console.log(currentContent.value);
+        // console.log(currentContent.value);
+        // console.log(reference.value);        
         update()
     }
     
