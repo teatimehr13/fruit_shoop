@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Back;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductOptionRequest;
 use App\Models\Product;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 /** 
@@ -13,11 +15,12 @@ use Inertia\Inertia;
  * back.products.options.store
  * back.options.destroy
  * back.options.update
-*/
+ */
 
 class ProductOptionController extends Controller
 {
-    public function index(Product $product){
+    public function index(Product $product)
+    {
         $productOptions = $product->productOptions()->get();
         return response()->json($productOptions);
     }
@@ -27,7 +30,8 @@ class ProductOptionController extends Controller
         //
     }
 
-    public function store(ProductOptionRequest $request){
+    public function store(ProductOptionRequest $request)
+    {
         $validated = $request->validated();
         $productOption = ProductOption::create($validated);
         return response()->json($productOption, 201); //新增201
@@ -56,7 +60,31 @@ class ProductOptionController extends Controller
         return response()->noContent();
     }
 
-    private function fetchIndexData(Request $request){
+    private function fetchIndexData(Request $request) {}
 
+    public function save(ProductOptionRequest $request)
+    {
+        $validated = $request->validated();
+        // return response()->json($request->validated());
+
+        DB::transaction(function () use ($validated) {
+            // 1. 新增與更新
+            foreach ($validated['options'] as $optionData) {
+                $next = ProductOption::lockForUpdate()->max('sort_order');
+                $optionData['sort_order'] = ($next ?? 0) + 1;
+
+                ProductOption::updateOrCreate(
+                    ['id' => $optionData['id'] ?? null],
+                    $optionData
+                );
+            }
+
+            // 2. 處理刪除
+            if (!empty($validated['deleted_ids'])) {
+                ProductOption::whereIn('id', $validated['deleted_ids'])->delete();
+            }
+        });
+
+        return response()->json(['message' => '保存成功']);
     }
 }

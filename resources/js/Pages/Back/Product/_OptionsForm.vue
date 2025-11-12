@@ -1,31 +1,72 @@
 <script setup>
-import { ref, inject, watch, nextTick, onBeforeUpdate } from 'vue'
+import { ref, inject, watch, nextTick, onBeforeUpdate, onMounted } from 'vue'
 const props = defineProps({
-    options: Array
+    options: Array,
+    productId: Number
 })
 
+// console.log(props.productId);
 
 const emit = defineEmits(['save'])
 
-const localOptions = ref([...props.options || []])
+const localOptions = ref([...props.options || []]);
+const originalOptions = ref(JSON.parse(JSON.stringify(props.options)) || []);
+const deletedIds = ref([]);
+
+onMounted(() => {
+    localOptions.value = localOptions.value.map(opt => ({
+        ...opt,
+        key: crypto.randomUUID()
+    }));
+})
 
 const addOption = () => {
     localOptions.value.push({
-        id: Date.now(),
+        id: '',
         option_text: '',
         original_price: '',
         price: '',
         inventory: 0,
-        is_enabled: true
+        is_enabled: true,
+        key: crypto.randomUUID(),
+        product_id: props.productId
     })
 }
 
 const removeOption = (index) => {
-    localOptions.value.splice(index, 1)
+    const option = localOptions.value[index];
+    if (option.id) {
+        const pos = deletedIds.value.indexOf(option.id);
+        if (pos > -1) {
+            // 取消刪除
+            deletedIds.value = deletedIds.value.filter(id => id !== option.id);
+        } else {
+            // 標記刪除
+            deletedIds.value.push(option.id);
+        }
+        return;
+    }else{
+        localOptions.value.splice(index, 1);
+    }
 }
 
 const handleSave = () => {
-    emit('save', localOptions.value)
+    const changeOptions = localOptions.value
+        .filter(opt => !deletedIds.value.includes(opt.id))
+        .filter((opt, idx) => {
+            if (!opt.id) return true
+            const { key, ...optWithoutKey } = opt
+            const original = originalOptions.value.find(o => o.id === opt.id)
+            if (!original) return true
+            // const original = originalOptions.value[idx];
+            return JSON.stringify(optWithoutKey) !== JSON.stringify(original);
+        })
+    // if (changeOptions.length === 0) return
+    console.log('changeOptions =>', changeOptions);
+    console.log('localOptions =>', localOptions.value);
+    // console.log(deletedIds.value);
+
+    emit('save', changeOptions, deletedIds.value, props.productId)
 }
 
 const inputRefs = ref([])
@@ -35,7 +76,8 @@ const editingTarget = ref(null);
 // 檢查是否點擊在任何 input 之外
 const handleClickOutside = (event) => {
     const clickedOutside = !inputRefs.value.some(el => el && el.contains(event.target))
-
+    // console.log(event.target);
+    // console.log(inputRefs.value);    
     if (clickedOutside) {
         editingTarget.value = null
         document.removeEventListener('click', handleClickOutside)
@@ -46,7 +88,7 @@ const setEditing = async (index, field) => {
     editingTarget.value = `${index}-${field}`
     await nextTick()
     const targetInput = inputRefs.value.find(el => el && el.dataset.field === `${index}-${field}`)
-    console.log(targetInput);
+    // console.log(targetInput);
 
     if (targetInput) {
         targetInput.focus()
@@ -54,6 +96,11 @@ const setEditing = async (index, field) => {
 }
 
 const isEditing = (index, field) => {
+    const option = localOptions.value[index]
+    if (!option.id) {
+        return true
+    }
+
     return editingTarget.value === `${index}-${field}`
 }
 
@@ -78,19 +125,32 @@ watch(editingTarget, async (newVal) => {
                 ➕ 新增選項
             </button>
         </div>
-        <div v-for="(option, index) in localOptions" :key="option.key" class="p-4">
+        <div v-for="(option, index) in localOptions" :key="option.key" class="p-4"
+            :class="{ 'bg-red-100': deletedIds.includes(option.id) }">
             <div class="flex justify-between items-start mb-3">
                 <span class="font-medium">選項 {{ index + 1 }}</span>
-                <button @click="removeOption(index)" class="btn btn-xs btn-error">
-                    刪除
+                <button @click="removeOption(index)" class="cursor-pointer" role="button">
+                    <!-- {{ deletedIds.includes(option.id) ? '待刪除' : '刪除' }} -->
+                    <svg v-if="deletedIds.includes(option.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        fill="red" class="size-6">
+                        <path fill-rule="evenodd"
+                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
                 </button>
             </div>
 
+
             <div class="relative grid lg:grid-cols-2 gap-x-12 gap-y-3
-        lg:after:content-[''] lg:after:absolute lg:after:inset-y-0
-        lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:w-px lg:after:bg-base-300
-        before:content-[''] before:absolute before:inset-x-0 before:-bottom-4
-        before:h-px before:bg-base-300">
+                lg:after:content-[''] lg:after:absolute lg:after:inset-y-0
+                lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:w-px lg:after:bg-base-300
+                before:content-[''] before:absolute before:inset-x-0 before:-bottom-4
+                before:h-px before:bg-base-300">
 
                 <div class="grid lg:grid-cols-[1fr_3fr] gap-x-4">
                     <label class="label">
@@ -149,7 +209,7 @@ watch(editingTarget, async (newVal) => {
 
         <div class="flex justify-end">
             <button @click="handleSave" class="btn btn-primary">
-                儲存選項
+                儲存
             </button>
         </div>
     </div>

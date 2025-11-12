@@ -30,6 +30,8 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
             'options' => 'productOption',   // 讓 {option} 變成 {productOption}
         ]);;
 
+    Route::post('products/{product}/options/save', [BackProductOptionController::class, 'save'])->name('products.options.save');  
+
     Route::resource('product.images', BackProductImageController::class)
         ->except(['create', 'edit', 'show'])
         ->shallow()

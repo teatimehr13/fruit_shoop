@@ -378,11 +378,16 @@ const handleSaveBasic = async (formData) => {
     }
 }
 
-const handleSaveOptions = async (options) => {
-    await axios.post(route('back.product.options.batch-update', productDetails.value.id), {
-        options
-    })
-    alert('選項已儲存')
+const handleSaveOptions = async (formData, delArray, productId) => {
+    // console.log(formData);
+    // console.log(delArray);
+    // console.log(productId);
+    const res = await api.post(route('back.products.options.save', productId),{
+        options: formData,
+        deleted_ids: delArray
+    });
+    console.log(res);
+
 }
 
 const handleSaveImages = async (images) => {
@@ -565,7 +570,7 @@ const deleteMessage = computed(() => {
 
                 <!-- 選項管理 Tab -->
                 <template #options="{ data }">
-                    <OptionsForm :options="data.options" @save="handleSaveOptions" />
+                    <OptionsForm :options="data.options" :productId="data.basic.id" @save="handleSaveOptions" />
                 </template>
 
                 <!-- 圖片管理 Tab -->
