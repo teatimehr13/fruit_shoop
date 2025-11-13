@@ -17,8 +17,15 @@ class ProductImage extends Model
         'sort_order',
     ];
 
-    public function product(){
+    protected $appends = ['img_url'];
+
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
-    
+
+    public function getImgUrlAttribute()
+    {
+        return $this->image ? '/storage/' . $this->image : $this->image;
+    }
 }

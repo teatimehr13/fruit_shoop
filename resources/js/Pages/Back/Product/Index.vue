@@ -623,7 +623,10 @@ const deleteMessage = computed(() => {
         </button> -->
 
     <!-- </BackLayout> -->
-
+     <input type="file" id="file">
+    <button @click="addImages(5)">
+        addImages
+    </button>
 </template>
 
 <style>
