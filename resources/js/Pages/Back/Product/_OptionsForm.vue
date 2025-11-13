@@ -1,5 +1,7 @@
 <script setup>
-import { ref, inject, watch, nextTick, onBeforeUpdate, onMounted } from 'vue'
+import api from '@/Lib/apiFeedback';
+import { ref, inject, watch, nextTick, onBeforeUpdate, onMounted, computed } from 'vue'
+
 const props = defineProps({
     options: Array,
     productId: Number
@@ -45,28 +47,37 @@ const removeOption = (index) => {
             deletedIds.value.push(option.id);
         }
         return;
-    }else{
+    } else {
         localOptions.value.splice(index, 1);
     }
 }
 
-const handleSave = () => {
-    const changeOptions = localOptions.value
+const changeOptions = computed(() => {
+    return localOptions.value
         .filter(opt => !deletedIds.value.includes(opt.id))
         .filter((opt, idx) => {
             if (!opt.id) return true
             const { key, ...optWithoutKey } = opt
             const original = originalOptions.value.find(o => o.id === opt.id)
             if (!original) return true
-            // const original = originalOptions.value[idx];
             return JSON.stringify(optWithoutKey) !== JSON.stringify(original);
         })
-    // if (changeOptions.length === 0) return
-    console.log('changeOptions =>', changeOptions);
-    console.log('localOptions =>', localOptions.value);
-    // console.log(deletedIds.value);
+})
 
-    emit('save', changeOptions, deletedIds.value, props.productId)
+const handleSave = async () => {
+    // console.log('changeOptions =>', changeOptions.value);
+    // console.log('localOptions =>', localOptions.value);
+    const res = await api.post(route('back.products.options.save', props.productId), {
+        options: changeOptions.value,
+        deleted_ids: deletedIds.value
+    });
+
+    if (res.status === 200 || res.status === 201) {
+        deletedIds.value = [];
+        console.log(res.data.options);
+    }
+
+    emit('save', res.data.options);
 }
 
 const inputRefs = ref([])
@@ -88,8 +99,6 @@ const setEditing = async (index, field) => {
     editingTarget.value = `${index}-${field}`
     await nextTick()
     const targetInput = inputRefs.value.find(el => el && el.dataset.field === `${index}-${field}`)
-    // console.log(targetInput);
-
     if (targetInput) {
         targetInput.focus()
     }
@@ -115,6 +124,16 @@ watch(editingTarget, async (newVal) => {
         }, 0)
     }
 })
+
+watch(() => props.options, (newOptions) => {
+    if (newOptions) {
+        localOptions.value = newOptions.map(opt => ({
+            ...opt,
+            key: opt.id || crypto.randomUUID()
+        }))
+        originalOptions.value = JSON.parse(JSON.stringify(newOptions))
+    }
+}, { immediate: true, deep: true })
 </script>
 
 <template>
@@ -202,6 +221,14 @@ watch(editingTarget, async (newVal) => {
                         @click="setEditing(index, 'inventory')">
                         {{ option.inventory }}
                     </div>
+                </div>
+
+                <div class="grid">
+                    <label class="label">
+                        <input type="checkbox" checked="checked" class="checkbox checkbox-xs"
+                            v-model="option.is_enabled" :true-value="1" :false-value="0" />
+                        啟用
+                    </label>
                 </div>
 
             </div>

@@ -62,21 +62,38 @@ class ProductOptionController extends Controller
 
     private function fetchIndexData(Request $request) {}
 
-    public function save(ProductOptionRequest $request)
+    public function save(ProductOptionRequest $request, Product $product)
     {
         $validated = $request->validated();
         // return response()->json($request->validated());
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated, $product) {
             // 1. 新增與更新
             foreach ($validated['options'] as $optionData) {
-                $next = ProductOption::lockForUpdate()->max('sort_order');
-                $optionData['sort_order'] = ($next ?? 0) + 1;
+                if (!empty($optionData['id'])) {
+                    // 更新：不改變 sort_order
+                    ProductOption::where('id', $optionData['id'])->update([
+                        'option_text' => $optionData['option_text'],
+                        'original_price' => $optionData['original_price'],
+                        'price' => $optionData['price'],
+                        'inventory' => $optionData['inventory'],
+                        'is_enabled' => $optionData['is_enabled'] ?? true,
+                    ]);
+                } else {
+                    // 新增：計算新的 sort_order
+                    $next = ProductOption::where('product_id', $product->id)
+                        ->lockForUpdate()
+                        ->max('sort_order');
 
-                ProductOption::updateOrCreate(
-                    ['id' => $optionData['id'] ?? null],
-                    $optionData
-                );
+                    $product->productOptions()->create([
+                        'option_text' => $optionData['option_text'],
+                        'original_price' => $optionData['original_price'],
+                        'price' => $optionData['price'],
+                        'inventory' => $optionData['inventory'],
+                        'is_enabled' => $optionData['is_enabled'] ?? true,
+                        'sort_order' => ($next ?? 0) + 1,
+                    ]);
+                }
             }
 
             // 2. 處理刪除
@@ -85,6 +102,8 @@ class ProductOptionController extends Controller
             }
         });
 
-        return response()->json(['message' => '保存成功']);
+        $options = $product->productOptions()->orderBy('sort_order', 'asc')->get();
+
+        return response()->json(['message' => '保存成功', 'options' => $options], 201);
     }
 }

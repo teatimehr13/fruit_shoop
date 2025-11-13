@@ -308,6 +308,7 @@ const handleSave = async (formData) => {
         alert('儲存失敗')
     }
 }
+
 // 刪除
 const handleDelete = async () => {
     try {
@@ -378,16 +379,8 @@ const handleSaveBasic = async (formData) => {
     }
 }
 
-const handleSaveOptions = async (formData, delArray, productId) => {
-    // console.log(formData);
-    // console.log(delArray);
-    // console.log(productId);
-    const res = await api.post(route('back.products.options.save', productId),{
-        options: formData,
-        deleted_ids: delArray
-    });
-    console.log(res);
-
+const handleSaveOptions = async (newOptions) => {
+    productDetails.options = newOptions;
 }
 
 const handleSaveImages = async (images) => {

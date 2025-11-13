@@ -167,6 +167,7 @@ class ProductController extends Controller
 
             'options' => $product->productOptions()
                 // ->with('values') // 如果你有 option values 關聯
+                ->orderBy('sort_order', 'asc')
                 ->get(),
         ]);
     }
