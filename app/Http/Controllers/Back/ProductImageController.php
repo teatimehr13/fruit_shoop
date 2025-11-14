@@ -73,9 +73,14 @@ class ProductImageController extends Controller
         return response()->json($productImage->fresh(), 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(ProductImage $productImage)
     {
-        //
+        if($productImage->image && Storage::disk('public')->exists($productImage->image)){
+            Storage::disk('public')->delete($productImage->image);
+        }
+
+        $productImage->delete();
+        return response()->noContent();
     }
 
     private function fetchIndexData(Request $request)

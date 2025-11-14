@@ -69,7 +69,7 @@ class ProductOptionController extends Controller
 
         DB::transaction(function () use ($validated, $product) {
             // 1. 新增與更新
-            foreach ($validated['options'] as $optionData) {
+            foreach ($validated['options'] as $optionData) {   
                 if (!empty($optionData['id'])) {
                     // 更新：不改變 sort_order
                     ProductOption::where('id', $optionData['id'])->update([

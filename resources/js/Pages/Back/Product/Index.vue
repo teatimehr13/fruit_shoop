@@ -568,7 +568,7 @@ const deleteMessage = computed(() => {
 
                 <!-- 圖片管理 Tab -->
                 <template #images="{ data }">
-                    <ImagesForm :images="data.images" @save="handleSaveImages" />
+                    <ImagesForm :images="data.images" :productId="data.basic.id" @save="handleSaveImages" />
                 </template>
             </HeadlessTab>
         </EditDrawer>
@@ -623,10 +623,10 @@ const deleteMessage = computed(() => {
         </button> -->
 
     <!-- </BackLayout> -->
-     <input type="file" id="file">
-    <button @click="addImages(5)">
+     <!-- <input type="file" id="file"> -->
+    <!-- <button @click="addImages(5)">
         addImages
-    </button>
+    </button> -->
 </template>
 
 <style>

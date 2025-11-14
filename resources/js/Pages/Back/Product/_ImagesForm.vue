@@ -1,12 +1,15 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue'
-import { useFloating, offset, flip, shift } from '@floating-ui/vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/vue'
 import api from '@/Lib/apiFeedback';
+import { useNotify } from '@/Composables/useNotify';
 
 const props = defineProps({
-    images: Array
+    images: Array,
+    productId: Number
 })
 
+const localImages = ref([...props.images]);
 const emit = defineEmits(['save'])
 
 // ===== UI 狀態 =====
@@ -17,13 +20,16 @@ const current = ref(null) // 當前操作的項目
 const activeCategory = ref(null)
 const activeSubCategory = ref(null)
 
+const { toast } = useNotify()
+
 // ===== 表單資料 =====
 const form = reactive({
     id: null,
-    name: '',
+    product_id: null,
+    image: '',
     sort_order: 0,
-    is_enabled: true,
-    category_id: null,
+    is_primary: null,
+    alt_text: ''
 })
 
 // ===== Floating UI =====
@@ -35,41 +41,41 @@ const { floatingStyles, update } = useFloating(reference, floating, {
 })
 
 // ===== 計算屬性 =====
-const formTitle = computed(() => {
-    const action = formMode.value === 'add' ? '新增' : '編輯'
-
-    if (formMode.value === 'add') {
-        const parent = categories.value.find(c => c.id === activeCategory.value)
-        return `${action}到「${parent?.name}」`
-    }
-    return `${action}${target}`
-})
-
-const deleteMessage = computed(() => {
-    return `確定要刪除「${current.value?.name}」嗎？`
-})
-
 const formTitles = computed(() => {
-    const action = formMode.value === 'edit' ? '編輯附件' : '刪除附件';
+    // const action = formMode.value === 'edit' ? '編輯附件' : '刪除附件';
+    let action = '';
+    switch (formMode.value) {
+        case "edit":
+            action = '編輯附件';
+            break
+        case "add":
+            action = '新增附件';
+            break
+        case "delete":
+            action = '刪除附件'
+            break
+    }
     return action;
 })
 
 // 重置表單
 const resetForm = () => {
-    form.id = null
-    form.name = ''
-    form.sort_order = 0
-    form.is_enabled = true
-    form.category_id = null
+    form.id = null;
+    form.alt_text = '';
+    form.product_id = null;
+    form.is_primary = null;
+    // form.sort_order = 0
+    // form.image = ''
 }
 
 // 填充表單（編輯用）
 const fillForm = (item) => {
     form.id = item.id
-    form.name = item.name
-    form.sort_order = item.sort_order ?? 0
-    form.is_enabled = item.is_enabled ?? true
-    form.category_id = item.category_id ?? null
+    form.alt_text = item.alt_text
+    form.product_id = item.product_id
+    form.is_primary = item.is_primary ?? 0
+    // form.sort_order = item.sort_order ?? 0
+    // console.log(form);
 }
 
 // 設置 active 狀態
@@ -85,14 +91,12 @@ const setActiveState = (item, type) => {
 
 
 // 打開操作選單
-const openMenu = (event) => {
+const openMenu = (event, item) => {
     reference.value = event.currentTarget
     // current.value = item
     mode.value = 'menu'
-
-    // setActiveState(item, type)
-    // fillForm(item)
     update()
+    fillForm(item)
     // console.log(reference.value);
     // console.log(current.value);
 }
@@ -117,31 +121,85 @@ const openAddCategory = (event) => {
 
 // ===== 選單操作 =====
 
-const showEdit = () => {
+const showEdit = async () => {
     formMode.value = 'edit'
+    mode.value = ''
+    await nextTick()  // 等待 DOM 清空
     mode.value = 'form'
+    await nextTick()  // 等待新內容渲染
+
+    requestAnimationFrame(() => {
+        update()
+    })
 }
 
-const showAddSubcategory = () => {
+const showAdd = (event) => {
+    reference.value = event.currentTarget
     formMode.value = 'add'
     mode.value = 'form'
-
     resetForm()
-    form.category_id = activeCategory.value
 }
 
-const showDelete = () => {
+const showDelete = async () => {
     formMode.value = 'delete'
+    mode.value = ''
+    await nextTick()
     mode.value = 'delete'
+    await nextTick()
+
+    requestAnimationFrame(() => {
+        update()
+    })
+}
+
+const addImages = async (files) => {
+    // const files = document.getElementById('file').files;
+    const id = props.productId;
+    const fd = new FormData();
+    Array.from(files).forEach((file, i) => {
+        fd.append(`productImages[${i}][product_id]`, id);
+        fd.append(`productImages[${i}][alt_text]`, file.name);
+        fd.append(`productImages[${i}][is_primary]`, '0');
+
+        if (file) fd.append(`productImages[${i}][image]`, file);
+    })
+
+    // for (const [key, val] of fd) {
+    //     console.log(key, 'value =>', val);
+    // }
+    // return
+
+    const res = await api.post(route('back.product.images.store', id), fd);
+    if (res.status === 201) {
+        const newImages = res.data.data
+        if (Array.isArray(newImages)) {
+            localImages.value.push(...newImages)
+        } else {
+            localImages.value.push(newImages)
+        }
+        close()
+    }
 }
 
 const close = () => {
     current.value = null
     mode.value = null
     formMode.value = null
-    activeCategory.value = null;
-    activeSubCategory.value = null;
 }
+
+const handleSubmit = async () => {
+    const data = { alt_text: form.alt_text };
+    const res = await api.patch(route('back.images.update', form.id), data)
+    // console.log(res);
+    const image = localImages.value.find(e => e.id == form.id);
+    if (image) {
+        Object.assign(image, {
+            alt_text: res.data.alt_text
+        })
+    }
+    close()
+}
+
 
 // ===== 點擊外部關閉 =====
 const handleClickOutside = (event) => {
@@ -159,18 +217,49 @@ watch(() => mode.value, (val) => {
     }
 })
 
-
-const handleFileChange = (e) => {
-    // 處理圖片上傳
+const removeImage = async () => {
+    const res = await api.delete(route('back.images.destroy', form.id));
+    if (res.status === 204) {
+        close()
+        localImages.value = localImages.value.filter(e => e.id !== form.id);
+    }
+    console.log(res.status);
 }
 
-const removeImage = (imageId) => {
-    // 刪除圖片
+
+const fileInput = ref(null)
+const previewUrl = ref(null)
+const fileObj = ref(null) //上傳時放入formData
+const rmImg = ref(0);
+
+const revoke = () => {
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = null
 }
 
-console.log(props.images);
-const localImages = ref([...props.images]);
-console.log(localImages.value);
+const onFileChange = async (e) => {
+    const file = e.target.files
+    // console.log(file);
+
+    await addImages(file);
+
+    // revoke()
+    // if (file) {
+    //     fileObj.value = file
+    //     previewUrl.value = URL.createObjectURL(file)
+    //     rmImg.value = 0;
+    // } else {
+    //     fileObj.value = null
+    // }
+}
+
+// const clearFile = () => {
+//     revoke()
+//     fileObj.value = null
+//     // 清 input 值，否則同一檔再選不會觸發 change
+//     if (fileInput.value) fileInput.value.value = '';
+//     if (!aboutForm.image) rmImg.value = 1;
+// }
 
 </script>
 
@@ -178,7 +267,7 @@ console.log(localImages.value);
     <div class="space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold">圖片管理</h3>
-            <button @click="addOption" class="btn btn-sm">
+            <button @click="showAdd($event)" class="btn btn-sm">
                 新增圖片
             </button>
         </div>
@@ -189,7 +278,7 @@ console.log(localImages.value);
                 <div class="grid content-center">
                     <div>{{ img.alt_text }}</div>
                 </div>
-                <button class="btn btn-square" @click="openMenu($event)">
+                <button class="btn btn-square" @click="openMenu($event, img)">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -220,7 +309,7 @@ console.log(localImages.value);
                 </div>
 
                 <!-- 表單模式（新增/編輯） -->
-                <div v-else-if="mode === 'form'" class="w-80 p-4">
+                <div v-else-if="mode === 'form' && formMode === 'edit'" class="w-80 p-4">
                     <header class="flex w-full">
                         <h4 class="font-semibold order-2 flex-1 self-center text-center">{{ formTitles }}</h4>
                         <button class="btn btn-ghost btn-square btn-sm order-1 flex-0" @click="returnMenu">
@@ -239,14 +328,35 @@ console.log(localImages.value);
                     <div class="space-y-3">
                         <div class="mt-4 mb-1">
                             <legend class="fieldset-legend">檔案名稱</legend>
-                            <input type="text" class="input" placeholder="Type here" />
+                            <input type="text" class="input" placeholder="Type here" v-model="form.alt_text" />
                         </div>
                     </div>
 
                     <div class="mt-4 flex justify-end gap-2">
-                        <button class="btn btn-primary btn-block" @click="handleSubmit" :disabled="!form.name.trim()">
+                        <button class="btn btn-primary btn-block" @click="handleSubmit"
+                            :disabled="!form.alt_text.trim()">
                             更新
                         </button>
+                    </div>
+                </div>
+
+                <!-- 新增附件 -->
+                <div v-else-if="mode === 'form' && formMode === 'add'" class="w-80 p-4">
+                    <header class="flex w-full">
+                        <h4 class="font-semibold order-2 flex-1 self-center text-center">{{ formTitles }}</h4>
+
+                        <button class="btn btn-ghost btn-square btn-sm order-3 flex-0" @click="close">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </header>
+
+                    <div class="space-y-3">
+                        <div class="mt-4 mb-1">
+                            <input multiple type="file" class="input file-input" @change="onFileChange" />
+                        </div>
                     </div>
                 </div>
 
@@ -270,12 +380,12 @@ console.log(localImages.value);
 
                     <p class="mt-4 mb-1">
                         <span class="font-semibold">
-                            刪除這個附件嗎？
+                            確定要刪除這個附件嗎？
                         </span>
                         <span class="mt-2">此操作無法復原。</span>
                     </p>
                     <div class="mt-4 flex justify-end gap-2">
-                        <button class="btn hover:bg-red-700 bg-red-500 btn-block text-base-200">
+                        <button class="btn hover:bg-red-700 bg-red-500 btn-block text-base-200" @click="removeImage">
                             刪除
                         </button>
                     </div>
