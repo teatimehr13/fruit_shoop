@@ -9,7 +9,7 @@ const emit = defineEmits(['update:editOpen'])
 </script>
 
 <template>
-        <div class="relative z-9999">
+        <div class="relative z-50">
             <div :class="[editOpen ? 'pr-[620px]' : 'pr-0', 'transition-[padding] duration-300']">
                 <!-- 你的表格 -->
                      <!-- <button class="btn" @click="emit('update:editOpen', !editOpen), ui?.toggleSidebar && ui.toggleSidebar()">Open

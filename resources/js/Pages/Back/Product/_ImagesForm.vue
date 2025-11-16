@@ -3,6 +3,8 @@ import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/vue'
 import api from '@/Lib/apiFeedback';
 import { useNotify } from '@/Composables/useNotify';
+import VueEasyLightbox from 'vue-easy-lightbox/external-css'
+import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
 
 const props = defineProps({
     images: Array,
@@ -239,27 +241,28 @@ const revoke = () => {
 
 const onFileChange = async (e) => {
     const file = e.target.files
-    // console.log(file);
-
     await addImages(file);
-
-    // revoke()
-    // if (file) {
-    //     fileObj.value = file
-    //     previewUrl.value = URL.createObjectURL(file)
-    //     rmImg.value = 0;
-    // } else {
-    //     fileObj.value = null
-    // }
 }
 
-// const clearFile = () => {
-//     revoke()
-//     fileObj.value = null
-//     // 清 input 值，否則同一檔再選不會觸發 change
-//     if (fileInput.value) fileInput.value.value = '';
-//     if (!aboutForm.image) rmImg.value = 1;
-// }
+// ======打開圖片====
+const visibleRef = ref(false)
+const indexRef = ref(0)
+
+const lightboxImages = computed(() => {
+    return localImages.value.map(img => ({
+        src: img.img_url,
+        title: img.name || img.alt || ''
+    }))
+})
+console.log(lightboxImages.value);
+const showImg = (index) => {
+    indexRef.value = index
+    visibleRef.value = true
+}
+
+const onHide = () => {
+    visibleRef.value = false
+}
 
 </script>
 
@@ -271,9 +274,9 @@ const onFileChange = async (e) => {
                 新增圖片
             </button>
         </div>
-        <ul class="list bg-base-100 rounded-box shadow-md" v-for="img in localImages">
+        <ul class="list bg-base-100 rounded-box shadow-md" v-for="(img, index) in localImages" :key="img.id" >
             <li class="list-row">
-                <div><img class="size-20 rounded-box" :src="img.img_url" />
+                <div><img class="size-20 rounded-box cursor-pointer" :src="img.img_url"  @click="showImg(index)"/>
                 </div>
                 <div class="grid content-center">
                     <div>{{ img.alt_text }}</div>
@@ -288,6 +291,11 @@ const onFileChange = async (e) => {
             </li>
         </ul>
     </div>
+
+    <!-- lightbox -->
+     <Teleport to="body">
+         <vue-easy-lightbox :visible="visibleRef" :imgs="lightboxImages" :index="indexRef" @hide="onHide" class="z-[100]" />
+     </Teleport>
 
     <!-- Popover -->
     <Teleport to="body">
