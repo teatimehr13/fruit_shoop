@@ -220,12 +220,20 @@ watch(() => mode.value, (val) => {
 })
 
 const removeImage = async () => {
-    const res = await api.delete(route('back.images.destroy', form.id));
-    if (res.status === 204) {
-        close()
-        localImages.value = localImages.value.filter(e => e.id !== form.id);
+
+    // 如果只剩一張圖片
+    if (localImages.value.length === 1) {
+        toast('產品至少需要保留一張圖片', 'warning')
+        return
     }
-    console.log(res.status);
+
+    const res = await api.delete(route('back.images.destroy', form.id));
+    if (res.status === 200) {
+        close()
+        localImages.value = res.data.images;
+        // localImages.value = localImages.value.filter(e => e.id !== form.id);
+    }
+    console.log(res);
 }
 
 
@@ -264,22 +272,42 @@ const onHide = () => {
     visibleRef.value = false
 }
 
+const setPrimary = async () => {
+    // console.log(form.id);
+    const res = await api.patch(route('back.product.images.primary', form.id));
+    console.log(res);
+    localImages.value = res.data;
+    // const image = localImages.value.find(e => e.id == form.id);
+    close()
+}
+
+const delConfirm = computed(() => {
+    if (form.is_primary) {
+        return '確定要刪除主圖嗎？系統將自動設定下一張為主圖。'
+    } else {
+        return '確定要刪除這個附件嗎？'
+    }
+})
+
 </script>
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold">圖片管理</h3>
+        <div class="flex items-center justify-between bg-stone-100 my-4 py-2 px-6">
+            <h3 class="text-lg font-semibold ">圖片管理</h3>
+        </div>
+        <div class="px-6 flex justify-end">
             <button @click="showAdd($event)" class="btn btn-sm">
                 新增圖片
             </button>
         </div>
-        <ul class="list bg-base-100 rounded-box shadow-md" v-for="(img, index) in localImages" :key="img.id" >
+        <ul class="list bg-base-100 shadow-xs mx-6" v-for="(img, index) in localImages" :key="img.id">
             <li class="list-row">
-                <div><img class="size-20 rounded-box cursor-pointer" :src="img.img_url"  @click="showImg(index)"/>
+                <div><img class="size-20 rounded-box cursor-pointer" :src="img.img_url" @click="showImg(index)" />
                 </div>
                 <div class="grid content-center">
                     <div>{{ img.alt_text }}</div>
+                    <div v-if="img.is_primary" class="badge badge-success text-base-200">主圖</div>
                 </div>
                 <button class="btn btn-square" @click="openMenu($event, img)">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -293,9 +321,10 @@ const onHide = () => {
     </div>
 
     <!-- lightbox -->
-     <Teleport to="body">
-         <vue-easy-lightbox :visible="visibleRef" :imgs="lightboxImages" :index="indexRef" @hide="onHide" class="z-[100]" />
-     </Teleport>
+    <Teleport to="body">
+        <vue-easy-lightbox :visible="visibleRef" :imgs="lightboxImages" :index="indexRef" @hide="onHide"
+            class="z-[100]" />
+    </Teleport>
 
     <!-- Popover -->
     <Teleport to="body">
@@ -309,6 +338,11 @@ const onHide = () => {
                     <button class="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors"
                         @click="showEdit">
                         編輯
+                    </button>
+                    <button v-if="!form.is_primary"
+                        class="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors"
+                        @click="setPrimary">
+                        設為主圖
                     </button>
                     <button class="block w-full text-left px-4 py-2 hover:bg-error/10 text-error transition-colors"
                         @click="showDelete">
@@ -388,7 +422,7 @@ const onHide = () => {
 
                     <p class="mt-4 mb-1">
                         <span class="font-semibold">
-                            確定要刪除這個附件嗎？
+                            {{ delConfirm }}
                         </span>
                         <span class="mt-2">此操作無法復原。</span>
                     </p>

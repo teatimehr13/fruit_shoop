@@ -99,6 +99,7 @@ const setEditing = async (index, field) => {
     editingTarget.value = `${index}-${field}`
     await nextTick()
     const targetInput = inputRefs.value.find(el => el && el.dataset.field === `${index}-${field}`)
+    console.log(targetInput);
     if (targetInput) {
         targetInput.focus()
     }
@@ -134,17 +135,21 @@ watch(() => props.options, (newOptions) => {
         originalOptions.value = JSON.parse(JSON.stringify(newOptions))
     }
 }, { immediate: true, deep: true })
+
+onBeforeUpdate(() => { 
+    inputRefs.value = [] 
+})
 </script>
 
 <template>
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="bg-stone-100 my-4 py-2 px-6">
             <h3 class="text-lg font-semibold">選項管理</h3>
-            <button @click="addOption" class="btn btn-sm btn-primary">
-                ➕ 新增選項
-            </button>
         </div>
-        <div v-for="(option, index) in localOptions" :key="option.key" class="p-4"
+        <div class="px-6 flex justify-end">
+            <button @click="addOption" class="btn btn-sm">新增選項</button>
+        </div>
+        <div v-for="(option, index) in localOptions" :key="option.key" class="py-4 px-6"
             :class="{ 'bg-red-100': deletedIds.includes(option.id) }">
             <div class="flex justify-between items-start mb-3">
                 <span class="font-medium">選項 {{ index + 1 }}</span>
@@ -234,7 +239,7 @@ watch(() => props.options, (newOptions) => {
             </div>
         </div>
 
-        <div class="flex justify-end">
+        <div class="flex justify-end mb-4 px-6">
             <button @click="handleSave" class="btn btn-primary">
                 儲存
             </button>

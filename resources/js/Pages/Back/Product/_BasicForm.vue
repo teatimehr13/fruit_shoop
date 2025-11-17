@@ -27,17 +27,19 @@ const handleSave = () => {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <h3 class="text-lg font-semibold mb-4">基本資料</h3>
-        
-        <div>
+    <div class="bg-stone-100 my-4 py-2 px-6">
+        <h3 class="text-lg font-semibold">基本資料</h3>
+    </div>
+    
+    <div class="space-y-4 px-6 py-4">
+        <div class="form-control">
             <label class="label">
                 <span class="label-text">產品名稱</span>
             </label>
             <input v-model="form.name" class="input input-bordered w-full" />
         </div>
 
-        <div>
+        <div class="form-control">
             <label class="label">
                 <span class="label-text">Slug</span>
             </label>

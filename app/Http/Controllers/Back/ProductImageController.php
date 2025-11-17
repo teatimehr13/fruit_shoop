@@ -15,7 +15,8 @@ class ProductImageController extends Controller
 {
     public function index(Product $product)
     {
-        $productImages = $product->productImages()->get();
+        $productImages = $product->productImages()
+            ->orderBy('sort_order', 'asc')->get();
         return response()->json($productImages);
     }
 
@@ -75,12 +76,56 @@ class ProductImageController extends Controller
 
     public function destroy(ProductImage $productImage)
     {
-        if($productImage->image && Storage::disk('public')->exists($productImage->image)){
-            Storage::disk('public')->delete($productImage->image);
+        // if ($productImage->image && Storage::disk('public')->exists($productImage->image)) {
+        //     Storage::disk('public')->delete($productImage->image);
+        // }
+
+        // $productImage->delete();
+        // return response()->noContent();
+
+        $productId = $productImage->product_id;
+        $wasPrimary = $productImage->is_primary;
+
+        // 檢查是否為最後一張圖片
+        $imageCount = ProductImage::where('product_id', $productId)->count();
+
+        if ($imageCount <= 1) {
+            return response()->json([
+                'message' => '產品至少需要保留一張圖片'
+            ], 422);
         }
 
-        $productImage->delete();
-        return response()->noContent();
+        DB::transaction(function () use ($productImage, $productId, $wasPrimary) {
+            // 刪除檔案
+            if ($productImage->path) {
+                Storage::disk('public')->delete($productImage->path);
+            }
+
+            // 刪除記錄
+            $productImage->delete();
+
+            // 如果刪除的是主圖，自動設定新主圖
+            if ($wasPrimary) {
+                $newPrimary = ProductImage::where('product_id', $productId)
+                    ->orderBy('sort_order')
+                    ->first();
+
+                if ($newPrimary) {
+                    $newPrimary->update(['is_primary' => true]);
+                }
+            }
+        });
+
+        // 回傳更新後的所有圖片
+        $allImages = ProductImage::where('product_id', $productId)
+            ->orderBy('sort_order')
+            ->get();
+
+        return response()->json([
+            'message' => '刪除成功',
+            'images' => $allImages,
+            'auto_set_primary' => $wasPrimary
+        ], 200);
     }
 
     private function fetchIndexData(Request $request)
@@ -120,6 +165,10 @@ class ProductImageController extends Controller
             $productImage->update(['is_primary' => true]);
         });
 
-        return response()->json($productImage->fresh(), 200);
+        $productImage = ProductImage::where('product_id', $productImage->product_id)
+            ->orderBy('sort_order')
+            ->get();
+
+        return response()->json($productImage, 200);
     }
 }
