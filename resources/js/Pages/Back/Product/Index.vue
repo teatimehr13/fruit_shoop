@@ -44,7 +44,7 @@ const columns = [
     { key: 'name', label: '產品名稱', width: 'w-[15%]' },
     { key: 'price', label: '價格', width: 'w-[10%]' },
     { key: 'description', label: '描述', width: 'w-[35%]' },
-    { key: 'is_enabled', label: '狀態', width: 'w-[5%]' },
+    { key: 'is_enabled', label: '啟用', width: 'w-[8%]' },
     { key: 'opt', label: '操作', width: 'w-auto' },
 ]
 
@@ -271,6 +271,7 @@ const openEdit = async (id) => {
     editOpen.value = !editOpen.value;
     ui.toggleSidebar();
     productDetails.value = null
+    selectedTr.value = id;
     try {
         await getDetail(id)
     } catch (error) {
@@ -342,6 +343,7 @@ const handleDelete = async () => {
 const editOpen = ref(false)
 watch(editOpen, (v) => {
     if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+    if (!v) selectedTr.value = null;
 })
 
 const productDetails = reactive({
@@ -392,11 +394,26 @@ const deleteMessage = computed(() => {
     return `確定要刪除${delContent.value.name}嗎？`
 })
 
+const selectedTr = ref(null);
+
+const changeStatus = async (row) => {
+    // console.log(row.id);
+    const id = row.id;
+    const res = await api.patch(route('back.product.changeStatus', id));
+    // console.log(res);
+    if(res.status === 200){
+        row.is_enabled = res.data.is_enabled;
+    }
+    
+} 
 </script>
 
 <template>
     <!-- <BackLayout> -->
-    <div class="flex">
+    <div class="flex relative">
+        <!-- 遮罩層 -->
+        <div v-if="editOpen" class="absolute inset-0 z-10 cursor-not-allowed overflow-hidden" @click="() => { }">
+        </div>
         <div>
             <p class="text-[#1E2328] text-lg font-semibold">
                 產品
@@ -440,13 +457,13 @@ const deleteMessage = computed(() => {
                         </thead>
 
                         <tbody v-if="products.length">
-                            <tr v-for="product in products" :key="product.id">
+                            <tr v-for="product in products" :key="product.id"
+                                :class="{ 'bg-stone-100': selectedTr === product.id }">
                                 <td v-for="col in columns" :key="col.key">
                                     <template v-if="col.key === 'is_enabled'">
                                         <span :class="product.is_enabled ? 'text-600' : 'text-gray-400'">
-                                            <!-- {{ product.is_enabled == 1 ? '啟用' : '未啟用' }} -->
-                                            <label class="toggle toggle-xs text-base-content">
-                                                <input type="checkbox" disabled="true"
+                                            <label class="toggle toggle-xs text-base-content" @click="changeStatus(product)">
+                                                <input type="checkbox" disabled="true" class=""
                                                     :checked="product?.is_enabled == 1" />
                                                 <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24">
@@ -475,10 +492,10 @@ const deleteMessage = computed(() => {
                                             <button class="btn btn-xs" @click="openEdit(product.id)">編輯</button>
                                             <button class="btn btn-xs text-red-600"
                                                 @click="openDel($event, product)">刪除</button>
-                                            <div class="tooltip" data-tip="附圖及選項">
+                                            <!-- <div class="tooltip" data-tip="附圖及選項">
                                                 <button class="btn btn-xs text-blue-600 whitespace-nowrap"
                                                     @click="getDetail(product.id)">更多</button>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </template>
                                     <template v-else>
@@ -623,7 +640,7 @@ const deleteMessage = computed(() => {
         </button> -->
 
     <!-- </BackLayout> -->
-     <!-- <input type="file" id="file"> -->
+    <!-- <input type="file" id="file"> -->
     <!-- <button @click="addImages(5)">
         addImages
     </button> -->

@@ -17,7 +17,7 @@ const emit = defineEmits(['update:editOpen'])
             class="fixed inset-y-0 right-0 w-[660px] bg-base-100 shadow-xl transition-transform duration-300 overflow-x-auto"
             :class="editOpen ? 'translate-x-0' : 'translate-x-full'">
             <div class="">
-                <div class="flex justify-end px-4 pt-4">
+                <div class="float-right p-4 pb-0">
                     <button class="btn btn-ghost btn-circle btn-sm" @click="emit('update:editOpen', !editOpen)">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">

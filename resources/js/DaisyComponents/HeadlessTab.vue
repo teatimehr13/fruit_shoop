@@ -1,7 +1,7 @@
 <template>
   <div class="w-full px-2 sm:px-0">
     <TabGroup>
-      <TabList class="tabs tabs-border">
+      <TabList class="tabs tabs-border p-4 pb-0">
         <Tab v-for="tab in tabs" as="template" :key="tab.key" v-slot="{ selected }">
           <button :class="[
             'tab',

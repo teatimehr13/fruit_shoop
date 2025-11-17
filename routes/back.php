@@ -43,6 +43,7 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
     Route::patch('product/images/{productImage}/primary', [BackProductImageController::class, 'setPrimary'])->name('product.images.primary');
 
     Route::get('product/{product}/details', [BackProductController::class, 'details'])->name('product.details');
+    Route::patch('product/{product}/changeStatus', [BackProductController::class, 'changeStatus'])->name('product.changeStatus');
 });
 
 Route::get('/back/categories.json', [BackCategoryController::class, 'indexJson'])

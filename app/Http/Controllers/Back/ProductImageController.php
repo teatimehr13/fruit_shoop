@@ -97,8 +97,8 @@ class ProductImageController extends Controller
 
         DB::transaction(function () use ($productImage, $productId, $wasPrimary) {
             // 刪除檔案
-            if ($productImage->path) {
-                Storage::disk('public')->delete($productImage->path);
+            if ($productImage->image) {
+                Storage::disk('public')->delete($productImage->image);
             }
 
             // 刪除記錄

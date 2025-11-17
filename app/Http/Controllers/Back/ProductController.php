@@ -177,4 +177,15 @@ class ProductController extends Controller
     //     $products = $this->fetchIndexData();
     //     return response()->json(['data' => $products]);
     // }
+
+    public function changeStatus(Product $product)
+    {
+        $product->update([
+            'is_enabled' => !$product->is_enabled
+        ]);
+
+        return response()->json([
+            'is_enabled' => $product->is_enabled
+        ],200);
+    }
 }
