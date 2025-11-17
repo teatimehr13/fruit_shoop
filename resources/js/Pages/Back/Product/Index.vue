@@ -18,9 +18,12 @@ import api from '@/Lib/apiFeedback';
 const props = defineProps({
     products: Object,
     subcategories: Array,
+    categories: Array,
     filters: Object
 })
 // console.log(props.subcategories);
+console.log(props.categories);
+
 console.log(props.filters);
 
 const filterForm = reactive(
@@ -88,168 +91,33 @@ const handlePageChange = (page) => {
 
 
 const addProduct = async () => {
-    const file = document.getElementById('file').files[0];
-    const fd = new FormData();
-    fd.append('subcategory_id', 1);
-    fd.append('slug', 'test-slug');
-    fd.append('name', 'test name');
-    fd.append('price', 1999);
-    fd.append('description', 'desc');
-    fd.append('is_enabled', '1');
-    if (file) fd.append('image', file); // 這裡才是真正的檔案
-
-    const res = await axios.post(route('back.products.store'), fd, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
-
-    // if (res.status === 201) {
-
-    // } else if (res.status === 422) {
-    //     console.log(res.data.errors);
-    // }
-
+    const res = await api.post(route('back.products.store'), editingProduct.value);
     console.log(res.data);
-
-}
-
-const updProduct = async (id) => {
-    const file = document.getElementById('file').files[0];
-    const fd = new FormData();
-    fd.append('subcategory_id', 1);
-    fd.append('slug', 'test-slug2');
-    fd.append('name', 'test name2');
-    fd.append('price', 19992);
-    fd.append('description', 'desc2');
-    fd.append('is_enabled', '1');
-    fd.append('_method', 'PUT') //form表單不知援axios.put
-    // fd.append('remove_image', '1'); //只刪圖不更新
-
-    if (file) fd.append('image', file);
-
-    // for (const [k, v] of fd.entries()) console.log(k, v)
-
-    const res = await axios.post(route('back.products.update', id), fd, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
-
-    console.log(res.data);
-    // const r = await axios.get(route('back.products.index.json'));
-    // categories.value = r.data;
-
-}
-
-const delProduct = async (id) => {
-    const res = await axios.delete(route('back.products.destroy', id));
-    console.log(res.status);
-
-    // const r = await axios.get(route('back.products.index.json'));
-    // categories.value = r.data;
-}
-
-const getOptions = async (id) => {
-    const res = await axios.get(route('back.product.options.index', id));
-    console.log(res.data);
-}
-
-const delOptions = async (optId) => {
-    const res = await axios.delete(route('back.options.destroy', optId));
-    console.log(res);
-}
-
-const addOptions = async (id) => {
-    const fd = new FormData();
-    fd.append('product_id', id);
-    fd.append('option_text', 'option_text');
-    fd.append('original_price', 2500);
-    fd.append('price', 1999);
-    fd.append('inventory', 10);
-    fd.append('is_enabled', '1');
-
-    const res = await axios.post(route('back.product.options.store', id), fd, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
-    console.log(res.data);
-}
-
-const updOptions = async (optId) => {
-    const fd = new FormData();
-    fd.append('option_text', 'option_text');
-    fd.append('original_price', 500);
-    fd.append('price', 999);
-    fd.append('inventory', 5);
-    fd.append('is_enabled', '1');
-    fd.append('_method', 'PUT')
-
-    const res = await axios.post(route('back.options.update', optId), fd, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
-    console.log(res.data);
-}
-
-const getImages = async (id) => {
-    const res = await axios.get(route('back.product.images.index', id));
-    console.log(res.data);
-}
-
-const addImages = async (id) => {
-    const files = document.getElementById('file').files;
-    const fd = new FormData();
-    console.log(files);
-
-    Array.from(files).forEach((file, i) => {
-        fd.append(`productImages[${i}][product_id]`, id);
-        fd.append(`productImages[${i}][alt_text]`, file.name);
-        fd.append(`productImages[${i}][is_primary]`, '0');
-
-        if (file) fd.append(`productImages[${i}][image]`, file);
-    })
-
-    for (const [key, val] of fd) {
-        console.log(key, 'value =>', val);
-
+    if (res.status === 201) {
+        // products.value.push(res.data);
+        const my_modal_1 = document.getElementById("my_modal_1");
+        my_modal_1.close();
+        await reloadPage()
     }
-
-    const res = await axios.post(route('back.product.images.store', id), fd, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
-    console.log(res.data);
 }
 
-const delImages = async () => {
-    const id_s = [18, 19, 20];
-    const res = await axios.post(route('back.product.images.destroymany'), { ids: id_s }, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
-    });
+const reloadPage = () => {
+    const cur = props.products.current_page
+    const count = props.products.data.length
+    const target = (count === 1 && cur > 1) ? cur - 1 : cur
 
-    console.log(res);
-}
-
-const updImageText = async (id) => {
-    const data = { alt_text: 'hello00' };
-    const res = await axios.patch(route('back.images.update', id), data, {
-        headers: { Accept: 'application/json' },
-        validateStatus: s => s < 500
+    return router.visit(route('back.products.index', { page: target }), {
+        replace: true,
+        only: ['products'],
+        preserveState: true,
+        preserveScroll: true,
     })
-    console.log(res);
-}
-
-const setPrimary = async (id) => {
-    const res = await axios.patch(route('back.product.images.primary', id));
-
-    console.log(res);
-
 }
 
 // Edit Drawer
 const ui = inject('backUI')
 const showDrawer = ref(false)
-const editingProduct = ref(null)
+const editingProduct = ref({})
 
 // 開啟新增
 const openAdd = () => {
@@ -258,9 +126,14 @@ const openAdd = () => {
         name: '',
         price: '',
         description: '',
-        is_enabled: true
+        is_enabled: true,
+        subcategory_id: '',
+        category_id: ''
     }
-    showDrawer.value = true
+    console.log(editingProduct.value);
+    const my_modal_1 = document.getElementById("my_modal_1");
+    my_modal_1.showModal();
+    // showDrawer.value = true
 }
 
 const loading = ref(false)
@@ -283,60 +156,17 @@ const openEdit = async (id) => {
     }
 }
 
-
-// 儲存
-const handleSave = async (formData) => {
-    try {
-        if (formData.id) {
-            // 編輯
-            await axios.put(route('back.products.update', formData.id), formData, {
-                headers: { Accept: 'application/json' },
-                validateStatus: s => s < 500
-            })
-        } else {
-            // 新增
-            await axios.post(route('back.products.store'), formData, {
-                headers: { Accept: 'application/json' },
-                validateStatus: s => s < 500
-            })
-        }
-
-        // 重新載入
-        router.reload({ only: ['products'] })
-        showDrawer.value = false
-    } catch (error) {
-        console.error(error)
-        alert('儲存失敗')
-    }
-}
-
 // 刪除
 const handleDelete = async () => {
-    try {
-        const cur = props.products.current_page
-        const count = props.products.data.length
-        const target = (count === 1 && cur > 1) ? cur - 1 : cur
-
-        const res = await api.delete(route('back.products.destroy', delContent.value.id))
-        console.log(res);
-
-        if (res.status === 204) {
-            const idx = products.value.findIndex(e => e.id == delContent.value.id);
-            if (idx !== -1) products.value.splice(idx, 1)
-        }
-
-        await router.visit(route('back.products.index', { page: target }), {
-            replace: true,
-            only: ['products'],
-            preserveState: true,
-            preserveScroll: true,
-        })
-
-        closeDel()
-    } catch (error) {
-        console.error(error)
-        alert('刪除失敗')
+    const res = await api.delete(route('back.products.destroy', delContent.value.id))
+    // console.log(res);
+    if (res.status === 204) {
+        const idx = products.value.findIndex(e => e.id == delContent.value.id);
+        if (idx !== -1) products.value.splice(idx, 1)
     }
+    await reloadPage()
+    closeDel()
+
 }
 
 
@@ -401,16 +231,23 @@ const changeStatus = async (row) => {
     const id = row.id;
     const res = await api.patch(route('back.product.changeStatus', id));
     // console.log(res);
-    if(res.status === 200){
+    if (res.status === 200) {
         row.is_enabled = res.data.is_enabled;
     }
-    
-} 
+}
+
+const subcategoriesInCategory = ref([]);
+const getSubcategories = async () => {
+    const id = editingProduct.value.category_id;
+    const res = await api.get(route('back.product.getSubcategories', id));
+    console.log(res.data);
+    subcategoriesInCategory.value = res.data;
+}
 </script>
 
 <template>
     <!-- <BackLayout> -->
-    <div class="flex relative">
+    <div class="relative">
         <!-- 遮罩層 -->
         <div v-if="editOpen" class="absolute inset-0 z-10 cursor-not-allowed overflow-hidden" @click="() => { }">
         </div>
@@ -441,7 +278,11 @@ const changeStatus = async (row) => {
                         </option>
                     </select>
                 </div>
-
+                <div class="py-4 flex justify-start">
+                    <button @click="openAdd" class="btn btn-sm">
+                        新增產品
+                    </button>
+                </div>
                 <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                     <table class="table w-full">
                         <colgroup>
@@ -462,7 +303,8 @@ const changeStatus = async (row) => {
                                 <td v-for="col in columns" :key="col.key">
                                     <template v-if="col.key === 'is_enabled'">
                                         <span :class="product.is_enabled ? 'text-600' : 'text-gray-400'">
-                                            <label class="toggle toggle-xs text-base-content" @click="changeStatus(product)">
+                                            <label class="toggle toggle-xs text-base-content"
+                                                @click="changeStatus(product)">
                                                 <input type="checkbox" disabled="true" class=""
                                                     :checked="product?.is_enabled == 1" />
                                                 <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
@@ -492,10 +334,6 @@ const changeStatus = async (row) => {
                                             <button class="btn btn-xs" @click="openEdit(product.id)">編輯</button>
                                             <button class="btn btn-xs text-red-600"
                                                 @click="openDel($event, product)">刪除</button>
-                                            <!-- <div class="tooltip" data-tip="附圖及選項">
-                                                <button class="btn btn-xs text-blue-600 whitespace-nowrap"
-                                                    @click="getDetail(product.id)">更多</button>
-                                            </div> -->
                                         </div>
                                     </template>
                                     <template v-else>
@@ -522,19 +360,6 @@ const changeStatus = async (row) => {
                 <Transition enter-active-class="transition-opacity duration-200 ease-out" enter-from-class="opacity-0"
                     enter-to-class="opacity-100" leave-active-class="transition-opacity duration-150 ease-in"
                     leave-from-class="opacity-100" leave-to-class="opacity-0">
-                    <!-- <div v-if="currentContent?.description" ref="floating" :style="floatingStyles" class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl
-             leading-relaxed break-words whitespace-pre-line overflow-auto">
-                        <div class="max-w-100">
-                            {{ currentContent?.description }}
-                        </div>
-                    </div>
-
-                    <div v-else-if="del">
-                        <p class="text-sm text-base-content/70 mb-4">
-                            {{ deleteMessage }}
-                            <span class="block mt-2">此操作無法復原。</span>
-                        </p>
-                    </div> -->
                     <div v-if="descContent?.description" ref="descFloating" :style="descStyles"
                         class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl leading-relaxed break-words whitespace-pre-line overflow-auto">
                         <div class="max-w-100">
@@ -590,60 +415,80 @@ const changeStatus = async (row) => {
             </HeadlessTab>
         </EditDrawer>
 
+        <dialog id="my_modal_1" class="modal">
+            <div class="modal-box max-h-150">
+                <h3 class="text-lg font-bold mb-4">新增產品</h3>
+                <div class="space-y-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">類別</span>
+                        </label>
+                        <select class="select select-bordered w-full" v-model="editingProduct.category_id" @change="getSubcategories()">
+                            <option value="" selected disabled>選擇子類別</option>
+                            <option v-for="category in props.categories" :key="category.id" :value="category.id">{{
+                                category.name }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">子類別</span>
+                        </label>
+                        <select class="select select-bordered w-full" v-model="editingProduct.subcategory_id">
+                            <option value="" selected disabled>選擇子類別</option>
+                            <option v-for="sub in subcategoriesInCategory" :key="sub.id" :value="sub.id">{{ sub.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">產品名稱</span>
+                        </label>
+                        <input v-model="editingProduct.name" class="input input-bordered w-full" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Slug</span>
+                        </label>
+                        <input v-model="editingProduct.slug" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text">價格</span>
+                        </label>
+                        <input v-model="editingProduct.price" type="number" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text">描述</span>
+                        </label>
+                        <textarea v-model="editingProduct.description" class="textarea textarea-bordered w-full"
+                            rows="4"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="label cursor-pointer justify-start gap-2">
+                            <input v-model="editingProduct.is_enabled" type="checkbox" class="checkbox" />
+                            <span class="label-text">啟用</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <button @click="addProduct" class="btn btn-primary">
+                        新增
+                    </button>
+                    <form method="dialog">
+                        <button class="btn">關閉</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
     </div>
-
-    <!-- <button @click="addProduct">
-            addProduct
-        </button> -->
-    <!-- <button @click="updProduct('16')">
-            updProduct
-        </button> -->
-    <!-- <button @click="delProduct('17')">
-            delProduct
-        </button> -->
-
-    <!-- <input id="file" type="file" multiple /> -->
-
-    <!-- <button @click="getOptions(21)">
-            getOptions
-        </button> -->
-
-    <!-- <button @click="addOptions(21)">
-            addOptions
-        </button> -->
-
-    <!-- <button @click="updOptions(25)">
-            updOptions
-        </button> -->
-    <!-- <button @click="delOptions(25)">
-            delOptions
-        </button> -->
-
-    <!-- <button @click="getImages(23)">
-            getImages
-        </button> -->
-    <!-- 
-        <button @click="addImages(23)">
-            addImages
-        </button>
-
-        <button @click="delImages()">
-            delImages
-        </button>
-
-        <button @click="updImageText(4)">
-            updImageText
-        </button>
-
-        <button @click="setPrimary(24)">
-            setPrimary
-        </button> -->
-
-    <!-- </BackLayout> -->
-    <!-- <input type="file" id="file"> -->
-    <!-- <button @click="addImages(5)">
-        addImages
-    </button> -->
 </template>
 
 <style>

@@ -108,18 +108,6 @@ const returnMenu = () => {
     update()
 }
 
-// 打開新增類別表單
-const openAddCategory = (event) => {
-    reference.value = event.currentTarget
-    current.value = null
-    formMode.value = 'add'
-    mode.value = 'form'
-
-    activeCategory.value = null
-    activeSubCategory.value = null
-    resetForm()
-    update()
-}
 
 // ===== 選單操作 =====
 
@@ -220,7 +208,6 @@ watch(() => mode.value, (val) => {
 })
 
 const removeImage = async () => {
-
     // 如果只剩一張圖片
     if (localImages.value.length === 1) {
         toast('產品至少需要保留一張圖片', 'warning')

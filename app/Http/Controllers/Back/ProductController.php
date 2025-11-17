@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+
 
 class ProductController extends Controller
 {
@@ -16,11 +18,12 @@ class ProductController extends Controller
     {
         $products = $this->fetchIndexData($request);
         $subcategories = Subcategory::select('id', 'name')->get();
+        $categories = Category::select('id', 'name')->get();
         return Inertia::render('Back/Product/Index', [
             'products' => $products,
+            'categories' => $categories,
             'subcategories' => $subcategories,
             'filters' => $request->only(['subcategory_id', 'name'])
-
         ]);
     }
 
@@ -187,5 +190,12 @@ class ProductController extends Controller
         return response()->json([
             'is_enabled' => $product->is_enabled
         ],200);
+    }
+
+    public function getSubcategories(Category $category){
+         $subcategories = $category->subcategories()
+            ->select('id', 'name')
+            ->get();
+        return response()->json($subcategories);
     }
 }
