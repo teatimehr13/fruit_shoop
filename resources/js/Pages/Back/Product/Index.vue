@@ -91,7 +91,11 @@ const handlePageChange = (page) => {
 
 
 const addProduct = async () => {
-    const res = await api.post(route('back.products.store'), editingProduct.value);
+    if (!validateProduct()) {
+        return
+    }
+
+    const res = await api.post(route('back.products.store'), addForm.value);
     console.log(res.data);
     if (res.status === 201) {
         // products.value.push(res.data);
@@ -117,11 +121,12 @@ const reloadPage = () => {
 // Edit Drawer
 const ui = inject('backUI')
 const showDrawer = ref(false)
-const editingProduct = ref({})
+const addForm = ref({})
 
 // 開啟新增
 const openAdd = () => {
-    editingProduct.value = {
+    Object.keys(errors).forEach(key => delete errors[key])
+    addForm.value = {
         slug: '',
         name: '',
         price: '',
@@ -130,7 +135,7 @@ const openAdd = () => {
         subcategory_id: '',
         category_id: ''
     }
-    console.log(editingProduct.value);
+    console.log(addForm.value);
     const my_modal_1 = document.getElementById("my_modal_1");
     my_modal_1.showModal();
     // showDrawer.value = true
@@ -238,10 +243,39 @@ const changeStatus = async (row) => {
 
 const subcategoriesInCategory = ref([]);
 const getSubcategories = async () => {
-    const id = editingProduct.value.category_id;
+    const id = addForm.value.category_id;
     const res = await api.get(route('back.product.getSubcategories', id));
     console.log(res.data);
     subcategoriesInCategory.value = res.data;
+}
+
+const errors = reactive({})
+const validateProduct = () => {
+    Object.keys(errors).forEach(key => delete errors[key])
+
+    if (!addForm.value.category_id) {
+        errors.category_id = '請選擇類別'
+    }
+    if (!addForm.value.subcategory_id) {
+        errors.subcategory_id = '請選擇子類別'
+    }
+
+    if (!addForm.value.name?.trim()) {
+        errors.name = '請輸入產品名稱'
+    }
+
+    if (!addForm.value.slug?.trim()) {
+        errors.slug = '請輸入 Slug'
+    }
+    if (!addForm.value.price || addForm.value.price <= 0) {
+        errors.price = '請輸入有效價格'
+    }
+    return Object.keys(errors).length === 0
+}
+
+// 清除單一欄位錯誤
+const clearError = (field) => {
+    delete errors[field]
 }
 </script>
 
@@ -423,56 +457,73 @@ const getSubcategories = async () => {
                         <label class="label">
                             <span class="label-text">類別</span>
                         </label>
-                        <select class="select select-bordered w-full" v-model="editingProduct.category_id" @change="getSubcategories()">
+                        <select class="select select-bordered w-full" v-model="addForm.category_id" :class="{'select-error':errors.category_id}"
+                            @change="getSubcategories(); clearError('category_id')">
                             <option value="" selected disabled>選擇子類別</option>
                             <option v-for="category in props.categories" :key="category.id" :value="category.id">{{
                                 category.name }}</option>
                         </select>
+                        <label v-if="errors.category_id" class="label">
+                            <span class="label-text-alt text-error text-sm">{{ errors.category_id }}</span>
+                        </label>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">子類別</span>
                         </label>
-                        <select class="select select-bordered w-full" v-model="editingProduct.subcategory_id">
+                        <select class="select select-bordered w-full" :class="{'select-error':errors.subcategory_id}" v-model="addForm.subcategory_id" @change="clearError('subcategory_id')">
                             <option value="" selected disabled>選擇子類別</option>
                             <option v-for="sub in subcategoriesInCategory" :key="sub.id" :value="sub.id">{{ sub.name }}
                             </option>
                         </select>
+
+                        <label v-if="errors.subcategory_id" class="label">
+                            <span class="label-text-alt text-error text-sm">{{ errors.subcategory_id }}</span>
+                        </label>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">產品名稱</span>
                         </label>
-                        <input v-model="editingProduct.name" class="input input-bordered w-full" />
+                        <input v-model="addForm.name" class="input input-bordered w-full" @change="clearError('name')" :class="{'input-error':errors.name}"/>
+                        <label v-if="errors.name" class="label">
+                            <span class="label-text-alt text-error text-sm">{{ errors.name }}</span>
+                        </label>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Slug</span>
                         </label>
-                        <input v-model="editingProduct.slug" class="input input-bordered w-full" />
+                        <input v-model="addForm.slug" class="input input-bordered w-full" @change="clearError('slug')" :class="{'input-error':errors.slug}"/>
+                        <label v-if="errors.slug" class="label">
+                            <span class="label-text-alt text-error text-sm">{{ errors.slug }}</span>
+                        </label>
                     </div>
 
                     <div>
                         <label class="label">
                             <span class="label-text">價格</span>
                         </label>
-                        <input v-model="editingProduct.price" type="number" class="input input-bordered w-full" />
+                        <input v-model="addForm.price" type="number" class="input input-bordered w-full"  @change="clearError('price')" :class="{'input-error':errors.price}"/>
+                        <label v-if="errors.price" class="label">
+                            <span class="label-text-alt text-error text-sm">{{ errors.price }}</span>
+                        </label>
                     </div>
 
                     <div>
                         <label class="label">
                             <span class="label-text">描述</span>
                         </label>
-                        <textarea v-model="editingProduct.description" class="textarea textarea-bordered w-full"
+                        <textarea v-model="addForm.description" class="textarea textarea-bordered w-full"
                             rows="4"></textarea>
                     </div>
 
                     <div>
                         <label class="label cursor-pointer justify-start gap-2">
-                            <input v-model="editingProduct.is_enabled" type="checkbox" class="checkbox" />
+                            <input v-model="addForm.is_enabled" type="checkbox" class="checkbox" />
                             <span class="label-text">啟用</span>
                         </label>
                     </div>
@@ -481,7 +532,7 @@ const getSubcategories = async () => {
                     <button @click="addProduct" class="btn btn-primary">
                         新增
                     </button>
-                    <form method="dialog" class="modal-backdrop" >
+                    <form method="dialog">
                         <button class="btn">關閉</button>
                     </form>
                 </div>

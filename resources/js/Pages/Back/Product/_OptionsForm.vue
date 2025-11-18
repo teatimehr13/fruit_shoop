@@ -67,6 +67,10 @@ const changeOptions = computed(() => {
 const handleSave = async () => {
     // console.log('changeOptions =>', changeOptions.value);
     // console.log('localOptions =>', localOptions.value);
+    if (!validateOptions()) {
+        return
+    }
+
     const res = await api.post(route('back.products.options.save', props.productId), {
         options: changeOptions.value,
         deleted_ids: deletedIds.value
@@ -136,9 +140,47 @@ watch(() => props.options, (newOptions) => {
     }
 }, { immediate: true, deep: true })
 
-onBeforeUpdate(() => { 
-    inputRefs.value = [] 
+onBeforeUpdate(() => {
+    inputRefs.value = []
 })
+
+const hasError = ref(false)
+const errorMessage = ref('')
+
+// 只在送出時驗證
+const validateOptions = () => {
+    hasError.value = false
+    errorMessage.value = ''
+
+    for (let i = 0; i < localOptions.value.length; i++) {
+        const option = localOptions.value[i]
+
+        if (!option.option_text?.trim()) {
+            hasError.value = true
+            errorMessage.value = `選項 ${i + 1}：請輸入選項名稱`
+            return false
+        }
+
+        if (!option.price || option.price <= 0) {
+            hasError.value = true
+            errorMessage.value = `選項 ${i + 1}：請輸入有效價格`
+            return false
+        }
+
+        if (!option.original_price || option.original_price <= 0) {
+            hasError.value = true
+            errorMessage.value = `選項 ${i + 1}：請輸入有效原價`
+            return false
+        }
+
+        if (option.inventory === null || option.inventory < 0) {
+            hasError.value = true
+            errorMessage.value = `選項 ${i + 1}：請輸入有效庫存`
+            return false
+        }
+    }
+    return true
+}
 </script>
 
 <template>
@@ -185,7 +227,7 @@ onBeforeUpdate(() => {
                         class="input input-bordered w-full input-sm" />
                     <div v-show="!isEditing(index, 'option_text')" class="self-center cursor-pointer"
                         @click="setEditing(index, 'option_text')">
-                        {{ option.option_text }}
+                        {{ option.option_text || '未填寫'}}
                     </div>
                 </div>
 
@@ -237,6 +279,14 @@ onBeforeUpdate(() => {
                 </div>
 
             </div>
+        </div>
+
+        <div v-if="hasError" class="alert bg-red-200 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>{{ errorMessage }}</span>
         </div>
 
         <div class="flex justify-end mb-4 px-6">
