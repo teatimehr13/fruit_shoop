@@ -65,4 +65,22 @@ class SubcategoryController extends Controller
 
         return response()->json(['msge' => 'success'], 200);
     }
+
+    public function reorder(Request $request)
+    {
+        $data = $request->validate([
+            '*.id' => 'required|exists:subcategories,id',
+            '*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        DB::transaction(function () use ($data) {
+            foreach ($data as $item) {
+                Subcategory::where('id', $item['id'])
+                    ->update(['sort_order' => $item['sort_order']]);
+            }
+        });
+
+        return response()->json(['success' => true], 200);
+    }
 }
+

@@ -171,4 +171,21 @@ class ProductImageController extends Controller
 
         return response()->json($productImage, 200);
     }
+
+    public function reorder(Request $request)
+    {
+        $data = $request->validate([
+            '*.id' => 'required|exists:product_images,id',
+            '*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        DB::transaction(function () use ($data) {
+            foreach ($data as $item) {
+                ProductImage::where('id', $item['id'])
+                    ->update(['sort_order' => $item['sort_order']]);
+            }
+        });
+
+        return response()->json(['success' => true], 200);
+    }
 }

@@ -3,13 +3,21 @@ import { ref, reactive, computed, watch } from 'vue'
 import { useFloating, offset, flip, shift } from '@floating-ui/vue'
 import BackLayout from '@/Layouts/BackLayout.vue';
 import api from '@/Lib/apiFeedback';
+import { VueDraggable } from 'vue-draggable-plus';
 
 const props = defineProps({
     categories: Array
 })
 
 
-const categories = ref([...props.categories])
+// const categories = ref([...props.categories])
+
+const categories = ref(JSON.parse(JSON.stringify(props.categories)));
+
+// 當 props 更新時同步
+watch(() => props.categories, (newVal) => {
+    categories.value = JSON.parse(JSON.stringify(newVal));
+}, { deep: true });
 
 // ===== UI 狀態 =====
 const mode = ref(null) // 'menu' | 'form' | 'delete'
@@ -164,7 +172,7 @@ const handleAdd = async () => {
         const id = form.category_id;
         const res = await api.post(route('back.categories.subcategories.store', id), form);
         console.log(res);
-        
+
 
         // 模擬新增
         const parent = categories.value.find(c => c.id === form.category_id)
@@ -209,7 +217,7 @@ const handleUpdate = async () => {
         const subcategory = parent?.subcategories?.find(s => s.id === form.id)
         console.log(parent);
         console.log(subcategory);
-        
+
         if (subcategory) {
             Object.assign(subcategory, {
                 name: form.name,
@@ -275,6 +283,25 @@ watch(() => mode.value, (val) => {
         document.removeEventListener('mousedown', handleClickOutside)
     }
 })
+
+
+const onDragEnd = (evt, subcategories) => {
+    const updates = subcategories.map((item, index) => ({
+        id: item.id,
+        sort_order: index + 1
+    }));
+    console.log(updates);
+
+    reorder(updates)
+    // console.log(subcategories);
+
+}
+
+const reorder = async (updates) => {
+    const res = await api.patch(route('back.subcategories.reorder'), updates);
+    console.log(res);
+}
+
 </script>
 
 <template>
@@ -289,21 +316,24 @@ watch(() => mode.value, (val) => {
                     新增類別
                 </button>
             </div>
-
             <ul class="menu rounded-box w-full">
                 <li v-for="category in categories" :key="category.id">
                     <a @click="openMenu($event, category, 'category')" class="text-lg font-semibold"
                         :class="{ 'menu-active': activeCategory === category.id }">
                         {{ category.name }}
                     </a>
-                    <ul v-if="category.subcategories?.length">
-                        <li v-for="subcategory in category.subcategories" :key="subcategory.id">
-                            <a @click="openMenu($event, subcategory, 'subcategory')"
-                                :class="{ 'menu-active': activeSubCategory === subcategory.id }">
-                                {{ subcategory.name }}
-                            </a>
-                        </li>
-                    </ul>
+
+                    <VueDraggable v-if="category.subcategories?.length" v-model="category.subcategories"
+                        :animation="150" ghost-class="dragging-ghost" drag-class="dragging" chosen-class="chosen"
+                        tag="ul" @end="(evt) => onDragEnd(evt, category.subcategories)">
+                <li v-for="subcategory in category.subcategories" :key="subcategory.id">
+                    <a @click="openMenu($event, subcategory, 'subcategory')"
+                        :class="{ 'menu-active': activeSubCategory === subcategory.id }">
+                        {{ subcategory.name }}
+                    </a>
+                </li>
+                </VueDraggable>
+
                 </li>
             </ul>
         </div>
@@ -384,7 +414,18 @@ watch(() => mode.value, (val) => {
 </template>
 
 <style scoped>
-/* .menu .active {
-    @apply bg-base-200;
-} */
+.dragging-ghost {
+    opacity: 0.5;
+    background-color: oklch(92.3% 0.003 48.717);
+    cursor: grabbing;
+}
+
+.dragging {
+    cursor: grabbing !important;
+    opacity: 0.8;
+}
+
+.chosen {
+    cursor: grabbing;
+}
 </style>

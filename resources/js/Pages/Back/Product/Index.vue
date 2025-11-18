@@ -249,7 +249,7 @@ const getSubcategories = async () => {
     <!-- <BackLayout> -->
     <div class="relative">
         <!-- 遮罩層 -->
-        <div v-if="editOpen" class="absolute inset-0 z-10 cursor-not-allowed overflow-hidden" @click="() => { }">
+        <div v-if="editOpen" class="absolute inset-0 z-10 overflow-hidden cursor-not-allowed" @click="() => { }">
         </div>
         <div>
             <p class="text-[#1E2328] text-lg font-semibold">
@@ -481,7 +481,7 @@ const getSubcategories = async () => {
                     <button @click="addProduct" class="btn btn-primary">
                         新增
                     </button>
-                    <form method="dialog">
+                    <form method="dialog" class="modal-backdrop" >
                         <button class="btn">關閉</button>
                     </form>
                 </div>

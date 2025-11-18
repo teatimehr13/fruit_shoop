@@ -5,6 +5,7 @@ import api from '@/Lib/apiFeedback';
 import { useNotify } from '@/Composables/useNotify';
 import VueEasyLightbox from 'vue-easy-lightbox/external-css'
 import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
+import { VueDraggable } from 'vue-draggable-plus';
 
 const props = defineProps({
     images: Array,
@@ -276,6 +277,21 @@ const delConfirm = computed(() => {
     }
 })
 
+const onDragEnd = (evt) => {
+    const updates = localImages.value.map((item, index) => ({
+        id: item.id,
+        sort_order: index + 1
+    }));
+    console.log(updates);
+
+    reorder(updates)
+}
+
+const reorder = async (updates) => {
+    const res = await api.patch(route('back.product.images.reorder'), updates);
+    console.log(res);
+}
+
 </script>
 
 <template>
@@ -288,13 +304,17 @@ const delConfirm = computed(() => {
                 新增圖片
             </button>
         </div>
-        <ul class="list bg-base-100 shadow-xs mx-6" v-for="(img, index) in localImages" :key="img.id">
-            <li class="list-row">
-                <div><img class="size-20 rounded-box cursor-pointer" :src="img.img_url" @click="showImg(index)" />
+        <VueDraggable v-model="localImages" :animation="150" ghost-class="dragging-ghost" drag-class="dragging"
+            chosen-class="chosen" tag="ul" class="list bg-base-100 shadow-xs mx-6" @end="onDragEnd">
+            <li v-for="(img, index) in localImages" :key="img.id" class="list-row cursor-move">
+                <div>
+                    <img class="size-20 rounded-box cursor-pointer" :src="img.img_url" @click="showImg(index)" />
                 </div>
                 <div class="grid content-center">
                     <div>{{ img.alt_text }}</div>
-                    <div v-if="img.is_primary" class="badge badge-success text-base-200">主圖</div>
+                    <div v-if="img.is_primary" class="badge badge-success text-base-200">
+                        主圖
+                    </div>
                 </div>
                 <button class="btn btn-square" @click="openMenu($event, img)">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -304,7 +324,7 @@ const delConfirm = computed(() => {
                     </svg>
                 </button>
             </li>
-        </ul>
+        </VueDraggable>
     </div>
 
     <!-- lightbox -->
@@ -428,5 +448,21 @@ const delConfirm = computed(() => {
 .list> :not(:last-child).list-row::after,
 .list> :not(:last-child) .list-row::after {
     border-color: #e5e7eb !important;
+}
+
+
+.dragging-ghost {
+    opacity: 0.5;
+    background-color: oklch(92.3% 0.003 48.717);
+    cursor: grabbing;
+}
+
+.dragging {
+    cursor: grabbing !important;
+    opacity: 0.8;
+}
+
+.chosen {
+    cursor: grabbing;
 }
 </style>

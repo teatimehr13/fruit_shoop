@@ -73,7 +73,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         if ($category->subcategories()->count() !== 0) {
-            return response()->json(['msg' => 'subcategory exist'],422);
+            return response()->json(['msg' => 'subcategory exist'], 422);
         }
 
         if (!$category->delete()) {
@@ -106,4 +106,6 @@ class CategoryController extends Controller
         $categories = $this->fetchIndexData();
         return response()->json(['data' => $categories]);
     }
+
+
 }
