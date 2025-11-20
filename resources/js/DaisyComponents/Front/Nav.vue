@@ -1,109 +1,147 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue'
 
 //中間:首頁、特選商品、關於我們 
 //最右邊:會員、購物車
 const navLinks = ref([
-    { name: 'product.index', label: '首頁' },
+    // { name: 'product.index', label: '首頁' },
     { name: 'product.index', label: '所有商品' },
     { name: 'product.index', label: '關於我們' },
-
-
 ])
 
+const isOpen = ref(false)
+const wrapperRef = ref(null)
+const contentRef = ref(null)
+const mobileNavRef = ref();
 
+const toggleMenu = () => {
+    isOpen.value = !isOpen.value
+}
+
+
+watch(isOpen, (open) => {
+  const wrapper = wrapperRef.value
+  const content = contentRef.value
+  const mobileNav = mobileNavRef.value
+  if (!wrapper || !content || !mobileNav) return
+
+  const headerHeight = mobileNav.scrollHeight
+  const viewportHeight = window.innerHeight - headerHeight
+  const contentHeight = content.scrollHeight
+
+  // 至少佔滿螢幕
+  const targetHeight = Math.max(viewportHeight, contentHeight)
+
+  if (open) {
+    wrapper.style.height = `${targetHeight}px`
+  } else {
+    wrapper.style.height = '0px'
+  }
+})
 </script>
 
 <template>
-    <div class="drawer drawer-end">
-        <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex flex-col">
-            <!-- Navbar -->
-            <div class="navbar bg-base-300 w-full">
-                <div class="flex-none lg:hidden">
-                    <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-6 w-6 stroke-current">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </label>
-                </div>
-                <div class="mx-2 px-2 navbar-start whitespace-nowrap">Navbar Title</div>
-                <div class="navbar-center justify-center">
-                    <ul class="menu menu-horizontal custom-menu">
-                        <li v-for="link in navLinks">
-                            <a :href="route(link.name)">{{ link.label }}</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="navbar-end">
-                    <button class="btn btn-ghost btn-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-circle">
-                        <div class="indicator">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    <div>
+        <header class="max-w-[1440px] w-full m-auto p-4 box-shadow relative">
+            <!-- desktop -->
+            <nav
+                class="relative hidden md:flex w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+                <ul class="flex flex-1">
+                    <li v-for="nav in navLinks" class="mr-12">
+                        <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
+                    </li>
+                </ul>
+
+                <a class="flex-1 w-full" href="">
+                    <img class="h-14 m-auto" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png" alt="vege">
+                </a>
+                <ul class="flex flex-1 justify-end gap-4">
+                    <li class="mr-12">
+                        <a href="" class="text-[#67645e] font-semibold">
+                            會員登入
+                        </a>
+                    </li>
+                    <li class="mr-12">
+                        <a href="" class="text-[#67645e] font-semibold">
+                            購物車
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- mobile -->
+            <nav ref="mobileNavRef"
+                class="relative flex md:hidden w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+                <ul class="hidden md:flex md:flex-1">
+                    <li v-for="nav in navLinks" class="mr-12">
+                        <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
+                    </li>
+                </ul>
+
+                <div class="md:hidden flex flex-1 justify-start">
+                    <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu">
+                        <span class="absolute inset-0 flex items-center justify-center
+                            transition-all duration-600 ease-out"
+                            :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
-                            <span class="badge badge-xs badge-primary indicator-item"></span>
-                        </div>
+                        </span>
+
+                        <!-- X icon -->
+                        <span class="absolute inset-0 flex items-center justify-center
+                            transition-all duration-600 ease-out"
+                            :class="isOpen ? 'rotate-0 opacity-100' : 'rotate-[-180deg] opacity-0'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </span>
                     </button>
                 </div>
-            </div>
-            <!-- Page content here -->
-            <!-- Content -->
-        </div>
-        <div class="drawer-side">
-            <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-            <ul class="menu bg-base-200 min-h-full w-80 p-4">
-                <!-- Sidebar content here -->
-                <li v-for="link in navLinks">
-                    <a :href="route(link.name)">{{ link.label }}</a>
-                </li>
-            </ul>
-        </div>
+
+                <a class="flex-1 w-full" href="">
+                    <img class="h-10 m-auto" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png" alt="vege">
+                </a>
+                <ul class="flex flex-1 justify-end gap-4">
+                    <li class="">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 手機選單外框 -->
+                <div ref="wrapperRef" class="absolute left-0 right-0 z-50 bg-[#f1f0ed] overflow-hidden
+                    transition-[height] duration-500 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 56px; height: 0">
+                    <div ref="contentRef" class="p-4 space-y-4">
+                        <a href="#" class="block">分類一</a>
+                        <a href="#" class="block">分類二</a>
+                        <a href="#" class="block">分類三</a>
+                    </div>
+                </div>
+            </nav>
+
+        </header>
     </div>
 </template>
 
 
 <style>
-.custom-menu {
-    & :where(li:not(.menu-title, .disabled) > :not(ul, details, .menu-title):not(.menu-active, :active, .btn),
-        li:not(.menu-title, .disabled) > details > summary:not(.menu-title):not(.menu-active, :active, .btn)) {
-        position: relative;
 
-        &::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: 3px;
-            width: calc(100% - 16px);
-            height: 2px;
-            background-color: currentColor;
-            transform-origin: center;
-            transform: translateX(-50%) scaleX(0);
-            opacity: 0;
-            transition:
-                transform 0.3s ease,
-                opacity 0.3s ease;
-        }
-    }
-
-    & :where(li:not(.menu-title, .disabled) > :not(ul, details, .menu-title):not(.menu-active, :active, .btn):hover,
-        li:not(.menu-title, .disabled) > details > summary:not(.menu-title):not(.menu-active, :active, .btn):hover) {
-        background-color: transparent !important;
-
-        &::after {
-            transform: translateX(-50%) scaleX(1);
-            opacity: 1;
-        }
-    }
-}
 </style>
