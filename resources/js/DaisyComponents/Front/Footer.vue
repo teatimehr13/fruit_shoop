@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <footer class="footer sm:footer-horizontal bg-base-300 text-base-content p-10">
+    <footer class="footer sm:footer-horizontal bg-base-300 text-base-content p-10" style="height: 1500px;">
   <nav>
     <h6 class="footer-title">Services</h6>
     <a class="link link-hover">Branding</a>

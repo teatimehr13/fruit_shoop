@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted, inject, computed } from 'vue'
 
 //中間:首頁、特選商品、關於我們 
 //最右邊:會員、購物車
@@ -16,39 +16,84 @@ const mobileNavRef = ref();
 
 const toggleMenu = () => {
     isOpen.value = !isOpen.value
+    isInHeroOverride.value === false ? isInHeroOverride.value = true : isInHeroOverride.value = false;
 }
 
 
 watch(isOpen, (open) => {
-  const wrapper = wrapperRef.value
-  const content = contentRef.value
-  const mobileNav = mobileNavRef.value
-  if (!wrapper || !content || !mobileNav) return
+    const wrapper = wrapperRef.value
+    const content = contentRef.value
+    const mobileNav = mobileNavRef.value
+    if (!wrapper || !content || !mobileNav) return
 
-  const headerHeight = mobileNav.scrollHeight
-  const viewportHeight = window.innerHeight - headerHeight
-  const contentHeight = content.scrollHeight
+    const headerHeight = mobileNav.scrollHeight
+    const viewportHeight = window.innerHeight - headerHeight
+    const contentHeight = content.scrollHeight
 
-  // 至少佔滿螢幕
-  const targetHeight = Math.max(viewportHeight, contentHeight)
+    // 至少佔滿螢幕
+    const targetHeight = Math.max(viewportHeight, contentHeight)
 
-  if (open) {
-    wrapper.style.height = `${targetHeight}px`
-  } else {
-    wrapper.style.height = '0px'
-  }
+    if (open) {
+        wrapper.style.height = `${targetHeight}px`
+    } else {
+        wrapper.style.height = '0px'
+    }
 })
+
+const props = defineProps({
+    isInHero: {
+        type: Boolean,
+        defalut: true
+    },
+    isScrollingDown: {
+        type: Boolean,
+    },
+})
+
+console.log(props.isInHero);
+
+const isInHeroOverride = ref(null)
+
+const isInHeroState = computed({
+    get() {
+        return isInHeroOverride.value ?? props.isInHero
+    },
+    set(val) {
+        isInHeroOverride.value = val
+    },
+})
+
+const forceInHero = (val) => {
+    isInHeroOverride.value = val
+}
+
+const resetInHero = () => {
+    isInHeroOverride.value = null 
+}
+
+// Debug
+// watch(() => props.isInHero, (val) => {
+//     console.log('Nav isInHero changed:', val)
+// })
+// watch(() => props.isScrollingDown, (val) => {
+//     console.log('Nav isScrollingDown changed:', val)
+// })
+
 </script>
 
 <template>
     <div>
-        <header class="max-w-[1440px] w-full m-auto p-4 box-shadow relative">
+        <header class="box-shadow fixed z-5 3xl:w-[calc(100%-80px)] lg:w-[calc(100%-64px)] w-[calc(100%-32px)]">
             <!-- desktop -->
-            <nav
-                class="relative hidden md:flex w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+            <nav class="bg-[#f1f0ed] px-4 w-full relative hidden md:flex items-center justify-between sticky py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]"
+                :class="{
+                    '-translate-y-full': props.isScrollingDown,
+                    'bg-transparent': isInHeroState,
+                }">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
-                        <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
+                        <a :href="route(nav.name)" class="font-semibold text-[#67645e]"
+                            :class="{ 'text-[#fff]': isInHeroState }">{{ nav.label }}</a>
                     </li>
                 </ul>
 
@@ -57,12 +102,12 @@ watch(isOpen, (open) => {
                 </a>
                 <ul class="flex flex-1 justify-end gap-4">
                     <li class="mr-12">
-                        <a href="" class="text-[#67645e] font-semibold">
+                        <a href="" class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
                             會員登入
                         </a>
                     </li>
                     <li class="mr-12">
-                        <a href="" class="text-[#67645e] font-semibold">
+                        <a href="" class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
                             購物車
                         </a>
                     </li>
@@ -71,7 +116,11 @@ watch(isOpen, (open) => {
 
             <!-- mobile -->
             <nav ref="mobileNavRef"
-                class="relative flex md:hidden w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+                class="relative flex md:hidden w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]"
+                :class="{
+                    '-translate-y-full': props.isScrollingDown,
+                    'bg-transparent': isInHeroState,
+                }">
                 <ul class="hidden md:flex md:flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
@@ -79,7 +128,8 @@ watch(isOpen, (open) => {
                 </ul>
 
                 <div class="md:hidden flex flex-1 justify-start">
-                    <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu">
+                    <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu"
+                        :class="{ 'text-[#fff]': isInHeroState }">
                         <span class="absolute inset-0 flex items-center justify-center
                             transition-all duration-600 ease-out"
                             :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
@@ -105,9 +155,9 @@ watch(isOpen, (open) => {
                 <a class="flex-1 w-full" href="">
                     <img class="h-10 m-auto" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png" alt="vege">
                 </a>
-                <ul class="flex flex-1 justify-end gap-4">
+                <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]" :class="{ 'text-[#fff]': isInHeroState }">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -116,7 +166,7 @@ watch(isOpen, (open) => {
                         </a>
                     </li>
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]" :class="{ 'text-[#fff]': isInHeroState }">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -142,6 +192,10 @@ watch(isOpen, (open) => {
 </template>
 
 
-<style>
+<style></style>
 
-</style>
+<!-- bg-[#f1f0ed] -->
+<!-- text-[#67645e] -->
+
+<!-- bg-transfer -->
+<!-- text-fff -->

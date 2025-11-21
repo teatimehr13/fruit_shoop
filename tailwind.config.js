@@ -15,6 +15,14 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            maxWidth: {
+                '8xl': '1600px',
+                '9xl': '1920px',
+            },
+            width: {
+                '8xl': '1600px',
+                '9xl': '1920px',
+            },
         },
     },
 
