@@ -42,3 +42,31 @@ initial-value: 0 0 #0000
 6.狀態更改(外面)
 7.還中時外面不可點選 OK
 8.整理code, 把編輯和更多結合
+
+往上滑動的時候
+.Header__sticky {
+    padding: 1.25rem 0 0;
+    position: fixed;
+    top: 0;
+    color: #67645e;
+    background: #fff;
+}
+
+.Header__sticky nav {
+    background-color: #f1f0ed;
+}
+
+往下滑的時，header加上，往上時則拿掉 
+.Header__hidden{
+    transform: translateY(-150%);
+    background: transparent !important;
+    padding: 2.5vw 0 0;
+}
+
+
+
+滑動到最上面時 
+.header{
+    top:40px; 
+    bg-transparent
+} 

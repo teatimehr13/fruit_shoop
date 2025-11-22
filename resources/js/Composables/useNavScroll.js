@@ -95,10 +95,10 @@ export function useNavScroll(heroRef) {
     const current = window.scrollY
     
     // 判斷滾動方向
-    isScrollingDown.value = current > lastScrollY.value && current > 100
+    isScrollingDown.value = current > lastScrollY.value && current > 50
     
     // 判斷是否在頂部(考慮 nav 高度)
-    isInHero.value = current < 64 // 64px 是 nav 的高度
+    isInHero.value = current < 84 // 64px 是 nav 的高度
     
     lastScrollY.value = current
   }

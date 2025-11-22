@@ -1,8 +1,7 @@
 <script setup>
-import { ref, onMounted, watch, onUnmounted, inject, computed } from 'vue'
+import { ref, onMounted, watch, onUnmounted, inject, computed, toRefs } from 'vue'
+import { useHeroNavState } from '@/Composables/useHeroNavState'
 
-//中間:首頁、特選商品、關於我們 
-//最右邊:會員、購物車
 const navLinks = ref([
     // { name: 'product.index', label: '首頁' },
     { name: 'product.index', label: '所有商品' },
@@ -16,9 +15,13 @@ const mobileNavRef = ref();
 
 const toggleMenu = () => {
     isOpen.value = !isOpen.value
-    isInHeroOverride.value === false ? isInHeroOverride.value = true : isInHeroOverride.value = false;
+    // console.log(isInHeroOverride.value);
+    if (isOpen.value) {
+        isInHeroOverride.value = false
+    } else {
+        isInHeroOverride.value = null
+    }
 }
-
 
 watch(isOpen, (open) => {
     const wrapper = wrapperRef.value
@@ -35,8 +38,10 @@ watch(isOpen, (open) => {
 
     if (open) {
         wrapper.style.height = `${targetHeight}px`
+        document.body.style.overflow = 'hidden'
     } else {
         wrapper.style.height = '0px'
+        document.body.style.overflow = ''
     }
 })
 
@@ -52,44 +57,23 @@ const props = defineProps({
 
 console.log(props.isInHero);
 
-const isInHeroOverride = ref(null)
-
-const isInHeroState = computed({
-    get() {
-        return isInHeroOverride.value ?? props.isInHero
-    },
-    set(val) {
-        isInHeroOverride.value = val
-    },
-})
-
-const forceInHero = (val) => {
-    isInHeroOverride.value = val
-}
-
-const resetInHero = () => {
-    isInHeroOverride.value = null 
-}
-
-// Debug
-// watch(() => props.isInHero, (val) => {
-//     console.log('Nav isInHero changed:', val)
-// })
-// watch(() => props.isScrollingDown, (val) => {
-//     console.log('Nav isScrollingDown changed:', val)
-// })
+const { isInHero, isScrollingDown } = toRefs(props)
+const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScrollingDown })
 
 </script>
 
 <template>
     <div>
-        <header class="box-shadow fixed z-5 3xl:w-[calc(100%-80px)] lg:w-[calc(100%-64px)] w-[calc(100%-32px)]">
+        <header
+            class="box-shadow fixed z-5 3xl:w-[calc(100%-80px)] lg:w-[calc(100%-64px)] w-[calc(100%-32px)] translate-y-0"
+            :class="{
+                'Header__hidden': props.isScrollingDown,
+                'Header__sticky': !props.isScrollingDown && !isInHeroState,
+                'header': isInHeroState,
+            }">
             <!-- desktop -->
-            <nav class="bg-[#f1f0ed] px-4 w-full relative hidden md:flex items-center justify-between sticky py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]"
-                :class="{
-                    '-translate-y-full': props.isScrollingDown,
-                    'bg-transparent': isInHeroState,
-                }">
+            <nav
+                class="px-4 w-full relative hidden md:flex items-center justify-between sticky py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold text-[#67645e]"
@@ -116,11 +100,7 @@ const resetInHero = () => {
 
             <!-- mobile -->
             <nav ref="mobileNavRef"
-                class="relative flex md:hidden w-full items-center justify-between sticky bg-[#f1f0ed] py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]"
-                :class="{
-                    '-translate-y-full': props.isScrollingDown,
-                    'bg-transparent': isInHeroState,
-                }">
+                class="relative flex md:hidden w-full items-center justify-between sticky py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
                 <ul class="hidden md:flex md:flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
@@ -157,7 +137,8 @@ const resetInHero = () => {
                 </a>
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]" :class="{ 'text-[#fff]': isInHeroState }">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]"
+                            :class="{ 'text-[#fff]': isInHeroState }">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -166,7 +147,8 @@ const resetInHero = () => {
                         </a>
                     </li>
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]" :class="{ 'text-[#fff]': isInHeroState }">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]"
+                            :class="{ 'text-[#fff]': isInHeroState }">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -192,10 +174,33 @@ const resetInHero = () => {
 </template>
 
 
-<style></style>
+<style>
+/* 往上滑動的時候 */
+.Header__sticky {
+    padding: 1.25rem 0 0;
+    position: fixed;
+    top: 0;
+    color: #67645e;
+    background: #fff;
+    transition: all .7s cubic-bezier(.76, 0, .24, 1), color 0s;
+}
 
-<!-- bg-[#f1f0ed] -->
-<!-- text-[#67645e] -->
+.Header__sticky nav {
+    background-color: #f1f0ed;
+}
 
-<!-- bg-transfer -->
-<!-- text-fff -->
+/* 往下滑的時，header加上，往上時則拿掉  */
+.Header__hidden {
+    transform: translateY(-150%);
+    background: transparent;
+    padding: 2.5vw 0 0;
+    transition: all .7s cubic-bezier(.76, 0, .24, 1), color 0s;
+    top: 0;
+}
+
+/* 滑動到最上面時  */
+/* isInHeroState */
+.header {
+    background: transparent !important;
+}
+</style>
