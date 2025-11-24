@@ -1,6 +1,8 @@
 <script setup>
 import FrontLayout from '@/Layouts/FrontLayout.vue';
 import Hero from './_Hero.vue';
+import Feature from './_Feature.vue';
+
 
 
 defineOptions({
@@ -15,7 +17,7 @@ defineOptions({
          <Hero />
      <!-- </section> -->
     <!-- icon feature-->
-    <section></section>
+        <Feature />
 
     <!-- category gallery -->
     <section></section>
