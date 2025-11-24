@@ -2,6 +2,7 @@
 import FrontLayout from '@/Layouts/FrontLayout.vue';
 import Hero from './_Hero.vue';
 import Feature from './_Feature.vue';
+import Category from './_Category.vue';
 
 
 
@@ -20,8 +21,9 @@ defineOptions({
         <Feature />
 
     <!-- category gallery -->
-    <section></section>
-
+    <!-- <section></section>
+      -->
+     <Category />
     <!-- recommand -->
     <section></section>
 </template>
