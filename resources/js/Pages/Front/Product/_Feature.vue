@@ -1,5 +1,5 @@
 <template>
-    <section class="py-14 my-8 rounded-[12px] border border-solid border-base-300">
+    <section class="py-14 my-8 ">
         <div class="w-full">
             <div class="grid md:grid-cols-4">
                 <div class="mx-auto mb-4">
@@ -136,4 +136,6 @@
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, .5);
 }
+
+/* rounded-[12px] border border-solid border-base-300 */
 </style>
