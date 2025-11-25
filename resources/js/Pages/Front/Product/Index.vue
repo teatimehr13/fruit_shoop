@@ -3,7 +3,7 @@ import FrontLayout from '@/Layouts/FrontLayout.vue';
 import Hero from './_Hero.vue';
 import Feature from './_Feature.vue';
 import Category from './_Category.vue';
-
+import TopPicks from './_TopPicks.vue';
 
 
 defineOptions({
@@ -25,5 +25,6 @@ defineOptions({
       -->
      <Category />
     <!-- recommand -->
-    <section></section>
+    <!-- <section></section> -->
+     <TopPicks />
 </template>
