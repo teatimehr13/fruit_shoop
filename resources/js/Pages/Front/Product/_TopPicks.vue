@@ -13,9 +13,9 @@ import 'swiper/css/navigation';
 const modules = [Scrollbar, EffectFade, Pagination, Navigation];
 
 </script>
-<!-- bg-[#f1f0ed] -->
+
 <template>
-    <section class="pb-16">
+    <section class="pb-16 md:pb-18">
         <div class="border border-[#f1f0ed] rounded-[12px] py-6 px-4 pr-0 lg:pr-0 lg:px-6">
             <div class="md:mb-8 mb-4 md:pt-4">
                 <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-[#67645e]">
@@ -118,7 +118,6 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
 <style>
 .custom-button-prev,
 .custom-button-next {
-    z-index: 10;
     width: 40px;
     height: 40px;
     border-radius: 50%;

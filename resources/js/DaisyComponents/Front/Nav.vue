@@ -12,14 +12,19 @@ const isOpen = ref(false)
 const wrapperRef = ref(null)
 const contentRef = ref(null)
 const mobileNavRef = ref();
+const showMenuHeader = ref(false);
 
 const toggleMenu = () => {
     isOpen.value = !isOpen.value
     // console.log(isInHeroOverride.value);
     if (isOpen.value) {
         isInHeroOverride.value = false
+        showMenuHeader.value = true;
+
     } else {
         isInHeroOverride.value = null
+        showMenuHeader.value = false;
+        customNav.value = false;
     }
 }
 
@@ -43,6 +48,9 @@ watch(isOpen, (open) => {
         wrapper.style.height = '0px'
         document.body.style.overflow = ''
     }
+
+    // console.log(props.isScrollingDown);
+    // console.log(isInHeroState.value);
 })
 
 const props = defineProps({
@@ -55,7 +63,8 @@ const props = defineProps({
     },
 })
 
-console.log(props.isInHero);
+
+// console.log(props.isInHero);
 
 const { isInHero, isScrollingDown } = toRefs(props)
 const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScrollingDown })
@@ -67,9 +76,9 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
         <header
             class="box-shadow fixed z-5 3xl:w-[calc(100%-80px)] lg:w-[calc(100%-64px)] w-[calc(100%-32px)] translate-y-0"
             :class="{
-                'Header__hidden': props.isScrollingDown,
-                'Header__sticky': !props.isScrollingDown && !isInHeroState,
-                'header': isInHeroState,
+                'Header__hidden': props.isScrollingDown && !showMenuHeader,
+                'Header__sticky ': !props.isScrollingDown && !isInHeroState || showMenuHeader,
+                'header': isInHeroState && !showMenuHeader,
             }">
             <!-- desktop -->
             <nav
@@ -100,7 +109,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 
             <!-- mobile -->
             <nav ref="mobileNavRef"
-                class="relative flex md:hidden w-full items-center justify-between sticky py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+                class="relative flex md:hidden w-full items-center justify-between sticky py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-300 ease-[cubic-bezier(.76,0,.24,1)]">
                 <ul class="hidden md:flex md:flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold text-[#67645e]">{{ nav.label }}</a>
@@ -108,10 +117,9 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                 </ul>
 
                 <div class="md:hidden flex flex-1 justify-start">
-                    <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu"
-                        :class="{ 'text-[#fff]': isInHeroState }">
+                    <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu">
                         <span class="absolute inset-0 flex items-center justify-center
-                            transition-all duration-600 ease-out"
+                            duration-600 ease-out"
                             :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="w-6 h-6">
@@ -122,7 +130,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 
                         <!-- X icon -->
                         <span class="absolute inset-0 flex items-center justify-center
-                            transition-all duration-600 ease-out"
+                             duration-600 ease-out"
                             :class="isOpen ? 'rotate-0 opacity-100' : 'rotate-[-180deg] opacity-0'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
@@ -138,7 +146,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
                         <a href="" class="btn btn-ghost btn-circle text-[#67645e]"
-                            :class="{ 'text-[#fff]': isInHeroState }">
+                            >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -147,8 +155,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                         </a>
                     </li>
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]"
-                            :class="{ 'text-[#fff]': isInHeroState }">
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -160,7 +167,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 
                 <!-- 手機選單外框 -->
                 <div ref="wrapperRef" class="absolute left-0 right-0 z-50 bg-[#f1f0ed] overflow-hidden
-                    transition-[height] duration-500 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 56px; height: 0">
+                    transition-[height] duration-400 delay-100 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 71px; height: 0">
                     <div ref="contentRef" class="p-4 space-y-4">
                         <a href="#" class="block">分類一</a>
                         <a href="#" class="block">分類二</a>
@@ -203,4 +210,15 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 .header {
     background: transparent !important;
 }
+
+.header nav {
+    transition: all .5s cubic-bezier(.76, 0, .24, 1) .3s, color .5s;
+    
+}
+
+.header nav a, .header nav button span {
+    color: #fff;
+    transition: all .5s cubic-bezier(.76, 0, .24, 1) 0s, color 1s;
+}
+
 </style>
