@@ -6,14 +6,14 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
-const parentHeroRef = inject('heroRef', null)
-const localHeroRef = ref(null)
+// const parentHeroRef = inject('heroRef', null)
+// const localHeroRef = ref(null)
 
-onMounted(() => {
-    if (parentHeroRef && localHeroRef.value) {
-        parentHeroRef.value = localHeroRef.value
-    }
-})
+// onMounted(() => {
+//     if (parentHeroRef && localHeroRef.value) {
+//         parentHeroRef.value = localHeroRef.value
+//     }
+// })
 
 const modules = [Autoplay, Pagination, EffectFade];
 

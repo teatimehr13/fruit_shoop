@@ -1,9 +1,11 @@
 <script setup>
 import FrontLayout from '@/Layouts/FrontLayout.vue';
-import Hero from './_Hero.vue';
+import HomeHero from './_HomeHero.vue';
 import Feature from './_Feature.vue';
 import Category from './_Category.vue';
 import TopPicks from './_TopPicks.vue';
+import PageHero from './_PageHero.vue';
+
 
 
 defineOptions({
@@ -13,9 +15,9 @@ defineOptions({
 </script>
 
 <template>
-    <!-- hero -->
+    <!-- <PageHero /> -->
      <!-- <section> -->
-         <Hero />
+         <HomeHero />
      <!-- </section> -->
     <!-- icon feature-->
         <Feature />

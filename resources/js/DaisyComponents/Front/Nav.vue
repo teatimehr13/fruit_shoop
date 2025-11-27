@@ -189,7 +189,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
     top: 0;
     color: #67645e;
     background: #fff;
-    transition: all .7s cubic-bezier(.76, 0, .24, 1), color 0s;
+    transition: all .5s cubic-bezier(.76, 0, .24, 1), color 0s;
 }
 
 .Header__sticky nav {
@@ -201,7 +201,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
     transform: translateY(-150%);
     background: transparent;
     padding: 2.5vw 0 0;
-    transition: all .7s cubic-bezier(.76, 0, .24, 1), color 0s;
+    transition: all .5s cubic-bezier(.76, 0, .24, 1), color 0s;
     top: 0;
 }
 

@@ -20,6 +20,16 @@ class Product extends Model
         'is_enabled',
     ];
 
+    protected $appends = [
+        'cheapest_price',
+        'cheapest_original_price',
+        'has_discount',
+    ];
+
+    protected $hidden = [
+        'cheapestOption',
+    ];
+
     protected static function booted()
     {
         static::deleting(function ($product) {
@@ -61,10 +71,37 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
     public function siblingSubcategories()
     {
         return $this->subcategory
             ? Subcategory::where('category_id', $this->subcategory->category_id)->get()
             : collect();
+    }
+
+    public function cheapestOption()
+    {
+        return $this->hasOne(ProductOption::class)
+            ->orderBy('price');
+    }
+
+    public function getCheapestPriceAttribute()
+    {
+        return $this->cheapestOption?->price;
+    }
+
+    public function getCheapestOriginalPriceAttribute()
+    {
+        return $this->cheapestOption?->original_price;
+    }
+
+    public function getHasDiscountAttribute()
+    {
+        return !is_null($this->cheapest_original_price)
+            && $this->cheapest_original_price > $this->cheapest_price;
     }
 }
