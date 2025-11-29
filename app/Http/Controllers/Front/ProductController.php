@@ -71,8 +71,11 @@ class ProductController extends Controller
             'categories_tab' => $categories_tab,
             'products'       => $products,
             'activeCategory'  => $category?->name,
+            'products'       => $products,
+            'activeCategory'  => $category?->name,
         ]);
     }
+
 
 
     public function home()

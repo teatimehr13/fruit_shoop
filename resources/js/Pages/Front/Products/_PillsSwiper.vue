@@ -25,7 +25,6 @@ const handleClickCategory = (name) => {
 
 console.log('test=>', props.activeCategory);
 console.log('test2=>', props.categories);
-
 </script>
 
 <template>
