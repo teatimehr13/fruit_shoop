@@ -4,8 +4,8 @@ import { useHeroNavState } from '@/Composables/useHeroNavState'
 
 const navLinks = ref([
     // { name: 'product.index', label: '首頁' },
-    { name: 'product.index', label: '所有商品' },
-    { name: 'product.index', label: '關於我們' },
+    { name: 'products.index', label: '所有商品' },
+    { name: 'products.index', label: '關於我們' },
 ])
 
 const isOpen = ref(false)

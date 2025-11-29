@@ -16,7 +16,13 @@ class Category extends Model
 
     protected $casts = ['is_enabled' => 'boolean'];
 
-    public function subcategories(){
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
+
+    public function subcategories()
+    {
         return $this->hasMany(Subcategory::class, 'category_id', 'id');
     }
 }
