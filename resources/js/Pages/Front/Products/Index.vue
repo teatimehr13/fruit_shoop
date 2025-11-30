@@ -33,33 +33,20 @@ const formatTwd = (value) => {
     return `$ ${Number(value).toLocaleString('zh-TW')}`
 }
 
-// const activeCategory = ref('all')
-
-const filteredProducts = computed(() => {
-    if (activeCategory.value === 'all') return props.products
-
-    return props.products.filter(p =>
-        p.subcategory_handle === activeCategory.value ||
-        p.category_handle === activeCategory.value
-    )
-})
-
-const handleCategoryChange = (handle) => {
-    activeCategory.value = handle
-}
-
-const filterForm = reactive({
-    category_id: null
-})
-
+const filterForm = reactive({})
 const categoryName = props.activeCategory ? ref(props.activeCategory) : ref('ALL');
-console.log(categoryName.value);
 
-const isUpdating = ref(false)
-const selectCategory = () => {
+const sortData = () => {
     // console.log(category.name);
     console.log(categoryName.value);
     const cleanFilters = Object.fromEntries(Object.entries(filterForm).filter(([_, v]) => v !== '' && v !== null));
+
+    const isDefaultSort = selectedSort.value.by === 'created_at' && selectedSort.value.dir === 'desc'
+
+    if (!isDefaultSort) {
+        cleanFilters.sort_by = selectedSort.value.by
+        cleanFilters.sort_dir = selectedSort.value.dir
+    }
 
     if (categoryName.value == 'ALL') {
         router.get(route('products.index'), {
@@ -69,9 +56,7 @@ const selectCategory = () => {
             preserveScroll: true,
         })
     } else {
-        router.get(route('categories.products', { category: categoryName.value }), {
-            ...cleanFilters
-        }, {
+        router.get(route('categories.products', { category: categoryName.value }), cleanFilters, {
             preserveState: true,
             preserveScroll: true,
             // only: ['products'],
@@ -89,8 +74,17 @@ const selectCategory = () => {
 
 const onSelectCategory = (name) => {
     categoryName.value = name
-    selectCategory()
+    sortData()
 }
+
+const sortOptions = [
+    { label: '最新上市優先', by: 'created_at', dir: 'desc' },
+    { label: '價格由高到低', by: 'price', dir: 'desc' },
+    { label: '價格由低到高', by: 'price', dir: 'asc' },
+]
+
+const selectedSort = ref(sortOptions[0])
+
 </script>
 
 <template>
@@ -111,26 +105,15 @@ const onSelectCategory = (name) => {
                     </div>
                     <ul>
                         <li class="text-[#67645e] px-2 py-1 rounded-sm"
-                            :class="{ 'bg-[#67645e] text-base-100': categoryName == 'ALL'}">
-                            <a href="#" class="block w-full hover:text-zinc-400" @click.prevent="
-                                () => {
-                                    categoryName = 'ALL'
-                                    selectCategory()
-                                }
-                            ">全部</a>
+                            :class="{ 'bg-[#67645e] text-base-100': categoryName == 'ALL' }">
+                            <a href="#" class="block w-full" :class="{ 'hover:text-zinc-400': categoryName !== 'ALL' }"
+                                @click.prevent="onSelectCategory('ALL')">全部</a>
                         </li>
                         <li v-for="value in props.categories_tab" class="text-[#67645e] px-2 py-1 rounded-sm"
                             :class="{ 'bg-[#67645e] text-base-100': value.name == categoryName }">
-                            <!-- <Link :href="route('front.home.index')" class="block w-full hover:text-zinc-400">
-                            {{ value.name }}
-                            </Link> -->
-
-                            <a href="#" class="block w-full hover:text-zinc-400" @click.prevent="
-                                () => {
-                                    categoryName = value.name
-                                    selectCategory()
-                                }
-                            ">
+                            <a href="#" class="block w-full "
+                                :class="{ 'hover:text-zinc-400': value.name !== categoryName }" @click.prevent="
+                                    onSelectCategory(value.name)">
                                 {{ value.name }}
                             </a>
                         </li>
@@ -142,11 +125,11 @@ const onSelectCategory = (name) => {
                 <div class="py-2 my-4 flex w-full items-center rounded-[12px]">
                     <div class="w-[50%] flex items-center ">
                         <label for="sort_product" class="align-middle whitespace-nowrap">排序:</label>
-                        <select class="border-b-1 border-[#67645e] w-full md:w-50 lg:w-58 py-1" id="sort_product">
-                            <option disabled selected>最新上市</option>
-                            <option>Inter</option>
-                            <option>Poppins</option>
-                            <option>Raleway</option>
+                        <select class="border-b-1 border-[#67645e] w-full md:w-50 lg:w-58 py-1" id="sort_product"
+                            v-model="selectedSort" @change="sortData">
+                            <option v-for="(opt, idx) in sortOptions" :key="idx" :value="opt">
+                                {{ opt.label }}
+                            </option>
                         </select>
                     </div>
 

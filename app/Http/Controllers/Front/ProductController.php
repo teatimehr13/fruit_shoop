@@ -51,12 +51,35 @@ class ProductController extends Controller
         $query = Product::query()
             ->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
             ->with('primaryImage')
-            ->with('cheapestOption');
+            ->with('cheapestOption')
+            ->withMin('productOptions', 'price');   // 會多一個欄位 options_min_price
+            // ->withMax('productOptions', 'created_at'); // 會多一個欄位 options_max_created_at
 
         if ($category && $category->exists) {
             $query->whereHas('subcategory', function ($q) use ($category) {
                 $q->where('category_id', $category->id);
             });
+        }
+
+        //加入排序條件
+        $sort_by = $request->input('sort_by', 'created_at'); // 預設用時間
+        $sort_dir = $request->input('sort_dir', 'desc');     // 預設 desc
+
+        $validSorts = ['created_at', 'price'];
+        $validDirs = ['asc', 'desc'];
+
+        // if (in_array($sort_by, $validSorts) && in_array($sort_dir, $validDirs)) {
+        //     $query->orderBy($sort_by, $sort_dir);
+        // }
+
+        if (in_array($sort_dir, $validDirs)) {
+            if ($sort_by === 'price') {
+                // 用每個 product 的「最低 option 價」來排序
+                $query->orderBy('product_options_min_price', $sort_dir);
+            } elseif ($sort_by === 'created_at') {
+                // 用商品本身的建立時間來排（最新上市）
+                $query->orderBy('created_at', $sort_dir);;
+            }
         }
 
         // dd(
