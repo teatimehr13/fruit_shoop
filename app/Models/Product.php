@@ -24,6 +24,8 @@ class Product extends Model
         'cheapest_price',
         'cheapest_original_price',
         'has_discount',
+        'cheapest_option_id',
+        // 'cheapest_option_qty'
     ];
 
     protected $hidden = [
@@ -104,4 +106,13 @@ class Product extends Model
         return !is_null($this->cheapest_original_price)
             && $this->cheapest_original_price > $this->cheapest_price;
     }
+
+    public function getCheapestOptionIdAttribute()
+    {
+        return $this->cheapestOption?->id;
+    }
+    //  public function getCheapestOptionQtyAttribute()
+    // {
+    //     return $this->cheapestOption?->qty;
+    // }
 }

@@ -49,4 +49,21 @@ class User extends Authenticatable
         'phone_verified_at' => 'datetime',
         'is_admin' => 'boolean',
     ];
+
+    public function purchaseCart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function getPurchaseCartOrCreate()
+    {
+        $purchaseCart = $this->purchaseCart()->first();
+        if (!$purchaseCart) {
+            $purchaseCart = Cart::create([
+                'user_id' => $this->id,
+            ]);
+        }
+
+        return $purchaseCart;
+    }
 }

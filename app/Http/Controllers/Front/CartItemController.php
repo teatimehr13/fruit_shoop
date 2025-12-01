@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class CartItemController extends Controller
 {
-        public function index(Request $request){
+    public function index(Request $request){
 
     }
 

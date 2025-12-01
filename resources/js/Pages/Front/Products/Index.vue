@@ -5,11 +5,15 @@ import Feature from './_Feature.vue';
 import Category from './_Category.vue';
 import TopPicks from './_TopPicks.vue';
 import PageHero from './_PageHero.vue';
-import { computed, reactive, ref } from 'vue';
+import { computed, inject, reactive, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import PillsSwiper from './_PillsSwiper.vue';
+import axios from 'axios';
+// import CartDrawer from '@/DaisyComponents/Front/CartDrawer.vue';
 
-
+const handleRemove = (id) => {
+    console.log('remove item id:', id)
+}
 
 defineOptions({
     layout: FrontLayout,
@@ -84,6 +88,28 @@ const sortOptions = [
 ]
 
 const selectedSort = ref(sortOptions[0])
+
+//cartdrawer 開關
+// const isCartOpen = inject('isCartOpen');
+const openCart = inject('openCart')
+
+
+const addToCartPayload = reactive({
+    product_option_id: null,
+    qty: 1,
+})
+
+const addToCart = async (option_id) => {
+    console.log(option_id);
+    addToCartPayload.product_option_id = option_id;
+    console.log(addToCartPayload);
+
+    const res = await axios.post(route('cart.addToCart'), addToCartPayload);
+    console.log(res.data);
+    // await openCart;
+}
+
+
 
 </script>
 
@@ -166,7 +192,7 @@ const selectedSort = ref(sortOptions[0])
                                     </div>
                                 </div>
                                 <div>
-                                    <button
+                                    <button @click="addToCart(value.cheapest_option_id)"
                                         class="btn btn-ghost btn-circle text-gray-500 hover:bg-green-600 hover:text-base-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -174,6 +200,7 @@ const selectedSort = ref(sortOptions[0])
                                                 d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                         </svg>
                                     </button>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -181,6 +208,13 @@ const selectedSort = ref(sortOptions[0])
                 </div>
             </div>
         </div>
+
+        <!-- <button type="button" class="relative btn btn-ghost btn-circle" @click="isCartOpen = true">
+            🛒
+        </button> -->
+
+        <!-- <CartDrawer :open="isCartOpen" @close="isCartOpen = false" @remove="handleRemove" /> -->
+        <!-- <CartDrawer :open="isCartOpen" @close="isCartOpen = false" @remove="handleRemove"/> -->
     </section>
     <!-- <section> -->
     <!-- <HomeHero /> -->

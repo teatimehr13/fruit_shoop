@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, watch, onUnmounted, inject, computed, toRefs } from 'vue'
 import { useHeroNavState } from '@/Composables/useHeroNavState'
+import { useSharedCart } from '@/Composables/useSharedCart';
+import { Link } from '@inertiajs/vue3';
 
 const navLinks = ref([
     // { name: 'product.index', label: '首頁' },
@@ -63,11 +65,14 @@ const props = defineProps({
     },
 })
 
-
-// console.log(props.isInHero);
-
 const { isInHero, isScrollingDown } = toRefs(props)
 const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScrollingDown })
+
+//cartdrawer 開關
+const emit = defineEmits(['open-cart'])
+
+//購物車資料
+const { ItemsCount } = useSharedCart();
 
 </script>
 
@@ -95,13 +100,24 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                 </a>
                 <ul class="flex flex-1 justify-end gap-4">
                     <li class="mr-12">
-                        <a href="" class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
+                        <!-- <a v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
+                            class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
+                            登出
+                        </a> -->
+                        <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
+                            class="text-[#67645e] font-semibold cursor-pointer" :class="{ 'text-[#fff]': isInHeroState }">
+                        登出
+                        </Link>
+                        <a v-else :href="route('login')" class="text-[#67645e] font-semibold"
+                            :class="{ 'text-[#fff]': isInHeroState }">
                             會員登入
                         </a>
+
                     </li>
                     <li class="mr-12">
-                        <a href="" class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
-                            購物車
+                        <a href="#" @click.prevent="emit('open-cart')" class="text-[#67645e] font-semibold"
+                            :class="{ 'text-[#fff]': isInHeroState }">
+                            {{ ItemsCount ? `購物車(${ItemsCount})` : '購物車' }}
                         </a>
                     </li>
                 </ul>
@@ -119,8 +135,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                 <div class="md:hidden flex flex-1 justify-start">
                     <button class="relative btn btn-ghost btn-circle text-[#67645e]" @click="toggleMenu">
                         <span class="absolute inset-0 flex items-center justify-center
-                            duration-600 ease-out"
-                            :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
+                            duration-600 ease-out" :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -145,8 +160,7 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
                 </a>
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]"
-                            >
+                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -167,7 +181,8 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 
                 <!-- 手機選單外框 -->
                 <div ref="wrapperRef" class="absolute left-0 right-0 z-50 bg-[#f1f0ed] overflow-hidden
-                    transition-[height] duration-400 delay-100 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 71px; height: 0">
+                    transition-[height] duration-400 delay-100 ease-[cubic-bezier(.76,0,.24,1)]"
+                    style="top: 71px; height: 0">
                     <div ref="contentRef" class="p-4 space-y-4">
                         <a href="#" class="block">分類一</a>
                         <a href="#" class="block">分類二</a>
@@ -213,12 +228,13 @@ const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScroll
 
 .header nav {
     transition: all .5s cubic-bezier(.76, 0, .24, 1) .3s, color .5s;
-    
+
 }
 
-.header nav a, .header nav button span {
+.header nav a,
+.header nav button,
+.header nav button span {
     color: #fff;
     transition: all .5s cubic-bezier(.76, 0, .24, 1) 0s, color 1s;
 }
-
 </style>
