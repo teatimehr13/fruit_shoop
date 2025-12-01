@@ -21,10 +21,10 @@ Route::get('/products', [ProductController::class, 'index'])
 Route::get('/categories/{category}', [ProductController::class, 'index'])
     ->name('categories.products');
 
-Route::prefix('cart')->name('cart.')->group(function () {
-    Route::post('/addToCart', [CartController::class, 'addToCart'])->name('addToCart');
-    Route::patch('/updateCartItem', [CartController::class, 'updateCartItem'])->name('updateCartItem');
-});
 
-// Route::get('/products', [ProductController::class, 'index'])->name('front.products.index');
-// Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('front.products.show');
+//DB cart crud (login後)    
+Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
+    Route::post('/items', [CartController::class, 'store'])->name('store');
+    Route::patch('/items/{cartItem}', [CartController::class, 'update'])->name('update');
+    Route::delete('/items/{cartItem}', [CartController::class, 'destroy'])->name('destroy');
+});

@@ -17,7 +17,16 @@ class CartController extends Controller
         //
     }
 
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        return $this->addToDBCart($request);
+        // $isLogin = $request->user();
+        // if ($isLogin) {
+        //     return $this->addToDBCart($request);
+        // } else {
+        //     return $this->addToCookieCart($request);
+        // }
+    }
 
     public function show(string $id)
     {
@@ -29,25 +38,45 @@ class CartController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, CartItem $cartItem)
     {
-        //
-    }
+        $user = $request->user();
 
-    public function destroy(string $id)
-    {
-        //
-    }
+        // if (!$user) {
+        //     return $this->updateToCookieCart($request);
+        // }
 
-    public function addToCart(Request $request)
-    {
-        $isLogin = $request->user();
-        if ($isLogin) {
-            return $this->addToDBCart($request);
-        } else {
-            return $this->addToCookieCart($request);
+        if ($cartItem->cart->user_id !== $user->id) {
+            abort(403);
         }
+
+        return $this->updateToDBCart($request, $cartItem);
     }
+
+    public function destroy(Request $request, CartItem $cartItem)
+    {
+        $user = $request->user();
+
+        // if (!$user) {
+        //     return $this->deleteFromCookieCart($request);
+        // }
+
+        if ($cartItem->cart->user_id !== $user->id) {
+            abort(403);
+        }
+
+        return $this->deleteFromDBCart($cartItem);
+    }
+
+    // public function addToCart(Request $request)
+    // {
+    //     $user = $request->user();
+    //     if ($user) {
+    //         return $this->addToDBCart($request);
+    //     } else {
+    //         return $this->addToCookieCart($request);
+    //     }
+    // }
 
     // public function addToCookieCart(Request $request)
     // {
@@ -90,7 +119,7 @@ class CartController extends Controller
     // }
 
 
-    public function addToDBCart(Request $request)
+    private function addToDBCart(Request $request)
     {
         //來自app > Models > User.php裡面
         $cart = $request->user()->getPurchaseCartOrCreate();
@@ -125,41 +154,63 @@ class CartController extends Controller
         ]);
     }
 
-    public function updateCartItem(Request $request)
-    {
-        $user_status = $request->user();
+    // public function updateCartItem(Request $request)
+    // {
+    //     $user_status = $request->user();
 
-        if ($user_status) {
-            $this->updateToDBCart($request);
-        } else {
-            $this->updateToCookieCart($request);
-        }
-    }
+    //     if ($user_status) {
+    //         $this->updateToDBCart($request);
+    //     } else {
+    //         $this->updateToCookieCart($request);
+    //     }
+    // }
 
-    private function updateToDBCart(Request $request)
+    private function updateToDBCart(Request $request, CartItem $cartItem)
     {
         $productOptions =  $request->validate([
             'qty' => 'required|integer|min:0',
-            'product_option_id' => 'required|integer|exists:product_options,id'
         ]);
 
         $qty = (int)$productOptions['qty'];
-        $optionId = (int)$productOptions['product_option_id'];
 
-        $cart = $request->user()->getPurchaseCartOrCreate();
-
-        $cartItem = $cart->cartItems()
-            ->where('product_option_id', $optionId)
-            ->first();
-
-        if (!$cartItem) {
-            return;
-        }
 
         if ($qty > 0) {
             $cartItem->update(['qty' => $qty]);
         } else {
             $cartItem->delete();  //刪除
         }
+
+        return response()->noContent();
+    }
+
+    // public function deleteCartItem(Request $request)
+    // {
+    //     $isLogin = $request->user();
+    //     if ($isLogin) {
+    //         return $this->deleteFromDBCart($request);
+    //     } else {
+    //         return $this->deleteFromCookieCart($request);
+    //     }
+    // }
+
+    private function deleteFromDBCart(CartItem $cartItem)
+    {
+        $cartItem->delete();
+    }
+
+    private function deleteFromCookieCart(Request $request)
+    {
+        // // Log::info($request->input());
+        // if ($request->has('product_option_id')) {
+        //     $productOptionId = intval($request->input('product_option_id'));
+        //     $cookieCart = $this->getCartFromCookie();
+
+        //     if (isset($cookieCart[$productOptionId])) {
+        //         unset($cookieCart[$productOptionId]);
+        //         $this->saveCookieCart($cookieCart);
+        //         return true;
+        //     }
+        // }
+        // return false;
     }
 }

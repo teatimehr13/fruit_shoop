@@ -39,13 +39,13 @@
               <div class="text-xs text-[#67645e] mt-1">
                 {{ item.qty }} x NT${{ item.price < item.original_price ? item.price : item.original_price }} </div>
               </div>
- 
-              <QuantityStepper v-model="item.qty" :max="50"
+
+              <QuantityStepper v-model="item.qty" :min="1" :max="50"
                 @update:modelValue="val => handleQtyChange(item, val)" />
 
 
               <button type="button" class="self-start text-xs text-red-500 hover:text-red-600"
-                @click="emit('remove', n)"> 刪除
+                @click="delCartItem(item.id)"> 刪除
               </button>
             </div>
         </section>
@@ -71,7 +71,7 @@ import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, inject } from 'vue';
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue'
-
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
   open: {
@@ -89,13 +89,32 @@ console.log(cartItems.value);
 
 
 const handleQtyChange = async (item, newQty) => {
-    const res = await axios.patch(route('cart.updateCartItem'), {
-      product_option_id: item.product_option_id,
-      qty: newQty,
-    })
+  console.log(item);
+  const res = await axios.patch(route('cart.update', item.id), {
+    qty: newQty,
+  })
 
-    console.log(res.data);
+  console.log(res.data);
+
+  await router.reload({
+    only: ['cartItems'], // 對應 share 的 key
+    preserveScroll: true,
+  })
 }
+
+const delCartItem = async (id) => {
+  console.log();
+  // return
+  const res = await axios.delete(route('cart.destroy', id));
+  console.log(res.data);
+
+  await router.reload({
+    only: ['cartItems'],   
+    preserveScroll: true,
+  })
+}
+
+
 
 </script>
 

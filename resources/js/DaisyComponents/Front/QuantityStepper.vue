@@ -49,7 +49,7 @@ const props = defineProps({
   },
   min: {
     type: Number,
-    // default: 1,
+    default: 1,
   },
   max: {
     type: Number,
@@ -60,9 +60,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const decrease = () => {
-//   if (props.modelValue > props.min) {
+  if (props.modelValue >= props.min) {
     emit('update:modelValue', props.modelValue - 1)
-//   }
+  }
 }
 
 const increase = () => {
