@@ -52,6 +52,7 @@ class ProductController extends Controller
             ->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
             ->with('primaryImage')
             ->with('cheapestOption')
+            ->with('productOptions')
             ->withMin('productOptions', 'price');   // 會多一個欄位 options_min_price
             // ->withMax('productOptions', 'created_at'); // 會多一個欄位 options_max_created_at
 

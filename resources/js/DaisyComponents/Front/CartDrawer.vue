@@ -44,8 +44,14 @@
                 @update:modelValue="val => handleQtyChange(item, val)" />
 
 
-              <button type="button" class="self-start text-xs text-red-500 hover:text-red-600"
-                @click="delCartItem(item.id)"> 刪除
+              <button type="button" class="btn btn-ghost btn-circle btn-xs self-start text-xs"
+                @click="delCartItem(item.product_option_id)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-6 text-[#67645e]">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+
               </button>
             </div>
         </section>
@@ -90,11 +96,10 @@ console.log(cartItems.value);
 
 const handleQtyChange = async (item, newQty) => {
   console.log(item);
-  const res = await axios.patch(route('cart.update', item.id), {
+  const res = await axios.patch(route('cart.update'), {
+    product_option_id: item.product_option_id,
     qty: newQty,
   })
-
-  console.log(res.data);
 
   await router.reload({
     only: ['cartItems'], // 對應 share 的 key
@@ -103,13 +108,17 @@ const handleQtyChange = async (item, newQty) => {
 }
 
 const delCartItem = async (id) => {
-  console.log();
-  // return
-  const res = await axios.delete(route('cart.destroy', id));
-  console.log(res.data);
+  console.log(id);
+  const res = await axios.delete(route('cart.destroy'), {
+    data: {
+      product_option_id: id,
+    },
+  })
+
+  console.log(res);
 
   await router.reload({
-    only: ['cartItems'],   
+    only: ['cartItems'],
     preserveScroll: true,
   })
 }

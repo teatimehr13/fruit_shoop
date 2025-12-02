@@ -40,5 +40,14 @@ provide('openCart', openCart)
         <Footer />
     </div>
 
-    <CartDrawer :open="isCartOpen" @close="closeCart" @remove="handleRemove"/>
+    <CartDrawer :open="isCartOpen" @close="closeCart"/>
 </template>
+
+<style>
+body {
+    color: #67645e;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+</style>

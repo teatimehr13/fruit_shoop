@@ -23,8 +23,8 @@ Route::get('/categories/{category}', [ProductController::class, 'index'])
 
 
 //DB cart crud (login後)    
-Route::middleware('auth')->prefix('cart')->name('cart.')->group(function () {
+Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/items', [CartController::class, 'store'])->name('store');
-    Route::patch('/items/{cartItem}', [CartController::class, 'update'])->name('update');
-    Route::delete('/items/{cartItem}', [CartController::class, 'destroy'])->name('destroy');
+    Route::patch('/items', [CartController::class, 'update'])->name('update');
+    Route::delete('/items', [CartController::class, 'destroy'])->name('destroy');
 });
