@@ -6,14 +6,13 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
-// const parentHeroRef = inject('heroRef', null)
-// const localHeroRef = ref(null)
+const heroRef = inject('heroRef', null)
 
-// onMounted(() => {
-//     if (parentHeroRef && localHeroRef.value) {
-//         parentHeroRef.value = localHeroRef.value
-//     }
-// })
+const setHeroRef = (el) => {
+  if (heroRef) {
+    heroRef.value = el
+  }
+}
 
 const modules = [Autoplay, Pagination, EffectFade];
 
@@ -43,7 +42,7 @@ const heroSlides = [
 </script>
 
 <template>
-    <section ref="localHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[600px]">
+    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[600px]">
         <Swiper :modules="modules" :slides-per-view="1" :loop="true" :effect="'fade'" :autoplay="{
             delay: 4000,
             disableOnInteraction: false,

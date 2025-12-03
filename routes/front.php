@@ -17,6 +17,9 @@ Route::get('/', [ProductController::class, 'home'])->name('front.home.index');
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
 
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+
+
 // 某分類底下的商品：/categories/水果
 Route::get('/categories/{category}', [ProductController::class, 'index'])
     ->name('categories.products');

@@ -87,32 +87,71 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 //最上層時變化
 export function useNavScroll(heroRef) {
   const isScrollingDown = ref(false)
-  const isInHero = ref(true) // 預設在最上面
+  const isInHero = ref(false)
   const lastScrollY = ref(0)
 
-  // 處理滾動
+  let observer = null
+
   const handleScroll = () => {
     const current = window.scrollY
-    
-    // 判斷滾動方向
-    isScrollingDown.value = current > lastScrollY.value && current > 50
-    
-    // 判斷是否在頂部(考慮 nav 高度)
-    isInHero.value = current < 84 // 64px 是 nav 的高度
-    
+    isScrollingDown.value = current > lastScrollY.value && current > 100
     lastScrollY.value = current
   }
 
+  const cleanupObserver = () => {
+    if (observer) {
+      observer.disconnect()
+      observer = null
+    }
+  }
+
+  const setupObserver = (el) => {
+    if (!el) {
+      isInHero.value = false
+      cleanupObserver()
+      return
+    }
+
+    cleanupObserver()
+
+    observer = new IntersectionObserver(
+      ([entry]) => {
+        isInHero.value = entry.isIntersecting
+      },
+      {
+        threshold: 0,
+        rootMargin: '-64px 0px 0px 0px', // nav 高度
+      }
+    )
+
+    observer.observe(el)
+  }
+
   onMounted(() => {
-    // 監聽滾動
     window.addEventListener('scroll', handleScroll, { passive: true })
-    
-    // 初始執行一次
-    handleScroll()
+
+    if (heroRef) {
+      if (heroRef.value) {
+        setupObserver(heroRef.value)
+      } else {
+        isInHero.value = false
+      }
+
+      watch(
+        () => heroRef.value,
+        (newEl) => {
+          setupObserver(newEl)
+        },
+        { flush: 'post' }
+      )
+    } else {
+      isInHero.value = false
+    }
   })
 
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
+    cleanupObserver()
   })
 
   return {

@@ -57,6 +57,10 @@ class Product extends Model
         });
     }
 
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
 
     public function subcategory()
     {

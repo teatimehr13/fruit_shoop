@@ -166,7 +166,7 @@ const formatTwd = (price) => {
             @select-category="onSelectCategory" />
 
         <div class="md:flex md:mt-8 md:mb-8 lg:mt-12">
-            <div class="hidden md:block md:basis-1/4 xl:basis-1/5">
+            <div class="hidden md:block md:basis-2/5 lg:basis-1/4 xl:basis-1/5">
                 <aside class="mr-8 p-4 px-8 border border-[#f1f0ed] rounded-[12px] bg-[#fafafa]">
                     <div class="mb-4 relative before:content-[''] before:absolute before:inset-x-0 before:-bottom-2
                 before:h-[1px] before:bg-[#67645e] before:block">
@@ -192,7 +192,7 @@ const formatTwd = (price) => {
                 </aside>
             </div>
 
-            <div class="md:basis-3/4 xl:basis-4/5 ">
+            <div class="md:basis-3/5 lg:basis-3/4 xl:basis-4/5 ">
                 <div class="py-2 my-4 flex w-full items-center rounded-[12px]">
                     <div class="w-[50%] flex items-center ">
                         <label for="sort_product" class="align-middle whitespace-nowrap">排序:</label>
@@ -211,12 +211,12 @@ const formatTwd = (price) => {
                         件商品
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-3 xl:gap-8 xl:grid-cols-4">
+                <div class="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:gap-8 xl:grid-cols-4">
                     <div v-for="value in props.products"
                         class="relative border border-[#f0f0f0] rounded-[12px] overflow-hidden flex flex-col"
                         :key="value.id">
                         <div class="overflow-hidden">
-                            <a href="">
+                            <a :href="route('products.show', value.name)">
                                 <img :src="value.primary_image?.img_url || '/images/categories/ChatGPT Image 2025年11月29日 下午02_44_25.png'"
                                     alt=""
                                     class="transition-all duration-200 hover:scale-110 object-cover aspect-3/2 w-full h-full">
@@ -228,8 +228,7 @@ const formatTwd = (price) => {
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <div class="text-[#82ae46] text-sm sm:text-base md:text-lg"
-                                        @click="toggleSelectCard(value.id)">
+                                    <div class="text-[#82ae46] text-sm sm:text-base md:text-lg">
                                         {{ formatTwd(value.cheapest_price) }}
                                     </div>
                                     <div v-if="value.has_discount"
@@ -238,15 +237,6 @@ const formatTwd = (price) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <!-- <button @click="addToCart(value.cheapest_option_id)"
-                                        class="btn btn-ghost btn-circle text-[#67645e] hover:bg-[#82ae46] hover:text-base-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                        </svg>
-                                    </button> -->
-
                                     <button @click="quickAddToCart(value)"
                                         class="btn btn-ghost btn-circle text-[#67645e] hover:bg-[#82ae46] hover:text-base-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -259,10 +249,11 @@ const formatTwd = (price) => {
                             </div>
                         </div>
 
-                        <div class="absolute bottom-0 bg-neutral-100/95 h-[80%] w-full rounded-[12px] p-4 transition-transform duration-500"
+                        <div class="fixed left-0 md:absolute bottom-0 h-[45%] md:h-[80%] w-full rounded-[12px] p-4 bg-neutral-100/95 transition-transform duration-500 z-10"
                             :class="selectToCartId == value.id ? 'translate-y-[0%]' : 'translate-y-[100%]'">
-                            <div class="flex flex-col">
-                                <div class="w-14 h-14 flex-shrink-0 rounded bg-gray-100 overflow-hidden">
+                            <div class="flex flex-col h-full">
+                                <div
+                                    class="w-24 h-24 mt-4 sm:mt-2 md:w-18 md:h-18 xl:w-20 xl:h-20 3xl:w-24 3xl:h-24 flex-shrink-0 rounded bg-gray-100 overflow-hidden ">
                                     <div>
                                         <img :src="value.primary_image?.img_url" alt="">
                                     </div>
@@ -273,17 +264,17 @@ const formatTwd = (price) => {
                                         <span></span>
                                     </div>
                                 </div>
-                                <label class="mt-4">選項</label>
-                                <select class="border-b-1 border-[#67645e] px-0 py-1 w-full mt-1 outline-none focus:border-gray-500
+                                <label class="mt-auto">選項</label>
+                                <select class="select-md md:select-sm border-b-1 border-[#67645e] px-0 py-1 w-full outline-none focus:border-gray-500
                                 appearance-none bg-select-arrow bg-no-repeat bg-right"
                                     v-model="selectedOptions[value.id]" @change="handleOptionChange(value)">
                                     <option v-for="(opt, idx) in value.product_options" :key="idx" :value="opt.id">
                                         {{ opt.option_text }}
                                     </option>
                                 </select>
-                                <div>
+                                <div class="mt-auto">
                                     <button type="button" @click="confirmAddToCart(value)"
-                                        class="btn btn-md mt-6 w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px] hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
+                                        class="btn btn-md md:btn-sm  w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px] hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
                                         加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
                                     </button>
                                 </div>
@@ -348,5 +339,4 @@ select::-ms-expand {
     transform: translate(-50%, -50%);
     transition: all .7s cubic-bezier(.76, 0, .24, 1);
 }
-
 </style>

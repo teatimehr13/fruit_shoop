@@ -116,9 +116,11 @@ class ProductController extends Controller
 
     public function store(Request $request) {}
 
-    public function show(string $id)
+    public function show(Product $product)
     {
-        //
+        return Inertia::render('Front/Products/Show', [
+            'product' => $product
+        ]);
     }
 
     public function edit(string $id)

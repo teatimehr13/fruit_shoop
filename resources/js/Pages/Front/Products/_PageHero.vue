@@ -1,5 +1,14 @@
 <script setup>
 import { inject, onMounted, ref } from 'vue'
+
+const heroRef = inject('heroRef', null)
+
+const setHeroRef = (el) => {
+  if (heroRef) {
+    heroRef.value = el
+  }
+}
+
 const heroSlides = [
     {
         id: 1,
@@ -13,7 +22,7 @@ const heroSlides = [
 
 <template>
 
-    <section ref="localHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[500px]">
+    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[500px]">
         <div v-if="heroSlides.length" class="relative h-full rounded-[12px] overflow-hidden">
             <img :src="heroSlides[0].image" :alt="heroSlides[0].title" class="w-full h-full object-cover" />
 

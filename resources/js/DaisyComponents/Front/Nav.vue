@@ -95,7 +95,7 @@ const { ItemsCount } = useSharedCart();
                     </li>
                 </ul>
 
-                <a class="flex-1 w-full" href="">
+                <a class="flex-1 w-full" :href="route('front.home.index')">
                     <img class="h-14 m-auto" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png" alt="vege">
                 </a>
                 <ul class="flex flex-1 justify-end gap-4">
@@ -105,7 +105,8 @@ const { ItemsCount } = useSharedCart();
                             登出
                         </a> -->
                         <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                            class="text-[#67645e] font-semibold cursor-pointer" :class="{ 'text-[#fff]': isInHeroState }">
+                            class="text-[#67645e] font-semibold cursor-pointer"
+                            :class="{ 'text-[#fff]': isInHeroState }">
                         登出
                         </Link>
                         <a v-else :href="route('login')" class="text-[#67645e] font-semibold"
@@ -155,7 +156,7 @@ const { ItemsCount } = useSharedCart();
                     </button>
                 </div>
 
-                <a class="flex-1 w-full" href="">
+                <a class="flex-1 w-full" :href="route('front.home.index')">
                     <img class="h-10 m-auto" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png" alt="vege">
                 </a>
                 <ul class="flex flex-1 justify-end gap-2">
@@ -168,8 +169,8 @@ const { ItemsCount } = useSharedCart();
                             </svg>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                    <li class="" >
+                        <a href="#" class="btn btn-ghost btn-circle text-[#67645e]"  @click.prevent="emit('open-cart')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -180,17 +181,25 @@ const { ItemsCount } = useSharedCart();
                 </ul>
 
                 <!-- 手機選單外框 -->
-                <div ref="wrapperRef" class="absolute left-0 right-0 z-50 bg-[#f1f0ed] overflow-hidden
-                    transition-[height] duration-400 delay-100 ease-[cubic-bezier(.76,0,.24,1)]"
-                    style="top: 71px; height: 0">
-                    <div ref="contentRef" class="p-4 space-y-4">
-                        <a href="#" class="block">分類一</a>
-                        <a href="#" class="block">分類二</a>
-                        <a href="#" class="block">分類三</a>
+                <div ref="wrapperRef" class="absolute left-0 right-0 z-50 overflow-hidden 
+             transition-[height] duration-400 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 71px; height: 0">
+                    <div class="w-full h-full bg-white pb-8">
+                        <div class="w-full h-full bg-[#f1f0ed] rounded-b-[12px] overflow-hidden relative flex flex-col">
+                            <div ref="contentRef"
+                                class="p-4 space-y-8 overflow-y-auto flex-1 content-center mt-[-72px]">
+                                <!-- <a href="#" class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center">所有商品</a>
+                                <a href="#" class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center">關於我們</a> -->
+                                <a 
+                                    class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center"
+                                    :class="{ 'text-[#fff]': isInHeroState }" :href="route('front.home.index')">首頁</a>
+                                <a v-for="nav in navLinks"
+                                    class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center"
+                                    :class="{ 'text-[#fff]': isInHeroState }" :href="route(nav.name)">{{ nav.label }}</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </nav>
-
         </header>
     </div>
 </template>
