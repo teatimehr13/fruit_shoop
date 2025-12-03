@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Cart;
 use App\Models\ProductOption;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cookie;
@@ -142,5 +143,64 @@ class CartService
         // [0 => ['id' => 1], 1 => ['id' => 3]]
         // 前端收到：[{...}, {...}]  ← 乾淨的陣列
 
+    }
+
+
+    //將訪客購物車移至資料庫(login後)
+    public function syncCookieCartToDBCart(User $user)
+    {
+        $items = $this->getItemsFromCookie();  
+
+        if ($items->isEmpty()) {
+            return;
+        }
+
+        $cart = $user->getPurchaseCartOrCreate();
+
+        foreach ($items as $item) {
+            $optionId = (int) $item['product_option_id'];
+            $qty      = (int) $item['qty'];
+
+            if ($qty <= 0) {
+                continue;
+            }
+
+            $productOption = ProductOption::find($optionId);
+            if (!$productOption) {
+                continue;
+            }
+
+            $cartItem = $cart->cartItems()
+                ->where('product_option_id', $optionId)
+                ->first();
+
+            if ($cartItem) {
+                $cartItem->qty += $qty;
+                $cartItem->save();
+            } else {
+                $cart->cartItems()->create([
+                    'product_option_id' => $optionId,
+                    'qty'               => $qty,
+                ]);
+            }
+        }
+
+        // 清空 cookie cart
+        $this->clearCookieCart();
+    }
+
+    protected function clearCookieCart(): void
+    {
+        Cookie::queue(
+            Cookie::make(
+                'cart',
+                json_encode([]),
+                60 * 24 * 7,
+                '/',
+                null,
+                false,
+                false
+            )
+        );
     }
 }

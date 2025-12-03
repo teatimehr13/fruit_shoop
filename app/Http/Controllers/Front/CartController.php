@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\CartItem;
 use App\Models\ProductOption;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
@@ -219,4 +220,6 @@ class CartController extends Controller
             Cookie::make('cart', $cartToJson, 60 * 24 * 7, '/', null, false, false)
         );
     }
+
+   
 }

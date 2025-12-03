@@ -37,7 +37,7 @@
                 </div>
               </div>
               <div class="text-xs text-[#67645e] mt-1">
-                {{ item.qty }} x NT${{ item.price < item.original_price ? item.price : item.original_price }} </div>
+                {{ item.qty }} x {{ item.price < item.original_price ? formatTwd(item.price) : formatTwd(item.original_price) }} </div>
               </div>
 
               <QuantityStepper v-model="item.qty" :min="1" :max="50"
@@ -59,7 +59,7 @@
         <footer class="border-t border-stone-300 px-4 py-3 space-y-2 bg-white">
           <div class="flex items-center justify-between text-sm">
             <span class="text-gray-600">小計</span>
-            <span class="font-semibold text-[#333]">NT$ {{ cartItems.subtotal }}</span>
+            <span class="font-semibold text-[#333]">{{ formatTwd(cartItems.subtotal) }}</span>
           </div>
           <button type="button"
             class="btn btn-lg mt-4 mb-2 w-full py-3 bg-[#67645e] text-white rounded-[40px] hover:bg-[#5a5751] transition-colors">
@@ -123,8 +123,9 @@ const delCartItem = async (id) => {
   })
 }
 
-
-
+const formatTwd = (price) => {
+  return `$ ${price?.toLocaleString() || 0}`
+}
 </script>
 
 <style scoped>
