@@ -8,4 +8,7 @@
 @theme {
     /* 100rem = 1600px */
     --breakpoint-3xl: 100rem;
+
+    --spacing-header: 108px;
+    --spacing-header-mobile: 80px;
 }

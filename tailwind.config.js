@@ -23,6 +23,7 @@ export default {
                 '8xl': '1600px',
                 '9xl': '1920px',
             },
+            
         },
     },
 
