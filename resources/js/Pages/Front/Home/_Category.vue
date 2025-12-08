@@ -2,7 +2,7 @@
 
 </script>
 <template>
-    <section class="rounded-[12px] pb-16 md:pb-20 lg:pb-24">
+    <section class="px-4 rounded-[12px] pb-16 md:pb-20 lg:pb-24 max-w-[var(--max-w-layout-wide)] mx-auto">
         <div class="grid grid-cols-12 gap-8 md:min-h-[550px] md:max-h-[600px] rounded-[12px] overflow-hidden">
             <div class="col-span-12 md:col-span-6 min-h-[350px] md:h-full">
                 <div class="grid grid-flow-col grid-rows-6 gap-4 h-full w-full">
@@ -77,6 +77,5 @@
     cursor: pointer;
     background-color: #82ae46;
     color: white;
-
 }
 </style>

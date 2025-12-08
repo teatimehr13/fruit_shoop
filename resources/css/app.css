@@ -8,7 +8,12 @@
 @theme {
     /* 100rem = 1600px */
     --breakpoint-3xl: 100rem;
-
+    --spacing-padding-content: 16px
     --spacing-header: 108px;
     --spacing-header-mobile: 80px;
+    --spacing-header-space: 88px;
+    --max-w-layout-wide: 90rem;
+    /* 1440px */
+    --max-w-layout-normal: 71.25rem;
+    /* 1140px */
 }

@@ -59,7 +59,7 @@ class Product extends Model
 
     public function getRouteKeyName()
     {
-        return 'name';
+        return 'slug';
     }
 
     public function subcategory()

@@ -6,13 +6,13 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
-const heroRef = inject('heroRef', null)
+// const heroRef = inject('heroRef', null)
 
-const setHeroRef = (el) => {
-  if (heroRef) {
-    heroRef.value = el
-  }
-}
+// const setHeroRef = (el) => {
+//   if (heroRef) {
+//     heroRef.value = el
+//   }
+// }
 
 const modules = [Autoplay, Pagination, EffectFade];
 
@@ -42,16 +42,16 @@ const heroSlides = [
 </script>
 
 <template>
-    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[600px]">
+    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[600px] mt-[var(--spacing-header-space)]">
         <Swiper :modules="modules" :slides-per-view="1" :loop="true" :effect="'fade'" :autoplay="{
             delay: 4000,
             disableOnInteraction: false,
-        }" :pagination="{ clickable: true }" class="h-full my-swiper rounded-[12px]">
+        }" :pagination="{ clickable: true }" class="h-full my-swiper">
             <SwiperSlide v-for="slide in heroSlides" :key="slide.id">
-                <div class="relative h-full">
+                <div class="relative h-full ">
                     <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent">
-                        <div class="max-w-8xl mx-auto h-full flex items-center px-6">
+                        <div class="max-w-8xl mx-auto h-full flex items-center px-4 max-w-[var(--max-w-layout-wide)]">
                             <div>
                                 <h1
                                     class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl 3xl:text-6xl font-bold text-white mb-4">

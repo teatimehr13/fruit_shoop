@@ -9,7 +9,7 @@
         :class="open ? 'translate-x-0 delay-100' : 'translate-x-full'">
         <header class="flex items-center justify-between px-4 py-3 border-b border-stone-300 bg-white">
           <h2 class="text-lg font-semibold text-[#67645e]">購物車</h2>
-          <button type="button" class="btn btn-ghost btn-circle text-sm text-gray-500 hover:text-gray-800"
+          <button type="button" class="btn btn-ghost btn-circle text-sm text-gray-500 hover:text-gray-800 "
             @click="emit('close')">
             ✕
           </button>
@@ -44,7 +44,7 @@
                 @update:modelValue="val => handleQtyChange(item, val)" />
 
 
-              <button type="button" class="btn btn-ghost btn-circle btn-xs self-start text-xs"
+              <button type="button" class="btn btn-ghost btn-circle btn-xs self-start text-xs "
                 @click="delCartItem(item.product_option_id)">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-6 text-[#67645e]">
@@ -62,7 +62,7 @@
             <span class="font-semibold text-[#333]">{{ formatTwd(cartItems.subtotal) }}</span>
           </div>
           <button type="button"
-            class="btn btn-lg mt-4 mb-2 w-full py-3 bg-[#67645e] text-white rounded-[40px] hover:bg-[#5a5751] transition-colors">
+            class="btn btn-lg mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
             前往結帳
           </button>
         </footer>
@@ -77,6 +77,7 @@ import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, inject } from 'vue';
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue'
+// import QuantityStepper_Product from '@/DaisyComponents/Front/QuantityStepper_Product.vue'
 import { router } from '@inertiajs/vue3'
 
 const props = defineProps({

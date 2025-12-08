@@ -3,11 +3,11 @@ import { inject, onMounted, ref } from 'vue'
 
 const heroRef = inject('heroRef', null)
 
-const setHeroRef = (el) => {
-  if (heroRef) {
-    heroRef.value = el
-  }
-}
+// const setHeroRef = (el) => {
+//   if (heroRef) {
+//     heroRef.value = el
+//   }
+// }
 
 const heroSlides = [
     {
@@ -22,12 +22,12 @@ const heroSlides = [
 
 <template>
 
-    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[500px]">
-        <div v-if="heroSlides.length" class="relative h-full rounded-[12px] overflow-hidden">
+    <section :ref="setHeroRef" class="w-full aspect-[16/9] md:aspect-auto md:h-[500px] mt-[88px]">
+        <div v-if="heroSlides.length" class="relative h-full  overflow-hidden">
             <img :src="heroSlides[0].image" :alt="heroSlides[0].title" class="w-full h-full object-cover" />
 
             <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent">
-                <div class="max-w-8xl mx-auto h-full flex items-center justify-center px-6">
+                <div class="w-full h-full flex items-center justify-center px-6">
                     <div class="text-center">
                         <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl 3xl:text-5xl font-bold text-white mb-4">
                             {{ heroSlides[0].title }}

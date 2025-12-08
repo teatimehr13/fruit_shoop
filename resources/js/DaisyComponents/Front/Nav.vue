@@ -79,15 +79,15 @@ const { ItemsCount } = useSharedCart();
 <template>
     <div>
         <header
-            class="box-shadow fixed z-5 3xl:w-[calc(100%-80px)] lg:w-[calc(100%-64px)] w-[calc(100%-32px)] translate-y-0"
+            class="box-shadow fixed z-5 w-full translate-y-0 "
             :class="{
                 'Header__hidden': props.isScrollingDown && !showMenuHeader,
                 'Header__sticky ': !props.isScrollingDown && !isInHeroState || showMenuHeader,
-                'header': isInHeroState && !showMenuHeader,
+                // 'header': isInHeroState && !showMenuHeader,
             }">
             <!-- desktop -->
             <nav
-                class="px-4 w-full relative hidden md:flex items-center justify-between sticky py-4 px-8  rounded-t-[12px] transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)]">
+                class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-[var(--max-w-layout-wide)]">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold text-[#67645e]"
@@ -115,10 +115,14 @@ const { ItemsCount } = useSharedCart();
                         </a>
 
                     </li>
-                    <li class="mr-12">
+                    <li class="">
                         <a href="#" @click.prevent="emit('open-cart')" class="text-[#67645e] font-semibold"
                             :class="{ 'text-[#fff]': isInHeroState }">
-                            {{ ItemsCount ? `購物車(${ItemsCount})` : '購物車' }}
+                            購物車
+                            <span v-if="ItemsCount" class="text-[#82ae46]">
+                                ({{ ItemsCount }})
+                            </span>
+                            
                         </a>
                     </li>
                 </ul>
@@ -208,16 +212,18 @@ const { ItemsCount } = useSharedCart();
 <style>
 /* 往上滑動的時候 */
 .Header__sticky {
-    padding: 1.25rem 0 0;
+    /* padding: 1.25rem 0 0; */
     position: fixed;
     top: 0;
     color: #67645e;
     background: #fff;
     transition: all .5s cubic-bezier(.76, 0, .24, 1), color 0s;
+        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .06);
 }
 
 .Header__sticky nav {
-    background-color: #f1f0ed;
+
+    /* background-color: #f1f0ed; */
 }
 
 /* 往下滑的時，header加上，往上時則拿掉  */

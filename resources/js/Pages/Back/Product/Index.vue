@@ -12,7 +12,7 @@ import BasicForm from '@/Pages/Back/Product/_BasicForm.vue';
 import OptionsForm from '@/Pages/Back/Product/_OptionsForm.vue'
 import ImagesForm from '@/Pages/Back/Product/_ImagesForm.vue'
 import api from '@/Lib/apiFeedback';
-
+import DOMPurify from 'dompurify';
 
 
 const props = defineProps({
@@ -195,7 +195,7 @@ const tabs = [
 
 const getDetail = async (id) => {
     const res = await axios.get(route('back.product.details', id));
-    // console.log(res.data);
+    console.log(res.data);
     productDetails.basic = res.data?.product || {};
     productDetails.images = res.data?.images || [];
     productDetails.options = res.data?.options || [];
@@ -203,6 +203,7 @@ const getDetail = async (id) => {
 
 const handleSaveBasic = async (formData) => {
     console.log(formData);
+    formData.description = DOMPurify.sanitize(formData.description);
     const res = await api.put(route('back.products.update', formData.id), formData)
     console.log(res.data);
     if (res.status === 200) {
@@ -360,7 +361,8 @@ const clearError = (field) => {
                                     <template v-else-if="col.key === 'description'">
                                         <div class="line-clamp-1 hover:cursor-pointer"
                                             @click="openDesc($event, product)">
-                                            {{ product.description }}
+                                            <!-- {{ product.description }} -->
+                                            <div v-html="product.description"></div>
                                         </div>
                                     </template>
                                     <template v-else-if="col.key === 'opt'">
@@ -397,7 +399,8 @@ const clearError = (field) => {
                     <div v-if="descContent?.description" ref="descFloating" :style="descStyles"
                         class="fixed z-50 max-h-64 p-2 rounded-xl bg-base-100 shadow-xl leading-relaxed break-words whitespace-pre-line overflow-auto">
                         <div class="max-w-100">
-                            {{ descContent.description }}
+                            <div v-html="descContent.description"></div>
+                            <!-- {{ descContent.description }} -->
                         </div>
                     </div>
                 </Transition>
@@ -457,7 +460,8 @@ const clearError = (field) => {
                         <label class="label">
                             <span class="label-text">類別</span>
                         </label>
-                        <select class="select select-bordered w-full" v-model="addForm.category_id" :class="{'select-error':errors.category_id}"
+                        <select class="select select-bordered w-full" v-model="addForm.category_id"
+                            :class="{ 'select-error': errors.category_id }"
                             @change="getSubcategories(); clearError('category_id')">
                             <option value="" selected disabled>選擇子類別</option>
                             <option v-for="category in props.categories" :key="category.id" :value="category.id">{{
@@ -472,7 +476,8 @@ const clearError = (field) => {
                         <label class="label">
                             <span class="label-text">子類別</span>
                         </label>
-                        <select class="select select-bordered w-full" :class="{'select-error':errors.subcategory_id}" v-model="addForm.subcategory_id" @change="clearError('subcategory_id')">
+                        <select class="select select-bordered w-full" :class="{ 'select-error': errors.subcategory_id }"
+                            v-model="addForm.subcategory_id" @change="clearError('subcategory_id')">
                             <option value="" selected disabled>選擇子類別</option>
                             <option v-for="sub in subcategoriesInCategory" :key="sub.id" :value="sub.id">{{ sub.name }}
                             </option>
@@ -487,7 +492,8 @@ const clearError = (field) => {
                         <label class="label">
                             <span class="label-text">產品名稱</span>
                         </label>
-                        <input v-model="addForm.name" class="input input-bordered w-full" @change="clearError('name')" :class="{'input-error':errors.name}"/>
+                        <input v-model="addForm.name" class="input input-bordered w-full" @change="clearError('name')"
+                            :class="{ 'input-error': errors.name }" />
                         <label v-if="errors.name" class="label">
                             <span class="label-text-alt text-error text-sm">{{ errors.name }}</span>
                         </label>
@@ -497,7 +503,8 @@ const clearError = (field) => {
                         <label class="label">
                             <span class="label-text">Slug</span>
                         </label>
-                        <input v-model="addForm.slug" class="input input-bordered w-full" @change="clearError('slug')" :class="{'input-error':errors.slug}"/>
+                        <input v-model="addForm.slug" class="input input-bordered w-full" @change="clearError('slug')"
+                            :class="{ 'input-error': errors.slug }" />
                         <label v-if="errors.slug" class="label">
                             <span class="label-text-alt text-error text-sm">{{ errors.slug }}</span>
                         </label>
@@ -507,7 +514,8 @@ const clearError = (field) => {
                         <label class="label">
                             <span class="label-text">價格</span>
                         </label>
-                        <input v-model="addForm.price" type="number" class="input input-bordered w-full"  @change="clearError('price')" :class="{'input-error':errors.price}"/>
+                        <input v-model="addForm.price" type="number" class="input input-bordered w-full"
+                            @change="clearError('price')" :class="{ 'input-error': errors.price }" />
                         <label v-if="errors.price" class="label">
                             <span class="label-text-alt text-error text-sm">{{ errors.price }}</span>
                         </label>

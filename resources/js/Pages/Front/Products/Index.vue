@@ -161,13 +161,13 @@ const formatTwd = (price) => {
 <template>
     <PageHero />
 
-    <section class="mt-4">
+    <section class="mt-4 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
         <PillsSwiper class="md:hidden mt-4" :categories="props.categories_tab" :activeCategory="categoryName"
             @select-category="onSelectCategory" />
 
         <div class="md:flex md:mt-8 md:mb-8 lg:mt-12">
-            <div class="hidden md:block md:basis-2/5 lg:basis-1/4 xl:basis-1/5">
-                <aside class="mr-8 p-4 px-8 border border-[#f1f0ed] rounded-[12px] bg-[#fafafa]">
+            <div class="hidden md:block md:basis-2/5 lg:basis-1/4">
+                <aside class="mr-8 p-4 border border-[#f1f0ed] rounded-[12px] bg-[#fafafa]">
                     <div class="mb-4 relative before:content-[''] before:absolute before:inset-x-0 before:-bottom-2
                 before:h-[1px] before:bg-[#67645e] before:block">
                         <h3 class="text-md md:text-lg lg:text-xl font-semibold text-[#67645e]">
@@ -176,12 +176,12 @@ const formatTwd = (price) => {
                     </div>
                     <ul>
                         <li class="text-[#67645e] px-2 py-1 rounded-sm"
-                            :class="{ 'bg-[#67645e] text-base-100': categoryName == 'ALL' }">
+                            :class="{ 'bg-[#82ae46] text-base-100': categoryName == 'ALL' }">
                             <a href="#" class="block w-full" :class="{ 'hover:text-zinc-400': categoryName !== 'ALL' }"
                                 @click.prevent="onSelectCategory('ALL')">全部</a>
                         </li>
                         <li v-for="value in props.categories_tab" class="text-[#67645e] px-2 py-1 rounded-sm"
-                            :class="{ 'bg-[#67645e] text-base-100': value.name == categoryName }">
+                            :class="{ 'bg-[#82ae46] text-base-100': value.name == categoryName }">
                             <a href="#" class="block w-full "
                                 :class="{ 'hover:text-zinc-400': value.name !== categoryName }" @click.prevent="
                                     onSelectCategory(value.name)">
@@ -192,7 +192,7 @@ const formatTwd = (price) => {
                 </aside>
             </div>
 
-            <div class="md:basis-3/5 lg:basis-3/4 xl:basis-4/5 ">
+            <div class="md:basis-3/5 lg:basis-3/4">
                 <div class="py-2 my-4 flex w-full items-center rounded-[12px]">
                     <div class="w-[50%] flex items-center ">
                         <label for="sort_product" class="align-middle whitespace-nowrap">排序:</label>
@@ -211,12 +211,12 @@ const formatTwd = (price) => {
                         件商品
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:gap-8 xl:grid-cols-4">
+                <div class="grid grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
                     <div v-for="value in props.products"
                         class="relative border border-[#f0f0f0] rounded-[12px] overflow-hidden flex flex-col"
                         :key="value.id">
                         <div class="overflow-hidden">
-                            <a :href="route('products.show', value.name)">
+                            <a :href="route('products.show', value.slug)">
                                 <img :src="value.primary_image?.img_url || '/images/categories/ChatGPT Image 2025年11月29日 下午02_44_25.png'"
                                     alt=""
                                     class="transition-all duration-200 hover:scale-110 object-cover aspect-3/2 w-full h-full">

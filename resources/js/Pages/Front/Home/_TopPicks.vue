@@ -15,7 +15,7 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
 </script>
 
 <template>
-    <section class="pb-16 md:pb-18">
+    <section class="px-4 pb-16 md:pb-18 max-w-[var(--max-w-layout-wide)] mx-auto">
         <div class="border border-[#f1f0ed] rounded-[12px] py-6 px-4 pr-0 lg:pr-0 lg:px-6">
             <div class="md:mb-8 mb-4 md:pt-4">
                 <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-[#67645e]">
@@ -23,7 +23,7 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
                 </h2>
             </div>
             <div class="relative">
-                <swiper :slidesPerView="1.5" :spaceBetween="14" :pagination="{
+                <swiper :slidesPerView="1" :spaceBetween="14" :pagination="{
                     el: '.custom-progressbar',
                     type: 'progressbar'
                 }" :navigation="{
@@ -35,7 +35,7 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
                         spaceBetween: 16,
                     },
                     '768': {
-                        slidesPerView: 2.5,
+                        slidesPerView: 3,
                         spaceBetween: 16,
                     },
                     '1024': {
@@ -43,11 +43,11 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
                         spaceBetween: 16,
                     },
                     '1280': {
-                        slidesPerView: 3.5,
+                        slidesPerView: 4,
                         spaceBetween: 16,
                     },
                     '1536': {
-                        slidesPerView: 4.5,
+                        slidesPerView: 5,
                         spaceBetween: 18,
                     }
 

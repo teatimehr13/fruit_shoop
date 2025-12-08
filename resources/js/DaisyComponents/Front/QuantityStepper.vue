@@ -1,9 +1,9 @@
 <template>
   <div class="inline-flex items-center">
-    <div class="rounded-[12px] border border-[#b8b5ae] bg-[#f9f7f2] px-4 py-2 inline-flex">
+    <div class="rounded-[12px]  px-4 py-2 inline-flex">
       <!-- 減少 -->
-      <button type="button" class="btn btn-xs w-7 h-7 flex items-center justify-center rounded-full bg-[#85827c] text-white
-             disabled:opacity-40 disabled:cursor-not-allowed" @click="decrease">
+      <button type="button" class="btn btn-ghost btn-xs w-7 h-7 flex items-center justify-center 
+             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#82ae46] hover:text-white" @click="decrease">
         <span class="sr-only">Reduce quantity</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
           className="size-6">
@@ -19,8 +19,8 @@
       </div>
 
       <!-- 增加 -->
-      <button type="button" class="btn btn-xs w-7 h-7 flex items-center justify-center rounded-full bg-[#85827c] text-white
-             disabled:opacity-40 disabled:cursor-not-allowed" @click="increase" :disabled="modelValue >= max">
+      <button type="button" class="btn btn-ghost btn-xs w-7 h-7 flex items-center justify-center 
+             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#82ae46] hover:text-white" @click="increase" :disabled="modelValue >= max">
         <span class="sr-only">Increase quantity</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-6">

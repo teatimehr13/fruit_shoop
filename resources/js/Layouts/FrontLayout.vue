@@ -32,7 +32,7 @@ provide('openCart', openCart)
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col mx-auto py-4 px-4 lg:py-8 lg:px-8 3xl:px-10 3xl:py-10">
+    <div class="min-h-screen flex flex-col mx-auto">
         <Nav :is-in-hero="isInHero" :is-scrolling-down="isScrollingDown" @open-cart="openCart"/>
         <main class="flex-1">
             <slot />

@@ -1,5 +1,5 @@
 <template>
-    <section class="py-14 my-8 ">
+    <section class="py-14 my-8 max-w-[var(--max-w-layout-wide)] mx-auto">
         <div class="w-full">
             <div class="grid md:grid-cols-4">
                 <div class="mx-auto mb-4">

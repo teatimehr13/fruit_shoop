@@ -118,8 +118,14 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        $productRow = $product->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
+            ->with('primaryImage')
+            ->with('cheapestOption')
+            ->with('productOptions')
+            ->findOrFail($product->id);
+
         return Inertia::render('Front/Products/Show', [
-            'product' => $product
+            'product' => $productRow
         ]);
     }
 

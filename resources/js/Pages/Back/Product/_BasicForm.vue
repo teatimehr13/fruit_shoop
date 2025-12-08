@@ -1,6 +1,12 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+//文字區
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
+
+
 const props = defineProps({
     product: Object
 })
@@ -30,7 +36,7 @@ const handleSave = () => {
     <div class="bg-stone-100 my-4 py-2 px-6">
         <h3 class="text-lg font-semibold">基本資料</h3>
     </div>
-    
+
     <div class="space-y-4 px-6 py-4">
         <div class="form-control">
             <label class="label">
@@ -57,7 +63,8 @@ const handleSave = () => {
             <label class="label">
                 <span class="label-text">描述</span>
             </label>
-            <textarea v-model="form.description" class="textarea textarea-bordered w-full" rows="4"></textarea>
+            <QuillEditor v-model:content="form.description" content-type="html" theme="snow" style="min-height: 160px;"/>
+            <!-- <textarea v-model="form.description" class="textarea textarea-bordered w-full" rows="4"></textarea> -->
         </div>
 
         <!-- <div>
