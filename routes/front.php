@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Front\CartController;
+use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\ProductController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -31,3 +33,6 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::patch('/items', [CartController::class, 'update'])->name('update');
     Route::delete('/items', [CartController::class, 'destroy'])->name('destroy');
 });
+
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

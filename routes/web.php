@@ -44,3 +44,4 @@ Route::get('/back', function() {
 require __DIR__.'/auth.php';
 require __DIR__.'/back.php';
 require __DIR__.'/front.php';
+require __DIR__.'/ecpay.php';

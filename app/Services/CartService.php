@@ -78,6 +78,7 @@ class CartService
                 'qty'               => $item->qty,
                 'img_url'          => $image?->img_url ?? null,
                 'image'          => $image?->image ?? null,
+                'subtotal' => (int)$item->qty * (int)$option?->price
             ];
         })->values();
     }
