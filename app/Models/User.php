@@ -26,6 +26,10 @@ class User extends Authenticatable
         'is_admin',
         'provider',
         'provider_id',
+        'city',
+        'district',
+        'address_detail',
+        'zip_code',
     ];
 
     /**

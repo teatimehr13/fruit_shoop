@@ -12,7 +12,8 @@ const { cartItems } = useSharedCart()
 console.log(cartItems.value);
 
 const formatTwd = (price) => {
-    return `$ ${price?.toLocaleString() || 0}`
+    const n = Number(price ?? 0)
+    return `$ ${n.toLocaleString()}`
 }
 
 const singleItemSubtotal = (qty, itemPrice) => {
@@ -72,33 +73,23 @@ const singleItemSubtotal = (qty, itemPrice) => {
                         </span>
                     </div>
                     <div>
+                        <span>運費</span>
+                    </div>
+                    <div class="justify-self text-right">
+                        <span v-if="cartItems.subtotal">
+                            {{ formatTwd(cartItems.shipping_fee) }}
+                        </span>
+                    </div>
+                    <div>
                         <span class="text-lg font-semibold">合計</span>
                     </div>
                     <div class="justify-self text-right">
                         <span class="text-lg font-semibold">
-                            {{ formatTwd(cartItems.subtotal) }}
+                            {{ cartItems.subtotal ? formatTwd(cartItems.subtotal + cartItems.shipping_fee) : null }}
                         </span>
                     </div>
                 </div>
-
-                <div>
-                    <button type="button"
-                        class="btn btn-lg mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
-                        前往結帳
-                    </button>
-                </div>
             </div>
         </section>
-
-        <!-- <footer class="border-t border-stone-300 px-4 py-3 space-y-2 bg-white">
-            <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">小計</span>
-                <span class="font-semibold text-[#333]">2500</span>
-            </div>
-            <button type="button"
-                class="btn btn-lg mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
-                前往結帳
-            </button>
-        </footer> -->
     </div>
 </template>

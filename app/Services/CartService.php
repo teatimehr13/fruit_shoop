@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cookie;
 
 class CartService
 {
+    protected $shipping_free = 2000;
     public function getSharedCartItems(Request $request): array
     {
         $user = $request->user();
@@ -25,10 +26,13 @@ class CartService
             return ($item['price'] ?? 0) * ($item['qty'] ?? 1);
         });
 
+        $shipping_fee = (int)$subtotal >= $this->shipping_free ? 0 : 100;
+
         return [
             'items'          => $items->values(),
             'total_qty'      => $totalQuantity,
             'subtotal'       => $subtotal,
+            'shipping_fee'   => $shipping_fee
         ];
 
         // return $this->getItemsFromCookie();
@@ -131,6 +135,7 @@ class CartService
                     'qty'               => (int) ($data[$optionId] ?? 0),
                     'img_url'           => $image?->img_url ?? null,
                     'image'             => $image?->image ?? null,
+                    'subtotal'          => (int)$option->price * (int) ($data[$optionId] ?? 0), 
                 ];
             })
             ->filter()   // 把 null 的過濾掉
@@ -190,7 +195,7 @@ class CartService
         $this->clearCookieCart();
     }
 
-    protected function clearCookieCart(): void
+    public function clearCookieCart(): void
     {
         Cookie::queue(
             Cookie::make(

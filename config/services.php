@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'ecpay' => [
+        'env'         => env('ECPAY_ENV', 'stage'),
+        'merchant_id' => env('ECPAY_MERCHANT_ID'),
+        'hash_key'    => env('ECPAY_HASH_KEY'),
+        'hash_iv'     => env('ECPAY_HASH_IV'),
+        'return_url'  => env('ECPAY_RETURN_URL'),
+        'front_url'   => env('ECPAY_FRONT_URL'),
+        'notify_url'  => env('ECPAY_NOTIFY_URL')
+    ],
 ];

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckoutController;
+use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\ProductController;
 
 
@@ -36,3 +37,6 @@ Route::prefix('cart')->name('cart.')->group(function () {
 
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+Route::get('/order/{order:order_number}', [OrderController::class, 'show'])->name('order.show');

@@ -61,7 +61,7 @@
             <span class="text-gray-600">小計</span>
             <span class="font-semibold text-[#333]">{{ formatTwd(cartItems.subtotal) }}</span>
           </div>
-          <button type="button"
+          <button type="button" @click="goCheckout"
             class="btn btn-lg mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
             前往結帳
           </button>
@@ -79,6 +79,7 @@ import { computed, inject } from 'vue';
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue'
 // import QuantityStepper_Product from '@/DaisyComponents/Front/QuantityStepper_Product.vue'
 import { router } from '@inertiajs/vue3'
+
 
 const props = defineProps({
   open: {
@@ -122,6 +123,10 @@ const delCartItem = async (id) => {
     only: ['cartItems'],
     preserveScroll: true,
   })
+}
+
+const goCheckout = () => {
+  window.location.assign(route('checkout.index'))
 }
 
 const formatTwd = (price) => {
