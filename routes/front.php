@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Front\AccountController;
+use App\Http\Controllers\Front\AccountProfileController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\ProductController;
+
 
 
 use Illuminate\Support\Facades\Route;
@@ -40,3 +43,16 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 Route::get('/order/{order:order_number}', [OrderController::class, 'show'])->name('order.show');
+
+Route::middleware(['auth', 'verified'])->prefix('account')->name('account.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('index');
+    Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
+    Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+    Route::patch('/profile', [AccountProfileController::class, 'update'])->name('profile.update');
+
+    // Route::get('/profile', [AccountProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [AccountProfileController::class, 'update'])->name('profile.update');
+
+    // Route::get('/orders', [AccountOrderController::class, 'index'])->name('orders.index');
+    // Route::get('/orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
+});
