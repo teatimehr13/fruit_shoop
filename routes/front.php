@@ -47,7 +47,7 @@ Route::get('/order/{order:order_number}', [OrderController::class, 'show'])->nam
 Route::middleware(['auth', 'verified'])->prefix('account')->name('account.')->group(function () {
     Route::get('/', [AccountController::class, 'index'])->name('index');
     Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
-    Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::patch('/profile', [AccountProfileController::class, 'update'])->name('profile.update');
 
     // Route::get('/profile', [AccountProfileController::class, 'edit'])->name('profile.edit');

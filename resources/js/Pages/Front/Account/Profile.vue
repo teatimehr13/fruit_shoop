@@ -3,11 +3,10 @@ import AccountLayout from '@/Layouts/AccountLayout.vue'
 defineOptions({ layout: AccountLayout })
 
 import { computed, reactive, watch, ref } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import twCityData from '@/data/tw-zipcode.json';
 import axios from 'axios';
 import api from '@/Lib/apiFeedback';
-
 
 const cityOptions = computed(() => Object.keys(twCityData));
 
@@ -106,11 +105,20 @@ const focusFirstError = () => {
     }
 }
 
+watch(
+    () => form.city,
+    (newCity, oldCity) => {
+        if (newCity === oldCity) return
+        form.district = ''
+        form.zip_code = ''
+    }
+)
 
 //根據地區隨即填寫zip_code到物件
 watch(
     () => form.district,
     (newDistrict) => {
+        console.log(newDistrict);
         form.zip_code = districtOptions.value?.[newDistrict] ?? '';
     }
 )
@@ -143,6 +151,8 @@ const save = async () => {
 
         saved.value = true
         setTimeout(() => (saved.value = false), 1500)
+        sessionStorage.setItem('users_dirty', '1')
+        router.reload({ only: ['auth'] })
     } catch (err) {
         if (err.response?.status === 422) {
             const serverErrors = err.response.data.errors || {}
@@ -167,26 +177,40 @@ const save = async () => {
 <template>
     <div class="form-layout ">
         <div class="grid gap-4 px-2 md:px-10 pt-6">
-            <h1 class="text-3xl font-semibold">個人資訊</h1>
-            <div class="border-t border-[#c4c4c4] pt-6">
+            <div class="mb-2 md:hidden ">
+                <Link :href="route('account.index')" class="inline-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
+                        <path fill-rule="evenodd"
+                            d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span>
+                        返回會員中心
+                    </span>
+                </Link>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-semibold">個人資訊</h1>
+            <div class="border-t border-[#c4c4c4]"></div>
+            <div class="pt-4 md:pt-6">
                 <div class="w-full md:w-[50%] grid space-y-4">
                     <div>
-                        <input type="text" placeholder="姓名" class="input  input-lg w-full border-none"
+                        <input type="text" placeholder="姓名" class="input  input-lg w-full border-[#eeeeee] rounded-lg"
                             v-model="form.name" @change="clearError('name')" :class="{ 'input-error': errors.name }"
                             :ref="el => fieldRefs.name = el" />
                         <p v-if="errors.name" class="errors-hint">{{ errors.name }}</p>
                     </div>
 
                     <div>
-                        <input type="email" placeholder="Email" class="input input-lg w-full border-none"
-                            v-model="form.email" @change="clearError('email')" :class="{ 'input-error': errors.email }"
+                        <input type="email" placeholder="Email"
+                            class="input input-lg w-full border-[#eeeeee] rounded-lg" v-model="form.email"
+                            @change="clearError('email')" :class="{ 'input-error': errors.email }"
                             :ref="el => fieldRefs.email = el" />
                         <p v-if="errors.email" class="errors-hint">{{ errors.email }}</p>
                     </div>
 
                     <div class="grid gap-4 grid-flow-col">
                         <div>
-                            <select class="select select-lg w-full border-none" v-model="form.city"
+                            <select class="select select-lg w-full border-[#eeeeee] rounded-lg" v-model="form.city"
                                 @change="clearError('city')" :class="{ 'input-error': errors.city }"
                                 :ref="el => fieldRefs.city = el">
                                 <option disabled selected value="">城市 / 縣</option>
@@ -196,7 +220,7 @@ const save = async () => {
                         </div>
 
                         <div>
-                            <select class="select select-lg w-full border-none" v-model="form.district"
+                            <select class="select select-lg w-full border-[#eeeeee] rounded-lg" v-model="form.district"
                                 @change="clearError('district')" :class="{ 'input-error': errors.district }"
                                 :ref="el => fieldRefs.district = el">
                                 <option disabled selected value="">地區</option>
@@ -209,7 +233,7 @@ const save = async () => {
                     </div>
 
                     <div>
-                        <input type="text" placeholder="地址" class="input input-lg w-full border-none"
+                        <input type="text" placeholder="地址" class="input input-lg w-full border-[#eeeeee] rounded-lg"
                             v-model="form.address_detail" @change="clearError('address_detail')"
                             :class="{ 'input-error': errors.address_detail }"
                             :ref="el => fieldRefs.address_detail = el" />
@@ -217,7 +241,7 @@ const save = async () => {
                     </div>
 
                     <div>
-                        <input type="text" placeholder="電話號碼" class="input input-lg w-full border-none"
+                        <input type="text" placeholder="電話號碼" class="input input-lg w-full border-[#eeeeee] rounded-lg"
                             v-model="form.phone" @change="clearError('phone')" :class="{ 'input-error': errors.phone }"
                             :ref="el => fieldRefs.phone = el"
                             @input="form.phone = $event.target.value.replace(/[^0-9]/g, '')" />
@@ -228,7 +252,7 @@ const save = async () => {
 
             <div class="block mt-8 w-full md:w-[50%]">
                 <button type="button" :disabled="saving" @click="save"
-                    class="btn w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
+                    class="btn btn-sm w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
                     {{ saving ? '儲存中...' : '儲存' }}
                 </button>
             </div>

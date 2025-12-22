@@ -9,7 +9,20 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
-    public function index(Request $request) {}
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $orders = Order::query()
+            ->where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subYears(2))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+            
+        return Inertia::render('Front/Account/OrderInfo', [
+            'orders' => $orders,
+        ]);
+    }
 
     public function create()
     {

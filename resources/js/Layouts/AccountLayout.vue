@@ -1,6 +1,6 @@
 <template>
     <FrontLayout>
-        <section class="mt-[88px] py-8 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
+        <section class="mt-[52px] md:mt-[88px] py-8 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
             <div class="md:grid md:grid-cols-[25rem_1fr] items-start">
                 <!-- desktop sidebar only -->
                 <aside class="hidden md:block mr-8 p-4">
@@ -20,6 +20,13 @@
                             <Link :href="route('account.orders')" class="block w-full">訂單</Link>
                         </li>
                     </ul>
+
+                    <div>
+                        <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
+                            class="tracking-wide btn btn-sm mt-8 mb-2 w-20 py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white" :class="{ 'text-[#fff]': isInHeroState }">
+                            登出
+                        </Link>
+                    </div>
                 </aside>
 
                 <!-- main always -->

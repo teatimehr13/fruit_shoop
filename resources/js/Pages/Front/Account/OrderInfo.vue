@@ -3,17 +3,110 @@ import AccountLayout from '@/Layouts/AccountLayout.vue'
 defineOptions({ layout: AccountLayout })
 
 import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
 
 const user = computed(() => usePage().props.auth.user)
-const createdDate = computed(() => {
-  const v = user.value?.created_at
-  if (!v) return ''
-  return String(v).slice(0, 10) // "2025-12-16"
-})
+
+const props = defineProps({
+  orders: Object
+});
+
+console.log(props.orders);
+const { data } = props.orders;
+console.log(data);
+
+
+const formatDate = (v) => (v ? String(v).slice(0, 10) : '');
+
+const formatTwd = (price) => {
+  return `$ ${price?.toLocaleString() || 0}`
+}
 </script>
 
 
 <template>
+  <div class="order-info px-2 md:px-10 pt-6  items-center grid gap-4">
+    <!-- desktop -->
+    <div class="mb-2 md:hidden ">
+      <Link :href="route('account.index')" class="inline-flex">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
+        <path fill-rule="evenodd"
+          d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+          clip-rule="evenodd" />
+      </svg>
+      <span>
+        返回會員中心
+      </span>
+      </Link>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-semibold">訂單</h1>
+    <div class="hidden md:grid grid-cols-[2fr_1.5fr_1fr_1fr_.75fr] border-t border-[#c4c4c4] pt-6">
+      <div class="contents font-semibold text-[#67645e]">
+        <div class="p-3">訂單號碼</div>
+        <div class="p-3">日期</div>
+        <div class="p-3">合計</div>
+        <div class="p-3">訂單狀態</div>
+        <div class="p-3"></div>
 
+        <div class="col-span-5 h-px bg-[#eeeeee]"></div>
+      </div>
+
+      <div v-for="row in data" :key="row.id" class="contents">
+        <div class="p-3">{{ row.order_number }}</div>
+        <div class="p-3">{{ formatDate(row.created_at) }}</div>
+        <div class="p-3">{{ formatTwd(row.amount) }}</div>
+        <div class="p-3">{{ row.order_status_label }}</div>
+        <div class="p-3 text-center">
+          <!-- <button type="button"
+            class="btn btn-sm w-20 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
+            
+            查看
+          </button> -->
+          <a :href="route('order.show', row.order_number)"
+            class="btn btn-sm w-20 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+            查看
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- mobile -->
+    <div class="space-y-4 md:hidden">
+      <div class="border-t border-[#c4c4c4] pt-4"></div>
+      <div v-for="row in data" :key="row.id" class="border border-[#e5e5e5] rounded-xl p-4 bg-white">
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between gap-3">
+            <div class="text-[#67645e]">訂單號碼</div>
+            <div class="font-medium text-right break-all">{{ row.order_number }}</div>
+          </div>
+
+          <div class="flex justify-between gap-3">
+            <div class="text-[#67645e]">日期</div>
+            <div class="font-medium">{{ formatDate(row.created_at) }}</div>
+          </div>
+
+          <div class="flex justify-between gap-3">
+            <div class="text-[#67645e]">合計</div>
+            <div class="font-medium">{{ formatTwd(row.amount) }}</div>
+          </div>
+
+          <div class="flex justify-between gap-3">
+            <div class="text-[#67645e]">訂單狀態</div>
+            <div class="font-medium">{{ row.order_status_label }}</div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <a :href="route('order.show', row.order_number)"
+            class="btn btn-sm w-full border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+            查看
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto mt-4 text-sm tracking-wider">
+      僅顯示2年內訂單
+    </div>
+  </div>
 </template>

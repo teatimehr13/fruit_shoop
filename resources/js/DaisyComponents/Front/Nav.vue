@@ -78,13 +78,11 @@ const { ItemsCount } = useSharedCart();
 
 <template>
     <div>
-        <header
-            class="box-shadow fixed z-5 w-full translate-y-0 "
-            :class="{
-                'Header__hidden': props.isScrollingDown && !showMenuHeader,
-                'Header__sticky ': !props.isScrollingDown && !isInHeroState || showMenuHeader,
-                // 'header': isInHeroState && !showMenuHeader,
-            }">
+        <header class="box-shadow fixed z-5 w-full translate-y-0 " :class="{
+            'Header__hidden': props.isScrollingDown && !showMenuHeader,
+            'Header__sticky ': !props.isScrollingDown && !isInHeroState || showMenuHeader,
+            // 'header': isInHeroState && !showMenuHeader,
+        }">
             <!-- desktop -->
             <nav
                 class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-[var(--max-w-layout-wide)]">
@@ -104,14 +102,19 @@ const { ItemsCount } = useSharedCart();
                             class="text-[#67645e] font-semibold" :class="{ 'text-[#fff]': isInHeroState }">
                             登出
                         </a> -->
-                        <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
+                        <!-- <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
                             class="text-[#67645e] font-semibold cursor-pointer"
                             :class="{ 'text-[#fff]': isInHeroState }">
                         登出
-                        </Link>
+                        </Link> -->
+                        <a v-if="$page.props.auth.user" :href="route('account.index')" method="post" as="button"
+                            class="text-[#67645e] font-semibold cursor-pointer"
+                            :class="{ 'text-[#fff]': isInHeroState }">
+                            會員中心
+                        </a>
                         <a v-else :href="route('login')" class="text-[#67645e] font-semibold"
                             :class="{ 'text-[#fff]': isInHeroState }">
-                            會員登入
+                            會員中心
                         </a>
 
                     </li>
@@ -122,7 +125,7 @@ const { ItemsCount } = useSharedCart();
                             <span v-if="ItemsCount" class="text-[#82ae46]">
                                 ({{ ItemsCount }})
                             </span>
-                            
+
                         </a>
                     </li>
                 </ul>
@@ -165,7 +168,16 @@ const { ItemsCount } = useSharedCart();
                 </a>
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
-                        <a href="" class="btn btn-ghost btn-circle text-[#67645e]">
+                        <a v-if="$page.props.auth.user" :href="route('account.index')"
+                            class="btn btn-ghost btn-circle text-[#67645e]">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </a>
+
+                        <a v-else :href="route('login')" class="btn btn-ghost btn-circle text-[#67645e]">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -173,8 +185,8 @@ const { ItemsCount } = useSharedCart();
                             </svg>
                         </a>
                     </li>
-                    <li class="" >
-                        <a href="#" class="btn btn-ghost btn-circle text-[#67645e]"  @click.prevent="emit('open-cart')">
+                    <li class="">
+                        <a href="#" class="btn btn-ghost btn-circle text-[#67645e]" @click.prevent="emit('open-cart')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -193,12 +205,12 @@ const { ItemsCount } = useSharedCart();
                                 class="p-4 space-y-8 overflow-y-auto flex-1 content-center mt-[-72px]">
                                 <!-- <a href="#" class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center">所有商品</a>
                                 <a href="#" class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center">關於我們</a> -->
-                                <a 
-                                    class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center"
+                                <a class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center"
                                     :class="{ 'text-[#fff]': isInHeroState }" :href="route('front.home.index')">首頁</a>
                                 <a v-for="nav in navLinks"
                                     class="block text-lg font-semibold text-[#67645e] px-4 py-2 rounded-[8px] text-center"
-                                    :class="{ 'text-[#fff]': isInHeroState }" :href="route(nav.name)">{{ nav.label }}</a>
+                                    :class="{ 'text-[#fff]': isInHeroState }" :href="route(nav.name)">{{ nav.label
+                                    }}</a>
                             </div>
                         </div>
                     </div>
@@ -218,7 +230,7 @@ const { ItemsCount } = useSharedCart();
     color: #67645e;
     background: #fff;
     transition: all .5s cubic-bezier(.76, 0, .24, 1), color 0s;
-        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .06);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .06);
 }
 
 .Header__sticky nav {
