@@ -147,7 +147,9 @@ const loading = ref(false)
 const openEdit = async (id) => {
     loading.value = true
     editOpen.value = !editOpen.value;
-    ui.toggleSidebar();
+    // ui.toggleSidebar();
+    // ui.closeSidebar()
+    ui.toggleDesktop()
     productDetails.value = null
     selectedTr.value = id;
     try {
@@ -177,7 +179,8 @@ const handleDelete = async () => {
 
 const editOpen = ref(false)
 watch(editOpen, (v) => {
-    if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+    // if (!v) ui?.openSidebar?.()      // 編輯抽屜關閉 → 讓側欄回來
+    if (!v) ui?.toggleDesktop?.()
     if (!v) selectedTr.value = null;
 })
 

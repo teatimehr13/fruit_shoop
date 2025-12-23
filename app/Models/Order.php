@@ -44,6 +44,13 @@ class Order extends Model
         3 => self::CANCELLED
     ];
 
+    const ORDER_STATUS_LABELS = [
+        self::NOT_SELECTED_PAYMENT => '未選擇付款',
+        self::WAITING_FOR_THE_TRANSFER => '等待匯款',
+        self::PAID => '已付款',
+        self::CANCELLED => '已取消',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -95,6 +102,4 @@ class Order extends Model
             default => '未知狀態',
         };
     }
-
-    
 }

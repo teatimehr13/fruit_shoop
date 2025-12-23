@@ -24,6 +24,7 @@ Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
         ->shallow();
 
     Route::resource('orders', BackOrderController::class);
+    // Route::get('/order/{order:order_number}', [OrderController::class, 'show'])->name('order.show');
     Route::get('about', [BackAboutController::class, 'index'])->name('about.index');
     Route::post('about/save', [BackAboutController::class, 'save'])->name('about.save');
     // Route::resource('about', BackAboutController::class);
