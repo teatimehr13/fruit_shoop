@@ -2,15 +2,12 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-
 
 class LoginRequest extends FormRequest
 {
@@ -30,8 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'email' => ['required', 'string', 'email'],
-            'login' => ['required', 'string'],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -43,47 +39,16 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        // $this->ensureIsNotRateLimited();
-
-        // if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-        //     RateLimiter::hit($this->throttleKey());
-
-        //     throw ValidationException::withMessages([
-        //         'email' => trans('auth.failed'),
-        //     ]);
-        // }
-
-        // RateLimiter::clear($this->throttleKey());
-
         $this->ensureIsNotRateLimited();
 
-        $login = trim((string) $this->input('login'));
-        $password = (string) $this->input('password');
-        $remember = $this->boolean('remember');
-
-        // 判斷是不是 email
-        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL) !== false;
-
-        // phone normalize（只留數字）
-        $normalizedPhone = $isEmail ? null : preg_replace('/\D+/', '', $login);
-
-        // 先找 user（email 或 phone）
-        $user = User::query()
-            ->when($isEmail, fn($q) => $q->where('email', $login))
-            ->when(! $isEmail, fn($q) => $q->where('phone', $normalizedPhone))
-            ->first();
-
-        // 驗證失敗
-        if (! $user || ! Hash::check($password, $user->password)) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'login' => __('auth.failed'),
+                'email' => trans('auth.failed'),
             ]);
         }
 
-        // 登入成功
-        Auth::login($user, $remember);
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -115,6 +80,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
+        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
     }
 }

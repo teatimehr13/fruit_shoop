@@ -186,4 +186,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'demo_reset_link' => env('DEMO_RESET_LINK', false),
+
 ];
