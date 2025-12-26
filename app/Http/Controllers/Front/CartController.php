@@ -13,7 +13,9 @@ use Inertia\Inertia;
 
 class CartController extends Controller
 {
-    public function index(Request $request) {}
+    public function index(Request $request) {
+        return Inertia::render('Front/Cart/Index');
+    }
 
     public function create()
     {

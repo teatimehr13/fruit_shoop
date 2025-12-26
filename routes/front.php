@@ -36,6 +36,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/items', [CartController::class, 'store'])->name('store');
     Route::patch('/items', [CartController::class, 'update'])->name('update');
     Route::delete('/items', [CartController::class, 'destroy'])->name('destroy');
+    Route::get('/', [CartController::class, 'index'])->name('index');
 });
 
 
