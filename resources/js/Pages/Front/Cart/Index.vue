@@ -12,13 +12,14 @@ const goShop = () => router.visit(route('home')) // 你自己換成 products.ind
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-6 mt-[68px] md:mt-[108px]">
+  <div class="max-w-[var(--max-w-layout-wide)] mx-auto px-4 py-6 mt-[68px] md:mt-[108px]">
     <h1 class="text-2xl font-semibold text-[#67645e] mb-4">購物車</h1>
 
     <div class="">
       <CartContent
         @checkout="goCheckout"
         @continue="goShop"
+        layoutMode="page"
       />
     </div>
   </div>

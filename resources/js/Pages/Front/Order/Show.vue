@@ -5,6 +5,7 @@
         <!-- <h1 class="font-semibold text-xl">
             訂單詳情
         </h1> -->
+        <div class="font-semibold text-lg px-4 py-3">訂單內容</div>
         <!-- Cart Items -->
         <div class="cart-items mt-2 md:mt-4">
             <div class="cart-items-wrapper">
@@ -18,7 +19,8 @@
                 </div>
 
                 <div class="border-b border-[#EDEDED] px-4 py-4 md:py-5">
-                    <div class="grid md:grid-cols-12 md:gap-4 border-b border-[#EDEDED] last:border-b-0 md:border-none py-4" v-for="item in props.items" :key="item.id">
+                    <div class="grid md:grid-cols-12 md:gap-4 border-b border-[#EDEDED] last:border-b-0 md:border-none py-4"
+                        v-for="item in props.items" :key="item.id">
 
                         <!-- 商品資料 -->
                         <div class="col-span-12 md:col-span-5 flex gap-3 ">
@@ -96,9 +98,9 @@
 
         <div class="order-info mt-4 px-4 py-3">
             <div>
-                <div class="grid md:grid-cols-2 gap-4">
+                <!-- <div class="grid md:grid-cols-2 gap-4">
                     <div class="">
-                        <div class="font-semibold text-xl">訂單資訊</div>
+                        <div class="font-semibold text-lg">訂單資訊</div>
                         <div class="mt-2 md:mt-4 grid grid-cols-[40%_60%]">
                             <div>訂單號碼</div>
                             <div>{{ props.order.order_number }}</div>
@@ -117,7 +119,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="font-semibold text-xl">
+                        <div class="font-semibold text-lg">
                             顧客資訊
                         </div>
                         <div class="mt-2 md:mt-4 grid grid-cols-[40%_60%]">
@@ -131,6 +133,46 @@
                         <div class="grid grid-cols-[40%_60%]">
                             <div>送貨地址</div>
                             <div> {{ fullShippingAddress }} </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="grid md:grid-cols-2">
+                    <div class="border-b md:border-none border-[#EDEDED] pb-6 mb-6 md:border-b-0 md:border-r md:mb-0 md:pb-0 md:pr-6">
+                        <div class="font-semibold text-lg">訂單資訊</div>
+
+                        <div class="mt-2 md:mt-4 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">訂單號碼</div>
+                            <div>{{ props.order.order_number }}</div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">訂單Email</div>
+                            <div class="break-all">{{ props.order.shipping_email }}</div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">訂單日期</div>
+                            <div>{{ createdDate }}</div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">訂單狀態</div>
+                            <div>{{ props.order.order_status_label }}</div>
+                        </div>
+                    </div>
+
+                    <div class="md:pl-6">
+                        <div class="font-semibold text-lg">顧客資訊</div>
+
+                        <div class="mt-2 md:mt-4 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">姓名</div>
+                            <div>{{ props.order.recipient_name }}</div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">電話號碼</div>
+                            <div>{{ props.order.recipient_phone }}</div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-[40%_60%]">
+                            <div class="text-gray-500">送貨地址</div>
+                            <div>{{ fullShippingAddress }}</div>
                         </div>
                     </div>
                 </div>
@@ -159,16 +201,16 @@ defineOptions({
 
 
 const fullShippingAddress = computed(() => {
-  const city = props.order?.shipping_city ?? ''
-  const district = props.order?.shipping_district ?? ''
-  const detail = props.order?.shipping_address_detail ?? ''
-  return [city, district, detail].filter(Boolean).join('')
+    const city = props.order?.shipping_city ?? ''
+    const district = props.order?.shipping_district ?? ''
+    const detail = props.order?.shipping_address_detail ?? ''
+    return [city, district, detail].filter(Boolean).join('')
 })
 
 const createdDate = computed(() => {
-  const v = props.order?.created_at
-  if (!v) return ''
-  return String(v).slice(0, 10) // "2025-12-16"
+    const v = props.order?.created_at
+    if (!v) return ''
+    return String(v).slice(0, 10) // "2025-12-16"
 })
 
 const formatTwd = (price) => {
