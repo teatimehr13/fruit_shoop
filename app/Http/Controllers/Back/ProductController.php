@@ -126,7 +126,10 @@ class ProductController extends Controller
         //     ->get();
 
         $query = Product::query()
-            ->select(['id', 'slug', 'name', 'price', 'description', 'is_enabled'])
+            ->select(['id', 'subcategory_id', 'slug', 'name', 'description', 'is_enabled'])
+            ->with(['subcategory' => function ($query) {
+                $query->select(['id', 'name']);
+            }])
             ->orderBy('created_at', 'asc')
             ->orderBy('id', 'asc'); // 讓分頁順序穩定
 
@@ -147,21 +150,45 @@ class ProductController extends Controller
         // $query->when($request->filled('min_price'), fn($q) => $q->where('price', '>=', (int)$request->min_price));
         // $query->when($request->filled('max_price'), fn($q) => $q->where('price', '<=', (int)$request->max_price));
 
-        $products = $query->paginate(10)->withQueryString();
+        $products = $query->paginate(10)->withQueryString()->through(function ($item) {
+            // 這裡就是「打平」的地方
+            return [
+                'id' => $item->id,
+                'slug' => $item->slug,
+                'name' => $item->name,
+                'description' => $item->description,
+                'is_enabled' => $item->is_enabled,
+                // 直接創造一個第一層的 key 給前端
+                'subcategory_name' => $item->subcategory?->name ?? '未分類',
+            ];
+        });
 
         return $products;
     }
 
     public function details(Product $product)
     {
+        $product->load('subcategory');
+
         return response()->json([
+            // 'product' => array_merge($product->only([
+            //     'id',
+            //     'slug',
+            //     'name',
+            //     'description',
+            //     'is_enabled',
+            //     'subcategory_id'
+            // ]), [
+            //     'subcategory_name' => $product->subcategory?->name ?? '未分類'
+            // ]),
             'product' => $product->only([
                 'id',
                 'slug',
                 'name',
                 'description',
-                'price',
-                'is_enabled'
+                'is_enabled',
+                'subcategory_id',
+                'subcategory_name'
             ]),
 
             'images' => $product->productImages()
@@ -189,11 +216,12 @@ class ProductController extends Controller
 
         return response()->json([
             'is_enabled' => $product->is_enabled
-        ],200);
+        ], 200);
     }
 
-    public function getSubcategories(Category $category){
-         $subcategories = $category->subcategories()
+    public function getSubcategories(Category $category)
+    {
+        $subcategories = $category->subcategories()
             ->select('id', 'name')
             ->get();
         return response()->json($subcategories);

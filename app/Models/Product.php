@@ -25,6 +25,7 @@ class Product extends Model
         'cheapest_original_price',
         'has_discount',
         'cheapest_option_id',
+        'subcategory_name'
         // 'cheapest_option_qty'
     ];
 
@@ -69,7 +70,7 @@ class Product extends Model
 
     public function productOptions()
     {
-        return $this->hasMany(ProductOption::class);
+        return $this->hasMany(ProductOption::class)->orderBy('price', 'asc');
     }
 
     public function productImages()
@@ -92,7 +93,7 @@ class Product extends Model
     public function cheapestOption()
     {
         return $this->hasOne(ProductOption::class)
-            ->orderBy('price');
+            ->orderBy('price', 'asc');
     }
 
     public function getCheapestPriceAttribute()
@@ -115,6 +116,12 @@ class Product extends Model
     {
         return $this->cheapestOption?->id;
     }
+
+    public function getSubcategoryNameAttribute()
+    {
+        return $this->subcategory?->name ?? '未分類';
+    }
+
     //  public function getCheapestOptionQtyAttribute()
     // {
     //     return $this->cheapestOption?->qty;

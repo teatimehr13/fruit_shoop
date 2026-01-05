@@ -27,7 +27,7 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('pro
 
 
 // 某分類底下的商品：/categories/水果
-Route::get('/categories/{category}', [ProductController::class, 'index'])
+Route::get('/categories/{category:name}', [ProductController::class, 'index'])
     ->name('categories.products');
 
 
@@ -40,8 +40,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
 });
 
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
 
 Route::get('/order/{order:order_number}', [OrderController::class, 'show'])->name('order.show');
 
@@ -50,10 +49,9 @@ Route::middleware(['auth', 'verified'])->prefix('account')->name('account.')->gr
     Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::patch('/profile', [AccountProfileController::class, 'update'])->name('profile.update');
+});
 
-    // Route::get('/profile', [AccountProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [AccountProfileController::class, 'update'])->name('profile.update');
-
-    // Route::get('/orders', [AccountOrderController::class, 'index'])->name('orders.index');
-    // Route::get('/orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
+Route::middleware(['auth', 'verified'])->group(function() {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });

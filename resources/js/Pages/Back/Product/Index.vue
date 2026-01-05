@@ -45,7 +45,8 @@ console.log(subSelects.value);
 const columns = [
     { key: 'slug', label: 'Slug', width: 'w-[15%]' },
     { key: 'name', label: '產品名稱', width: 'w-[15%]' },
-    { key: 'price', label: '價格', width: 'w-[10%]' },
+    { key: 'subcategory_name', label: '子類別', width: 'w-[15%]' },
+    // { key: 'price', label: '價格', width: 'w-[10%]' },
     { key: 'description', label: '描述', width: 'w-[35%]' },
     { key: 'is_enabled', label: '啟用', width: 'w-[8%]' },
     { key: 'opt', label: '操作', width: 'w-auto' },
@@ -129,7 +130,7 @@ const openAdd = () => {
     addForm.value = {
         slug: '',
         name: '',
-        price: '',
+        // price: '',
         description: '',
         is_enabled: true,
         subcategory_id: '',
@@ -187,7 +188,8 @@ watch(editOpen, (v) => {
 const productDetails = reactive({
     basic: {},
     images: [],
-    options: []
+    options: [],
+    subSelects: subSelects.value
 })
 
 const tabs = [
@@ -214,7 +216,9 @@ const handleSaveBasic = async (formData) => {
         Object.assign(updated, {
             description: res.data.description,
             name: res.data.name,
-            price: res.data.price,
+            // price: res.data.price,
+            subcategory_id: res.data.subcategory_id,
+            subcategory_name: res.data.subcategory_name,
             slug: res.data.slug
         })
     }
@@ -271,9 +275,9 @@ const validateProduct = () => {
     if (!addForm.value.slug?.trim()) {
         errors.slug = '請輸入 Slug'
     }
-    if (!addForm.value.price || addForm.value.price <= 0) {
-        errors.price = '請輸入有效價格'
-    }
+    // if (!addForm.value.price || addForm.value.price <= 0) {
+    //     errors.price = '請輸入有效價格'
+    // }
     return Object.keys(errors).length === 0
 }
 
@@ -344,7 +348,7 @@ const clearError = (field) => {
                                             <label class="toggle toggle-xs text-base-content"
                                                 @click="changeStatus(product)">
                                                 <input type="checkbox" disabled="true" class=""
-                                                    :checked="product?.is_enabled == 1" />
+                                                    :checked="product?.is_enabled == 0" />
                                                 <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24">
                                                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="4"
@@ -440,7 +444,7 @@ const clearError = (field) => {
                 <!-- 基本資料 Tab -->
                 <!-- data為headless傳回來的值，再傳給basicForm -->
                 <template #basic="{ data }">
-                    <BasicForm :product="data.basic" @save="handleSaveBasic" />
+                    <BasicForm :product="data.basic" :subSelects="data.subSelects" @save="handleSaveBasic" />
                 </template>
 
                 <!-- 選項管理 Tab -->
@@ -513,7 +517,7 @@ const clearError = (field) => {
                         </label>
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <label class="label">
                             <span class="label-text">價格</span>
                         </label>
@@ -522,7 +526,7 @@ const clearError = (field) => {
                         <label v-if="errors.price" class="label">
                             <span class="label-text-alt text-error text-sm">{{ errors.price }}</span>
                         </label>
-                    </div>
+                    </div> -->
 
                     <div>
                         <label class="label">

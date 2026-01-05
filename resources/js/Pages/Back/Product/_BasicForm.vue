@@ -8,7 +8,8 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 
 const props = defineProps({
-    product: Object
+    product: Object,
+    subSelects: Array,
 })
 
 const emit = defineEmits(['save'])
@@ -16,7 +17,8 @@ const emit = defineEmits(['save'])
 const form = ref({
     name: '',
     slug: '',
-    price: '',
+    subcategory_id: '',
+    // price: '',
     description: '',
     // is_enabled: true
 })
@@ -52,18 +54,29 @@ const handleSave = () => {
             <input v-model="form.slug" class="input input-bordered w-full" />
         </div>
 
-        <div>
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">子類別</span>
+            </label>
+            <select v-model="form.subcategory_id" class="select select-bordered w-full">
+                <option v-for="sel of subSelects" :value="sel.id">{{ sel.name }}</option>
+            </select>
+            <!-- <select v-model="form.subcategory_id" class="input input-bordered w-full" /> -->
+        </div>
+
+        <!-- <div>
             <label class="label">
                 <span class="label-text">價格</span>
             </label>
             <input v-model="form.price" type="number" class="input input-bordered w-full" />
-        </div>
+        </div> -->
 
         <div>
             <label class="label">
                 <span class="label-text">描述</span>
             </label>
-            <QuillEditor v-model:content="form.description" content-type="html" theme="snow" style="min-height: 160px;"/>
+            <QuillEditor v-model:content="form.description" content-type="html" theme="snow"
+                style="min-height: 160px;" />
             <!-- <textarea v-model="form.description" class="textarea textarea-bordered w-full" rows="4"></textarea> -->
         </div>
 

@@ -16,10 +16,10 @@ class Category extends Model
 
     protected $casts = ['is_enabled' => 'boolean'];
 
-    public function getRouteKeyName()
-    {
-        return 'name';
-    }
+    // public function getRouteKeyName()
+    // {
+    //     return 'name';
+    // }
 
     public function subcategories()
     {
