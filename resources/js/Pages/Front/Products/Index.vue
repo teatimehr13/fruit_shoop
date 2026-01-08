@@ -211,7 +211,7 @@ const formatTwd = (price) => {
                         件商品
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 md:gap-4 xl:grid-cols-3">
+                <div class="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3 mb-4">
                     <div v-for="value in props.products"
                         class="relative border border-[#f0f0f0] rounded-[12px] overflow-hidden flex flex-col"
                         :key="value.id">
@@ -251,34 +251,50 @@ const formatTwd = (price) => {
 
                         <div class="fixed left-0 md:absolute bottom-0 h-[45%] md:h-[80%] w-full rounded-[12px] p-4 bg-neutral-100/95 transition-transform duration-500 z-10"
                             :class="selectToCartId == value.id ? 'translate-y-[0%]' : 'translate-y-[100%]'">
-                            <div class="flex flex-col h-full">
-                                <div
-                                    class="w-24 h-24 mt-4 sm:mt-2 md:w-18 md:h-18 xl:w-20 xl:h-20 3xl:w-24 3xl:h-24 flex-shrink-0 rounded bg-gray-100 overflow-hidden ">
-                                    <div>
-                                        <img :src="value.primary_image?.img_url" alt="">
-                                    </div>
-                                    <div>
-                                        {{ value.name }}
-                                    </div>
-                                    <div class="options-close" @click="toggleSelectCard">
-                                        <span></span>
+
+                            <div class="flex flex-col h-full gap-3">
+                                <!-- Top block: take more space -->
+                                <div class="flex-1">
+                                    <div class="grid grid-cols-[minmax(auto,100px)_1fr_32px] md:grid-cols-[1fr_1fr_32px] items-start gap-4">
+                                        <div class="w-full aspect-square overflow-hidden rounded bg-white">
+                                            <img :src="value.primary_image?.img_url" alt=""
+                                                class="w-full h-full object-cover" />
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <div class="text-base font-medium leading-snug line-clamp-2 pt-2">
+                                                {{ value.name }}
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="w-8 h-8 options-close" @click="toggleSelectCard">
+                                            <span></span>
+                                        </button>
                                     </div>
                                 </div>
-                                <label class="mt-auto">選項</label>
-                                <select class="select-md md:select-sm border-b-1 border-[#67645e] px-0 py-1 w-full outline-none focus:border-gray-500
-                                appearance-none bg-select-arrow bg-no-repeat bg-right"
-                                    v-model="selectedOptions[value.id]" @change="handleOptionChange(value)">
-                                    <option v-for="(opt, idx) in value.product_options" :key="idx" :value="opt.id">
-                                        {{ opt.option_text }}
-                                    </option>
-                                </select>
-                                <div class="mt-auto">
-                                    <button type="button" @click="confirmAddToCart(value)"
-                                        class="btn btn-md md:btn-sm  w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px] hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
-                                        加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
-                                    </button>
+
+                                <!-- Bottom block: smaller -->
+                                <div class="flex flex-1 flex-col justify-between gap-4">
+                                    <div>
+                                        <label>選項</label>
+                                        <select class="select-md border-b-1 border-[#67645e] px-0 py-1 w-full outline-none focus:border-gray-500
+                                            appearance-none bg-select-arrow bg-no-repeat bg-right" v-model="selectedOptions[value.id]"
+                                            @change="handleOptionChange(value)">
+                                            <option v-for="(opt, idx) in value.product_options" :key="idx" :value="opt.id">
+                                                {{ opt.option_text }}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="">
+                                        <button type="button" @click="confirmAddToCart(value)" class="btn btn-md md:btn-sm w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px]
+                                                    hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
+                                            加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

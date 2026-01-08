@@ -48,9 +48,11 @@
                         </div>
 
                         <div>
-                            <button class="buy_btn mt-6 md:mt-12">
-                                BUY NOW
-                            </button>
+                            <a :href="route('products.index')">
+                                <button class="buy_btn mt-6 md:mt-12 tracking-wider">
+                                    搶鮮去!
+                                </button>
+                            </a>
                         </div>
                     </div>
 

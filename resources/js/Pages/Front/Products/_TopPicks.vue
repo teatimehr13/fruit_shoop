@@ -143,8 +143,8 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
     cursor: not-allowed;
 }
 
-.custom-progressbar{
-    position:  relative !important;
+.custom-progressbar {
+    position: relative !important;
     height: 2px !important;
     background: #d8d8d8 !important;
 

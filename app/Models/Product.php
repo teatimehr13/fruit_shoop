@@ -58,10 +58,10 @@ class Product extends Model
         });
     }
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
 
     public function subcategory()
     {
@@ -76,6 +76,7 @@ class Product extends Model
     public function productImages()
     {
         return $this->hasMany(ProductImage::class);
+        //  ->orderByDesc('is_primary')  // true(1) 會排最前
     }
 
     public function primaryImage()

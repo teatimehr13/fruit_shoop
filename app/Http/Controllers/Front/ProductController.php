@@ -54,7 +54,7 @@ class ProductController extends Controller
             ->with('cheapestOption')
             ->with('productOptions')
             ->withMin('productOptions', 'price');   // 會多一個欄位 options_min_price
-            // ->withMax('productOptions', 'created_at'); // 會多一個欄位 options_max_created_at
+        // ->withMax('productOptions', 'created_at'); // 會多一個欄位 options_max_created_at
 
         if ($category && $category->exists) {
             $query->whereHas('subcategory', function ($q) use ($category) {
@@ -104,8 +104,32 @@ class ProductController extends Controller
 
     public function home()
     {
+        // $featured = Product::where('is_featured', 1)
+        //     ->orderByRaw('featured_sort IS NULL')  //沒填 sort 的也可以出現但排最後
+        //     ->orderBy('featured_sort')
+        //     ->with('primaryImage') 
+        //     ->limit(9)
+        //     ->get();
+
+        $featured = Product::query()
+            ->select(['id', 'name', 'slug', 'featured_sort'])
+            ->where('is_featured', 1)
+            ->orderByRaw('featured_sort IS NULL')
+            ->orderBy('featured_sort')
+            ->with(['primaryImage:id,product_id,image'])
+            ->limit(9)
+            ->get()
+            // ->map(fn($p) => $p->primaryImage?->img_url)
+            ->map(fn($p) => [
+                'slug'  => $p->slug,
+                'image' => $p->primaryImage?->img_url, 
+            ])
+            ->filter()
+            ->values();
+
+
         return Inertia::render('Front/Home/Index', [
-            'data' => ''
+            'featured' => $featured,
         ]);
     }
 
@@ -124,7 +148,7 @@ class ProductController extends Controller
         //     ->with('productOptions')
         //     ->findOrFail($product->id);
 
-        $product->load(['primaryImage', 'cheapestOption', 'productOptions']);
+        $product->load(['primaryImage', 'cheapestOption', 'productOptions', 'productImages' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('id')]);
 
         return Inertia::render('Front/Products/Show', [
             'product' => $product

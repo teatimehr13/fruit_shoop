@@ -193,7 +193,7 @@ const submitToCart = async () => {
 </script>
 
 <template>
-    <section class="py-8 px-4 mt-[var(--spacing-header-space)] max-w-[var(--max-w-layout-normal)] mx-auto">
+    <section class="py-8 px-4 mt-[var(--spacing-header-space)] max-w-[var(--max-w-layout-wide)] mx-auto">
         <div class="mt-header">
             <div class="mx-auto h-full">
                 <div class="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
@@ -201,7 +201,7 @@ const submitToCart = async () => {
                     <div class="w-full md:w-[55%]" >
                         <div class="flex flex-col-reverse md:flex-row gap-4 h-auto">
                             <!-- 縮圖列表 -->
-                            <div class="w-full md:w-[60px] shrink-0" :style="{ maxHeight: thumbsMaxHeight }">
+                            <div v-if="props.product.product_images.length > 1" class="w-full md:w-[60px] shrink-0" :style="{ maxHeight: thumbsMaxHeight }">
                                 <Swiper class="swiper--thumbs !h-full w-full" :modules="modules" :space-between="8"
                                     :free-mode="true" :watch-slides-progress="true" :breakpoints="{
                                         0: {
@@ -213,11 +213,11 @@ const submitToCart = async () => {
                                             slidesPerView: 'auto'
                                         },
                                     }" @swiper="setThumbsSwiper">
-                                    <SwiperSlide v-for="(image, index) in images" :key="image.id || index"
+                                    <SwiperSlide v-for="(image, index) in props.product.product_images" :key="image.id || index"
                                         class="cursor-pointer !h-auto">
                                         <div
                                             class="aspect-square overflow-hidden border-2 border-gray-200 rounded-lg hover:border-[#82ae46] transition-colors">
-                                            <img :src="image.url" :alt="image.alt || `產品圖片 ${index + 1}`"
+                                            <img :src="image.img_url" :alt="image.alt_text || `產品圖片 ${index + 1}`"
                                                 class="w-full h-full object-cover">
                                         </div>
                                     </SwiperSlide>
@@ -225,8 +225,8 @@ const submitToCart = async () => {
                             </div>
 
                             <!-- 主圖區域 -->
-                            <div class="min-w-0 ">
-                                <div class="relative w-full">
+                            <div class="min-w-0 w-full">
+                                <div class="relative w-full aspect-3/2">
                                     <Swiper class="pdp-media__carousel absolute inset-0  "
                                         :modules="modules" :space-between="0" :thumbs="{ swiper: thumbsSwiper }"
                                         :navigation="{
@@ -236,9 +236,9 @@ const submitToCart = async () => {
                                             el: '.pdp-media__pagination',
                                             clickable: true
                                         }" @swiper="setMainSwiper">
-                                        <SwiperSlide v-for="(image, index) in images" :key="image.id || index">
-                                            <div class="aspect-square h-full bg-gray-100 rounded-lg overflow-hidden pdp-media__carousel_img">
-                                                <img :src="image.url" :alt="image.alt"
+                                        <SwiperSlide v-for="(image, index) in props.product.product_images" :key="image.id || index">
+                                            <div class="aspect-3/2 h-full bg-gray-100 rounded-lg overflow-hidden pdp-media__carousel_img">
+                                                <img :src="image.img_url" :alt="image.alt_text"
                                                     class="w-full h-full object-cover" @load="updateThumbsHeight">
                                             </div>
                                         </SwiperSlide>
@@ -253,7 +253,7 @@ const submitToCart = async () => {
                     </div>
 
                     <!-- 右側：商品資訊 -->
-                    <div class="w-full md:[45%] md:pl-4">
+                    <div class="w-full md:w-[45%] md:pl-4">
                         <div class="flex flex-col">
                             <!-- 商品標題 -->
                             <div>

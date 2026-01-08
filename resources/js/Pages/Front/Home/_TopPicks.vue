@@ -8,9 +8,11 @@ import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-
-
 const modules = [Scrollbar, EffectFade, Pagination, Navigation];
+
+const props = defineProps({
+    featured: Object
+});
 
 </script>
 
@@ -52,41 +54,11 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
                     }
 
                 }" class="mySwiper">
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=1"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=2"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=3"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=4"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=5"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=6"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=7"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=8"
-                            class="aspect-square object-cover rounded-[12px]">
-                    </swiper-slide>
-                    <swiper-slide>
-                        <img src="https://picsum.photos/600/900?random=9"
-                            class="aspect-square object-cover rounded-[12px]">
+                        <swiper-slide v-for="featured in props.featured">
+                        <a :href="route('products.show', featured.slug)">
+                            <img :src="featured.image"
+                                class="aspect-square object-cover rounded-[12px]">
+                        </a>
                     </swiper-slide>
                 </swiper>
 

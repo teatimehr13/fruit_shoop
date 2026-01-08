@@ -26,14 +26,14 @@ const heroSlides = [
     },
     {
         id: 2,
-        image: '/images/hero/messageImage_1763705363499.jpg',
-        title: '有機蔬菜箱',
-        subtitle: '本週限時 8 折',
+        image: '/images/hero/8bce9e29-97f7-43f9-822f-d1108e792ff2.png',
+        title: '鮮榨果汁',
+        subtitle: '新鮮喝的到',
         link: '/products/veggie-box',
     },
     {
         id: 3,
-        image: '/images/hero/messageImage_1763705600822.jpg',
+        image: '/images/hero/bfd4942a-1c19-402d-80c8-a63eb93b1b11.png',
         title: '有機蔬菜箱',
         subtitle: '本週限時 8 折',
         link: '/products/veggie-box',
@@ -61,13 +61,13 @@ const heroSlides = [
                                     {{ slide.subtitle }}
                                 </p>
 
-                                <a :href="slide.link" class="
+                                <!-- <a :href="slide.link" class="
                                     inline-block bg-green-600 text-white rounded-lg 
                                     hover:bg-green-700 transition-colors
                                     px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4
                                     text-sm md:text-base lg:text-lg">
                                     立即選購 →
-                                </a>
+                                </a> -->
                             </div>
                         </div>
                     </div>

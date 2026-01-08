@@ -75,7 +75,7 @@ const handleSave = () => {
             <label class="label">
                 <span class="label-text">描述</span>
             </label>
-            <QuillEditor v-model:content="form.description" content-type="html" theme="snow"
+            <QuillEditor v-model:content="form.description" content-type="html" theme="snow" toolbar="essential"
                 style="min-height: 160px;" />
             <!-- <textarea v-model="form.description" class="textarea textarea-bordered w-full" rows="4"></textarea> -->
         </div>

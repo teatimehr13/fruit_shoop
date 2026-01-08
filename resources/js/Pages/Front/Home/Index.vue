@@ -6,11 +6,16 @@ import Category from './_Category.vue';
 import TopPicks from './_TopPicks.vue';
 import PageHero from './_PageHero.vue';
 
-
-
 defineOptions({
     layout: FrontLayout,
 })
+
+const props = defineProps({
+    featured: Object
+});
+
+console.log(props.featured);
+
 
 </script>
 
@@ -28,5 +33,5 @@ defineOptions({
      <Category />
     <!-- recommand -->
     <!-- <section></section> -->
-     <TopPicks />
+     <TopPicks :featured="featured"/>
 </template>
