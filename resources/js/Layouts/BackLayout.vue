@@ -42,7 +42,9 @@ provide('backUI', ui)
 
     <SideBar v-model="drawerSideOpen" :is-pinned="isPinned">
         <template #drawer_content>
-            <slot />
+            <slot>
+                <p>點擊左側選單進行頁面操作</p>
+            </slot>
         </template>
     </SideBar>
 

@@ -1,8 +1,12 @@
 <script setup>
 import BackLayout from '@/Layouts/BackLayout.vue';
 import axios from 'axios';
-import {reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import api from '@/Lib/apiFeedback';
+
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
 
 const props = defineProps({
     about: Object
@@ -24,6 +28,9 @@ const fileInput = ref(null)
 const previewUrl = ref(null)
 const fileObj = ref(null) //上傳時放入formData
 const rmImg = ref(0);
+
+
+
 
 const revoke = () => {
     if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
@@ -89,12 +96,15 @@ const editAbout = async () => {
                     <input type="text" class="input w-full" placeholder="Type here" v-model="aboutForm.title" />
                 </fieldset>
 
-                <fieldset class="fieldset mt-4 max-w-xl">
+                <fieldset class="mt-4 max-w-xl">
                     <legend class="fieldset-legend text-sm">內文</legend>
-                    <textarea class="textarea w-full" placeholder="Bio" v-model="aboutForm.content"></textarea>
+                    <!-- <textarea class="textarea w-full" placeholder="Bio" v-model="aboutForm.content"></textarea> -->
+
+                    <QuillEditor v-model:content="aboutForm.content" content-type="html" theme="snow" toolbar="essential"
+                        style="min-height: 160px;" />
                 </fieldset>
 
-                <fieldset class="fieldset max-w-xl">
+                <fieldset class="fieldset max-w-xl mt-4">
                     <legend class="fieldset-legend text-sm">圖片</legend>
                     <input v-show="!aboutForm?.image" type="file" class="file-input w-full" ref="fileInput"
                         id="fileInput" @change="onFileChange" />

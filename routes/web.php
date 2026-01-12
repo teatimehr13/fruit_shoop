@@ -35,9 +35,7 @@ Route::get('/dashboard', function () {
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
-Route::get('/back', function() {
-    return Inertia::render('LayoutBack');
-});
+
 
 
 

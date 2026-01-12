@@ -7,12 +7,17 @@ use App\Http\Controllers\Back\ProductOptionController as BackProductOptionContro
 use App\Http\Controllers\Back\OrderController as BackOrderController;
 use App\Http\Controllers\Back\AboutController as BackAboutController;
 use App\Http\Controllers\Back\ProductImageController as BackProductImageController;
+use Inertia\Inertia;
 
 
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->prefix('back')->name('back.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('back')->name('back.')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('LayoutBack');
+    });
+
     Route::patch('subcategories/reorder', [BackSubcategoryController::class, 'reorder'])->name('subcategories.reorder');
 
     Route::resource('products', BackProductController::class)->parameters([

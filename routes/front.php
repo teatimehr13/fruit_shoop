@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Front\AboutController;
 use App\Http\Controllers\Front\AccountController;
 use App\Http\Controllers\Front\AccountProfileController;
 use App\Http\Controllers\Front\CartController;
@@ -55,3 +56,5 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });
+
+Route::get('/about', [AboutController::class, 'index'])->name('front.about.index');
