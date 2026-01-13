@@ -125,7 +125,7 @@ class PaymentController extends Controller
     // 3) 綠界前端導回（OrderResultURL）
     public function frontOrderResultURL(Request $req)
     {
-        Log::info('OrderResult 回傳內容', $req->all());
+        // Log::info('OrderResult 回傳內容', $req->all());
 
         $merchantTradeNo = $req->input('MerchantTradeNo');
 
@@ -133,9 +133,11 @@ class PaymentController extends Controller
             ->orWhere('payment_token', $merchantTradeNo)
             ->firstOrFail();
 
+        Log::info('success');
         return redirect()
             ->route('order.show', ['order' => $order->order_number])
             ->with('success', '付款完成！訂單已成立');
+        //  return redirect()->route('account.orders');
     }
 
     // 4) 補繳（站內功能）
@@ -144,7 +146,7 @@ class PaymentController extends Controller
         // 確保是本人訂單
         // abort_unless($order->user_id === auth()->id(), 403);
 
-        if ($order->payment_status === 'paid') {
+        if ($order->order_status === 'paid') {
             return redirect()
                 ->route('order.show', ['order' => $order->order_number])
                 ->with('error', '此訂單無需補繳');

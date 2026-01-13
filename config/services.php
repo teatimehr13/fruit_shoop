@@ -38,6 +38,7 @@ return [
         'hash_iv'     => env('ECPAY_HASH_IV'),
         'return_url'  => env('ECPAY_RETURN_URL'),
         'front_url'   => env('ECPAY_FRONT_URL'),
-        'notify_url'  => env('ECPAY_NOTIFY_URL')
+        'notify_url'  => env('ECPAY_NOTIFY_URL'),
+        'client_back_url' => env('ECPAY_CLIENT_BACK_URL'),
     ],
 ];

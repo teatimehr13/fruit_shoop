@@ -2,8 +2,11 @@
 import AccountLayout from '@/Layouts/AccountLayout.vue'
 defineOptions({ layout: AccountLayout })
 
-import { computed } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { computed, onMounted } from 'vue'
+import { Link, usePage, router } from '@inertiajs/vue3'
+
+
+
 
 const user = computed(() => usePage().props.auth.user)
 
@@ -15,11 +18,26 @@ console.log(props.orders);
 const { data } = props.orders;
 console.log(data);
 
+//載入頁面時刷新資料
+onMounted(() => {
+  let times = 0
+  const timer = setInterval(() => {
+    router.reload({ only: ['orders'], preserveScroll: true })
+    times++
+    if (times >= 2) clearInterval(timer)
+  }, 2000)
+})
+
 
 const formatDate = (v) => (v ? String(v).slice(0, 10) : '');
 
 const formatTwd = (price) => {
   return `$ ${price?.toLocaleString() || 0}`
+}
+
+
+function retryPayment(orderNumber) {
+  window.location.href = `/payment/retry/${orderNumber}`
 }
 </script>
 
@@ -29,18 +47,18 @@ const formatTwd = (price) => {
     <!-- desktop -->
     <div class="mb-2 md:hidden ">
       <Link :href="route('account.index')" class="inline-flex">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
-        <path fill-rule="evenodd"
-          d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
-          clip-rule="evenodd" />
-      </svg>
-      <span>
-        返回會員中心
-      </span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
+          <path fill-rule="evenodd"
+            d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+            clip-rule="evenodd" />
+        </svg>
+        <span>
+          返回會員中心
+        </span>
       </Link>
     </div>
     <h1 class="text-2xl md:text-3xl font-semibold">訂單</h1>
-    <div class="hidden md:grid grid-cols-[2fr_1.5fr_1fr_1fr_.75fr] border-t border-[#c4c4c4] pt-6">
+    <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr_.75fr] border-t border-[#c4c4c4] pt-6">
       <div class="contents font-semibold text-[#67645e]">
         <div class="p-3">訂單號碼</div>
         <div class="p-3">日期</div>
@@ -55,7 +73,19 @@ const formatTwd = (price) => {
         <div class="p-3">{{ row.order_number }}</div>
         <div class="p-3">{{ formatDate(row.created_at) }}</div>
         <div class="p-3">{{ formatTwd(row.amount) }}</div>
-        <div class="p-3">{{ row.order_status_label }}</div>
+        <div class="p-3">{{ row.order_status_label }}
+          <div v-if="row.is_payment_pending" class="inline">
+            <div v-if="!row.is_payment_expired" class="inline">
+              <a :href="route('payment.retry', row.order_number)" class="text-[#0000ee] text-sm underline ">重新付款</a>
+              <div v-if="row.payment_expire_at_label" class="text-sm text-neutral-400">
+                (繳費期限：{{ row.payment_expire_at_label }})
+              </div>
+            </div>
+            <div v-else class="text-sm text-neutral-400">
+              (訂單已取消)
+            </div>
+          </div>
+        </div>
         <div class="p-3 text-center">
           <!-- <button type="button"
             class="btn btn-sm w-20 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
@@ -92,7 +122,33 @@ const formatTwd = (price) => {
 
           <div class="flex justify-between gap-3">
             <div class="text-[#67645e]">訂單狀態</div>
-            <div class="font-medium">{{ row.order_status_label }}</div>
+            <div class="font-medium">
+              <div class="flex flex-col items-end text-right">
+                <div class="text-sm">
+                  {{ row.order_status_label }}
+                </div>
+
+                <div v-if="row.is_payment_pending" class="mt-1 flex flex-col items-end gap-0.5">
+                  <template v-if="!row.is_payment_expired">
+                    <a :href="route('payment.retry', row.order_number)"
+                      class="text-sm text-[#0000ee] underline underline-offset-2 hover:opacity-80">
+                      重新付款
+                    </a>
+
+                    <div v-if="row.payment_expire_at_label" class="text-xs text-neutral-400">
+                      (繳費期限：{{ row.payment_expire_at_label }})
+                    </div>
+                  </template>
+
+                  <div v-else class="text-xs text-neutral-400">
+                    (訂單已取消)
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- <span v-if="row.is_payment_pending">...543543</span> -->
           </div>
         </div>
 

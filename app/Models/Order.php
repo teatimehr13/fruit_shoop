@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,7 @@ class Order extends Model
         'shipping_email'
     ];
 
-    protected $appends = ['order_status_label'];
+    protected $appends = ['order_status_label', 'is_payment_pending',  'payment_expire_at_label', 'is_payment_expired'];
 
     const NOT_SELECTED_PAYMENT = 'not_selected_payment';
     const WAITING_FOR_THE_TRANSFER = 'waiting_for_the_transfer';
@@ -50,6 +51,12 @@ class Order extends Model
         self::PAID => '已付款',
         self::CANCELLED => '已取消',
     ];
+
+    const PAYMENT_PENDING_STATUSES = [
+        self::NOT_SELECTED_PAYMENT,
+        self::WAITING_FOR_THE_TRANSFER,
+    ];
+
 
     protected static function boot()
     {
@@ -101,5 +108,32 @@ class Order extends Model
             self::CANCELLED => '已取消',
             default => '未知狀態',
         };
+    }
+
+    public function getIsPaymentPendingAttribute()
+    {
+        return in_array($this->order_status, self::PAYMENT_PENDING_STATUSES, true);
+    }
+
+    public function getPaymentExpireAtLabelAttribute(): ?string
+    {
+        return $this->created_at
+            ? $this->created_at->copy()
+            ->utc()
+            ->addHours(4)
+            ->setTimezone('Asia/Taipei')
+            ->format('Y-m-d H:i')
+            : null;
+    }
+
+    public function getIsPaymentExpiredAttribute(): bool
+    {
+        if (!$this->created_at) return false;
+
+        $expireAtUtc = $this->created_at->copy()
+            ->utc()
+            ->addHours(4);
+
+        return Carbon::now('UTC')->greaterThan($expireAtUtc);
     }
 }

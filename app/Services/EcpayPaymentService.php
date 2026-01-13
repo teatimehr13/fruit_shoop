@@ -32,6 +32,7 @@ class EcpayPaymentService
             'ItemName'          => '測試商品',
             'ReturnURL'         => config('services.ecpay.return_url'),
             'OrderResultURL'    => config('services.ecpay.front_url'),
+            'ClientBackURL'     => route('account.orders'),
             'ChoosePayment'     => 'Credit',
             'EncryptType'       => 1,
         ];

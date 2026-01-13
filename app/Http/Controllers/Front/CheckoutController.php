@@ -24,15 +24,35 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
 
-        if ($user) {
+        // if ($request->boolean('from_ecpay') && $user) {
+        //     $pending = Order::where('user_id', $user->id)
+        //         ->whereIn('order_status', [Order::NOT_SELECTED_PAYMENT, Order::WAITING_FOR_THE_TRANSFER])
+        //         ->where('created_at', '>=', now()->subMinutes(10))
+        //         ->latest()
+        //         ->first();
+
+        //     // if ($pending && !empty($pending->payment_token)) {
+        //     //     // Log::info($pending->order_number);
+        //     //     return redirect()->route('account.orders');
+        //     //     // return redirect()->route('order.show', ['order' => $pending->order_number], 303);
+        //     // }
+        // }
+
+        $checkoutItems = $cartService->getSharedCartItems($request);
+        $items = $checkoutItems['items'] ?? collect();
+
+        if ($items->isEmpty() && $user) {
             $pending = Order::where('user_id', $user->id)
                 ->whereIn('order_status', [Order::NOT_SELECTED_PAYMENT, Order::WAITING_FOR_THE_TRANSFER])
                 ->where('created_at', '>=', now()->subMinutes(30))
                 ->latest()
                 ->first();
 
-            if ($pending && !empty($pending->payment_token)) {
-                return redirect()->route('order.show', ['order' => $pending->order_number], 303);
+            if ($pending) {
+                // 不要踢回商品頁，導去訂單頁讓他補繳/查看
+                // return redirect()->route('account.orders')
+                //     ->with('info', '你有一筆未完成付款的訂單，可以到訂單頁繼續付款或重新下單。');
+                return Inertia::location(route('account.orders'));
             }
         }
 
