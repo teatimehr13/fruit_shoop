@@ -45,14 +45,14 @@ class ProductController extends Controller
     {
         // dd($category);
         $categories_tab = Category::select(['id', 'name'])
+            ->where('is_enabled', 1)
             ->orderBy('sort_order')
             ->get();
 
         $query = Product::query()
             ->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
-            ->with('primaryImage')
-            ->with('cheapestOption')
-            ->with('productOptions')
+            ->where('is_enabled', 1)
+            ->with(['primaryImage', 'cheapestOption', 'productOptions'])
             ->withMin('productOptions', 'price');   // 會多一個欄位 options_min_price
         // ->withMax('productOptions', 'created_at'); // 會多一個欄位 options_max_created_at
 
@@ -95,8 +95,6 @@ class ProductController extends Controller
             'categories_tab' => $categories_tab,
             'products'       => $products,
             'activeCategory'  => $category?->name,
-            'products'       => $products,
-            'activeCategory'  => $category?->name,
         ]);
     }
 
@@ -113,7 +111,10 @@ class ProductController extends Controller
 
         $featured = Product::query()
             ->select(['id', 'name', 'slug', 'featured_sort'])
-            ->where('is_featured', 1)
+            ->where([
+                'is_featured' => 1,
+                'is_enabled'  => 1,
+            ])
             ->orderByRaw('featured_sort IS NULL')
             ->orderBy('featured_sort')
             ->with(['primaryImage:id,product_id,image'])
@@ -122,7 +123,7 @@ class ProductController extends Controller
             // ->map(fn($p) => $p->primaryImage?->img_url)
             ->map(fn($p) => [
                 'slug'  => $p->slug,
-                'image' => $p->primaryImage?->img_url, 
+                'image' => $p->primaryImage?->img_url,
             ])
             ->filter()
             ->values();
@@ -147,8 +148,9 @@ class ProductController extends Controller
         //     ->with('cheapestOption')
         //     ->with('productOptions')
         //     ->findOrFail($product->id);
+        abort_unless($product->is_enabled, 404);
 
-        $product->load(['primaryImage', 'cheapestOption', 'productOptions', 'productImages' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('id')]);
+        $product->load(['primaryImage', 'cheapestOption', 'productOptions', 'productImages' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id')]);
 
         return Inertia::render('Front/Products/Show', [
             'product' => $product

@@ -24,17 +24,17 @@
 
                 <div class="flex flex-col justify-center min-w-0">
                     <div>
-                        <div class="text-sm font-semibold text-[#67645e] line-clamp-2">
+                        <div class="text-md font-semibold text-[#67645e] line-clamp-2">
                             {{ item.product_name }}
                         </div>
-                        <div class="text-sm font-medium text-[#67645e] line-clamp-2">
+                        <div class="text-xs font-medium text-[#67645e] line-clamp-2">
                             {{ item.option_text }}
                         </div>
                     </div>
                     <!-- <div class="text-xs text-[#67645e] mt-2 block">
              {{ item.qty }} x {{ item.price < item.original_price ? formatTwd(item.price) : formatTwd(item.original_price) }}
           </div> -->
-                    <div class="hidden sm:block text-sm text-[#67645e] mt-1">
+                    <div class="text-sm text-[#67645e] mt-2 md:mt-4">
                         {{ item.price < item.original_price ? formatTwd(item.price) : formatTwd(item.original_price) }}
                             </div>
                     </div>

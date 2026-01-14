@@ -39,9 +39,8 @@ class OrderController extends Controller
                         ->orWhere('recipient_phone', 'like', "%{$q}%");
                 });
             })
-
             ->latest()
-            ->paginate(20)
+            ->paginate(10)
             ->withQueryString();
         return Inertia::render('Back/Order/Index', [
             'orders' => $orders,

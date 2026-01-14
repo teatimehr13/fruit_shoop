@@ -80,7 +80,7 @@ const submitCheckout = async () => {
                         <OrderSummary />
 
                         <div class="block md:hidden mt-8">
-                            <button type="submit"
+                            <button type="button" @click="submitCheckout"
                                 class="btn w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
                                 前往結帳
                             </button>
