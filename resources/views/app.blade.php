@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<script>
+    window.onpageshow = function(event) {
+        // 只有在結帳頁面，且是從 BFCache (按上一頁) 回來時才重整
+        if (event.persisted && window.location.pathname.includes('/checkout')) {
+            // 加上隨機參數確保擊穿 Varnish 快取
+            window.location.replace(window.location.pathname + '?ref=' + Date.now());
+        }
+    };
+</script>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
