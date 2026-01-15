@@ -37,15 +37,6 @@ class ProductOptionRequest extends FormRequest
             'options.*.is_enabled' => ['required', 'boolean'],
             'deleted_ids' => 'nullable|array',
             'deleted_ids.*' => 'exists:product_options,id',
-
-            // 'product_id' => [$req, 'integer', 'exists:products,id'],
-            // 'option_text' => [$req, 'string', 'max:255'],
-            // 'price' => [$req, 'numeric', 'min:0',],
-            // 'original_price' => [$req, 'numeric', 'min:0'],
-            // 'inventory' => ['nullable', 'integer', 'min:0',],
-            // 'is_enabled' => [$req, 'boolean'],
-            // 'image' => ['image', 'nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            // 'remove_image' => ['sometimes','boolean']
         ];
     }
 }

@@ -25,17 +25,11 @@ class ProductImageRequest extends FormRequest
         $req = $isUpdate ? 'sometimes' : 'required';
 
         return [
-            // 'product_id' => [$req, 'integer', 'exists:products,id'],
-            // 'image' => ['image', 'nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            // 'is_primary' => [$req, 'boolean'],
-            // 'alt_text' => ['nullable','string'],
-            // 'sort_order' => [],
-
             'productImages' => [$req, 'array'],
             'productImages.*.product_id' => [$req, 'integer', 'exists:products,id'],
             'productImages.*.image' => ['image', 'nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'productImages.*.is_primary' => [$req, 'boolean'],
-            'productImages.*.alt_text' => ['nullable','string'],
+            'productImages.*.alt_text' => ['nullable', 'string'],
         ];
     }
 }

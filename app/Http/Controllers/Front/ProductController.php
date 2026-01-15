@@ -11,39 +11,8 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    // public function index(Request $request, ?string $categoryName = null)
-    // {
-    //     $categories_tab = Category::select(['id', 'name'])->orderBy('sort_order')->get();
-    //     $query = Product::query()->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
-    //         ->with('primaryImage')
-    //         ->with('cheapestOption');
-    //     // ->get();
-
-    //     if ($categoryName) {
-    //         $category = Category::where('name', $categoryName)->first();
-
-    //         if ($category) {
-    //             $query->whereHas('subcategory', function ($q) use ($category) {
-    //                 $q->where('category_id', $category->id);
-    //             });
-    //         }
-    //     }
-
-    //     // if ($subcategoryId = $request->get('subcategory_id')) {
-    //     //     $query->where('subcategory_id', $subcategoryId);
-    //     // }
-
-    //     $products = $query->get();
-
-    //     return Inertia::render('Front/Products/Index', [
-    //         'categories_tab' => $categories_tab,
-    //         'products' => $products
-    //     ]);
-    // }
-
     public function index(Request $request, ?Category $category)
     {
-        // dd($category);
         $categories_tab = Category::select(['id', 'name'])
             ->where('is_enabled', 1)
             ->orderBy('sort_order')
@@ -69,9 +38,6 @@ class ProductController extends Controller
         $validSorts = ['created_at', 'price'];
         $validDirs = ['asc', 'desc'];
 
-        // if (in_array($sort_by, $validSorts) && in_array($sort_dir, $validDirs)) {
-        //     $query->orderBy($sort_by, $sort_dir);
-        // }
 
         if (in_array($sort_dir, $validDirs)) {
             if ($sort_by === 'price') {
@@ -102,14 +68,7 @@ class ProductController extends Controller
 
     public function home()
     {
-        // $featured = Product::where('is_featured', 1)
-        //     ->orderByRaw('featured_sort IS NULL')  //沒填 sort 的也可以出現但排最後
-        //     ->orderBy('featured_sort')
-        //     ->with('primaryImage') 
-        //     ->limit(9)
-        //     ->get();
-
-        $featured = Product::query()
+         $featured = Product::query()
             ->select(['id', 'name', 'slug', 'featured_sort'])
             ->where([
                 'is_featured' => 1,

@@ -17,16 +17,14 @@ class Order extends Model
         'address',
         'user_id',
         'payment_method',
-        // 'payment_status',
-        // 'fulfilment_status',
         'payment_token',
-        'shipping_city', //y
-        'shipping_district', //y
-        'shipping_address_detail', //y
-        'shipping_zip_code', //y
-        'note', //y
-        'recipient_phone', //y
-        'recipient_name', //y
+        'shipping_city', 
+        'shipping_district', 
+        'shipping_address_detail', 
+        'shipping_zip_code', 
+        'note', 
+        'recipient_phone', 
+        'recipient_name', 
         'shipping_email'
     ];
 

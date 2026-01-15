@@ -1,24 +1,21 @@
 <?php
 
 namespace App\Http\Controllers\Front;
+
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
 class ProductImageController extends Controller
 {
-        public function index(Request $request){
-
-    }
+    public function index(Request $request) {}
 
     public function create()
     {
         //
     }
 
-    public function store(Request $request){
-
-    }
+    public function store(Request $request) {}
 
     public function show(string $id)
     {
