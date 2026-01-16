@@ -16,15 +16,6 @@ class PaymentController extends Controller
         // $this->ecpay = $ecpay;
     }
 
-    // public function checkout(Request $req)
-    // {
-    //     $orderNumber = (string) $req->input('order_number');
-    //     $amount = (int) $req->input('amount');
-
-    //     $html = $this->ecpay->generateCheckoutHtml($orderNumber, $amount);
-    //     return response($html);
-    // }
-
     public function checkout(string $order)
     {
         // Log::info(1233);
@@ -89,23 +80,6 @@ class PaymentController extends Controller
                 'payment_method' => $method,
                 'payment_order_number' => $data['TradeNo'] ?? $order->payment_order_number,
             ]);
-
-            //成功後刪除購物車內容
-            // $optionIds = $order->orderItems()
-            //     ->pluck('product_option_id')
-            //     ->filter()
-            //     ->unique()
-            //     ->values()
-            //     ->all();
-
-            // if (!empty($optionIds)) {
-            //     // 你目前強制登入，order 一定有 user_id
-            //     $cart = $order->user->getPurchaseCartOrCreate();
-
-            //     $cart->cartItems()
-            //         ->whereIn('product_option_id', $optionIds)
-            //         ->delete();
-            // }
         } else {
             $order->update([
                 'order_status' => Order::WAITING_FOR_THE_TRANSFER, // 或 Order::PAYMENT_FAILED
@@ -132,6 +106,12 @@ class PaymentController extends Controller
         $order = Order::where('order_number', $merchantTradeNo)
             ->orWhere('payment_token', $merchantTradeNo)
             ->firstOrFail();
+
+        // 從 ECPay 返回時自動重新登入
+        if (!auth()->check() && $order->user_id) {
+            auth()->loginUsingId($order->user_id, true);
+            // Log::info('使用者從 ECPay 返回,已重新登入', ['user_id' => $order->user_id]);
+        }
 
         Log::info('success');
         return redirect()
