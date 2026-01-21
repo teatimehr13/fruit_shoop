@@ -19,21 +19,21 @@ const modules = [Autoplay, Pagination, EffectFade];
 const heroSlides = [
     {
         id: 1,
-        image: '/images/hero/engin-akyurt-Y5n8mCpvlZU-unsplash.jpg',
+        image: '/images/hero/engin-akyurt-Y5n8mCpvlZU-unsplash.webp',
         title: '春季新鮮草莓',
         subtitle: '產地直送・當日現採',
         link: '/products/strawberry',
     },
     {
         id: 2,
-        image: '/images/hero/8bce9e29-97f7-43f9-822f-d1108e792ff2.png',
+        image: '/images/hero/8bce9e29-97f7-43f9-822f-d1108e792ff2.webp',
         title: '鮮榨果汁',
         subtitle: '新鮮喝的到',
         link: '/products/veggie-box',
     },
     {
         id: 3,
-        image: '/images/hero/bfd4942a-1c19-402d-80c8-a63eb93b1b11.png',
+        image: '/images/hero/bfd4942a-1c19-402d-80c8-a63eb93b1b11.webp',
         title: '有機蔬菜箱',
         subtitle: '本週限時 8 折',
         link: '/products/veggie-box',
