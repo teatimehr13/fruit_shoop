@@ -5,7 +5,7 @@ import { inject, onMounted, ref } from 'vue'
 const heroSlides = [
     {
         id: 1,
-        image: '/images/hero/b1f5e613-0bae-49fc-94d0-d79f47a5ba23.png',
+        image: '/images/hero/b1f5e613-0bae-49fc-94d0-d79f47a5ba23.webp',
         title: '關於我們',
         // subtitle: '嚴選在地小農-高品質國產、進口蔬果',
         link: '/products/strawberry',

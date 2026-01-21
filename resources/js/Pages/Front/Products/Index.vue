@@ -218,7 +218,7 @@ const formatTwd = (price) => {
                         <div class="overflow-hidden">
                             <a :href="route('products.show', value.slug)">
                                 <img :src="value.primary_image?.img_url || '/images/categories/ChatGPT Image 2025年11月29日 下午02_44_25.png'"
-                                    alt=""
+                                    alt="" loading="lazy" decoding="async"
                                     class="transition-all duration-200 hover:scale-110 object-cover aspect-3/2 w-full h-full">
                             </a>
                         </div>
@@ -255,7 +255,8 @@ const formatTwd = (price) => {
                             <div class="flex flex-col h-full gap-3">
                                 <!-- Top block: take more space -->
                                 <div class="flex-1">
-                                    <div class="grid grid-cols-[minmax(auto,100px)_1fr_32px] md:grid-cols-[1fr_1fr_32px] items-start gap-4">
+                                    <div
+                                        class="grid grid-cols-[minmax(auto,100px)_1fr_32px] md:grid-cols-[1fr_1fr_32px] items-start gap-4">
                                         <div class="w-full aspect-square overflow-hidden rounded bg-white">
                                             <img :src="value.primary_image?.img_url" alt=""
                                                 class="w-full h-full object-cover" />
@@ -278,16 +279,18 @@ const formatTwd = (price) => {
                                     <div>
                                         <label>選項</label>
                                         <select class="select-md border-b-1 border-[#67645e] px-0 py-1 w-full outline-none focus:border-gray-500
-                                            appearance-none bg-select-arrow bg-no-repeat bg-right" v-model="selectedOptions[value.id]"
-                                            @change="handleOptionChange(value)">
-                                            <option v-for="(opt, idx) in value.product_options" :key="idx" :value="opt.id">
+                                            appearance-none bg-select-arrow bg-no-repeat bg-right"
+                                            v-model="selectedOptions[value.id]" @change="handleOptionChange(value)">
+                                            <option v-for="(opt, idx) in value.product_options" :key="idx"
+                                                :value="opt.id">
                                                 {{ opt.option_text }}
                                             </option>
                                         </select>
                                     </div>
 
                                     <div class="">
-                                        <button type="button" @click="confirmAddToCart(value)" class="btn btn-md md:btn-sm w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px]
+                                        <button type="button" @click="confirmAddToCart(value)"
+                                            class="btn btn-md md:btn-sm w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px]
                                                     hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
                                             加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
                                         </button>

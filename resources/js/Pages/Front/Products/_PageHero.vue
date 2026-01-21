@@ -12,7 +12,7 @@ const heroRef = inject('heroRef', null)
 const heroSlides = [
     {
         id: 1,
-        image: '/images/hero/Gemini_Generated_Image_xut2fvxut2fvxut2.png',
+        image: '/images/hero/Gemini_Generated_Image_xut2fvxut2fvxut2.webp',
         title: '所有產品',
         subtitle: '嚴選在地小農-高品質國產、進口蔬果',
         link: '/products/strawberry',
