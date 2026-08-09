@@ -37,7 +37,7 @@ const fullShippingAddress = computed(() => {
             </h1>
         </div>
 
-        <div class="grid space-y-2 info border-t border-[#c4c4c4] pt-4">
+        <div class="grid space-y-2 info border-t border-neutral pt-4">
 
             <div>
                 <span class="text-lg font-semibold ">
@@ -68,14 +68,14 @@ const fullShippingAddress = computed(() => {
 
             <div>
                 <Link :href="route('account.profile')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors w-full">
+                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors w-full">
                     編輯個人資訊
                 </Link>
 
             </div>
         </div>
 
-        <div class="grid space-y-2 order border-t border-[#c4c4c4] pt-4">
+        <div class="grid space-y-2 order border-t border-neutral pt-4">
             <div>
                 <span class="text-lg font-semibold">
                     訂單
@@ -84,19 +84,19 @@ const fullShippingAddress = computed(() => {
 
             <div>
                 <!-- <button
-                    class="tracking-wide btn mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+                    class="tracking-wide btn mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
                     查看所有訂單
                 </button> -->
                 <Link :href="route('account.orders')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors w-full">
+                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors w-full">
                     查看所有訂單</Link>
             </div>
         </div>
 
-        <div class="border-t border-[#c4c4c4]">
+        <div class="border-t border-neutral">
             <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                class="tracking-wide btn btn-sm mt-8 mb-2 w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white"
-                :class="{ 'text-[#fff]': isInHeroState }">
+                class="tracking-wide btn btn-sm mt-8 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white"
+                :class="{ 'text-base-100': isInHeroState }">
                 登出
             </Link>
         </div>
@@ -105,7 +105,7 @@ const fullShippingAddress = computed(() => {
     <div class="hidden md:block px-10 pt-6">
         <h1 class="text-3xl font-semibold mb-4">Hi, {{ user.name }}</h1>
 
-        <div class="grid space-y-2 info border-t border-[#c4c4c4] pt-6">
+        <div class="grid space-y-2 info border-t border-neutral pt-6">
             <p class="member-cache">一般會員</p>
 
             <div class="mt-4">

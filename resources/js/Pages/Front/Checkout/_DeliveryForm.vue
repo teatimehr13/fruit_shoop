@@ -197,7 +197,7 @@ defineExpose({
                 </div>
             </div>
             <div>
-                <h1 class="text-xl font-semibold text-[#67645e]">顧客資料</h1>
+                <h1 class="text-xl font-semibold text-base-content">顧客資料</h1>
             </div>
             <div v-if="$page.props.auth.user">
                 <select class="select select-lg w-full" v-model="form.filling_mode">

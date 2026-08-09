@@ -33,13 +33,13 @@
                 <div class="flex flex-col justify-end lg:max-w-[30rem] 3xl:max-w-xl h-full">
                     <div>
                         <div class="md:pt-6 mb-6 md:mb-12">
-                            <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-[#67645e]">
+                            <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-base-content">
                                 FRESH-PICK 果蔬箱
                             </h2>
                         </div>
 
                         <div>
-                            <span class="tracking-wide text-sm md:text-lg text-[#67645e]">
+                            <span class="tracking-wide text-sm md:text-lg text-base-content">
                                 當季蔬菜與日照剛好的水果，做成「整箱直送」或「現打冷壓果汁」。輕盈、不負擔，冰到冰箱，想喝或想料理隨手就有，無論一個人簡單開伙，或是家人一起分著吃都剛剛好。
                                 <br>
                                 <br>
@@ -67,8 +67,8 @@
 <style>
 .buy_btn {
     border-radius: 40px;
-    color: #82ae46;
-    box-shadow: inset 0 0 0 1px #82ae46;
+    color: var(--color-primary);
+    box-shadow: inset 0 0 0 1px var(--color-primary);
     padding: 6px 38px;
     font-weight: 600;
     /* margin-top: 48px; */
@@ -77,7 +77,7 @@
 
 .buy_btn:hover {
     cursor: pointer;
-    background-color: #82ae46;
+    background-color: var(--color-primary);
     color: white;
 }
 </style>

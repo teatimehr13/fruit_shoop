@@ -26,10 +26,10 @@ const singleItemSubtotal = (qty, itemPrice) => {
         <section class="flex-1 overflow-y-autospace-y-3 ">
             <div class="space-y-3">
                 <div class="block md:hidden">
-                    <h1 class="text-xl font-semibold text-[#67645e]">訂單商品</h1>
+                    <h1 class="text-xl font-semibold text-base-content">訂單商品</h1>
                 </div>
                 <div v-for="item in cartItems.items" :key="item.id"
-                    class="flex gap-4 p-3 bg-white rounded-lg border border-[#f1f0ed] hover:border-gray-200 transition-colors">
+                    class="flex gap-4 p-3 bg-white rounded-lg border border-base-200 hover:border-gray-200 transition-colors">
                     <!-- 商品圖片 + 數量標記 -->
                     <div class="relative w-16 h-16 flex-shrink-0 self-center">
                         <div class="w-full h-full rounded overflow-hidden bg-gray-50">
@@ -42,7 +42,7 @@ const singleItemSubtotal = (qty, itemPrice) => {
 
                         <!-- 數量標記 -->
                         <div
-                            class="absolute -right-2 -top-2 min-w-[22px] h-[22px] px-1.5 bg-[#82ae46] text-white text-xs font-bold rounded-md flex items-center justify-center shadow-md border-1 border-white">
+                            class="absolute -right-2 -top-2 min-w-[22px] h-[22px] px-1.5 bg-primary text-white text-xs font-bold rounded-md flex items-center justify-center shadow-md border-1 border-white">
                             {{ item.qty }}
                         </div>
                     </div>

@@ -3,7 +3,7 @@
     <div class="rounded-[12px]  px-4 py-2 inline-flex">
       <!-- 減少 -->
       <button type="button" class="btn btn-ghost btn-xs w-7 h-7 flex items-center justify-center 
-             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#82ae46] hover:text-white" @click="decrease">
+             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary hover:text-white" @click="decrease">
         <span class="sr-only">Reduce quantity</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"
           className="size-6">
@@ -13,14 +13,14 @@
       </button>
 
       <!-- 中間數字 -->
-      <div class="mx-3 text-sm text-[#67645e] content-center">
+      <div class="mx-3 text-sm text-base-content content-center">
         <span class="sr-only">Quantity</span>
         {{ modelValue }}
       </div>
 
       <!-- 增加 -->
       <button type="button" class="btn btn-ghost btn-xs w-7 h-7 flex items-center justify-center 
-             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#82ae46] hover:text-white" @click="increase" :disabled="modelValue >= max">
+             disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary hover:text-white" @click="increase" :disabled="modelValue >= max">
         <span class="sr-only">Increase quantity</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-6">
@@ -62,4 +62,3 @@ const increase = () => {
   }
 }
 </script>
-<!-- class="inline-flex items-center rounded-[12px] border border-[#b8b5ae] bg-[#f9f7f2] px-3 " -->

@@ -11,15 +11,15 @@
             <div class="cart-items-wrapper">
                 <!-- Header (md+) -->
                 <div
-                    class="hidden md:grid md:grid-cols-12 gap-4 px-4 py-3 text-sm text-gray-600 border-b border-[#EDEDED]">
+                    class="hidden md:grid md:grid-cols-12 gap-4 px-4 py-3 text-sm text-gray-600 border-b border-base-300">
                     <div class="md:col-span-5">商品資料</div>
                     <div class="md:col-span-3 text-center">單件價格</div>
                     <div class="md:col-span-2 text-center">數量</div>
                     <div class="md:col-span-2 text-right">小計</div>
                 </div>
 
-                <div class="border-b border-[#EDEDED] px-4 py-4 md:py-5">
-                    <div class="grid md:grid-cols-12 md:gap-4 border-b border-[#EDEDED] last:border-b-0 md:border-none py-4"
+                <div class="border-b border-base-300 px-4 py-4 md:py-5">
+                    <div class="grid md:grid-cols-12 md:gap-4 border-b border-base-300 last:border-b-0 md:border-none py-4"
                         v-for="item in props.items" :key="item.id">
 
                         <!-- 商品資料 -->
@@ -76,7 +76,7 @@
 
             </div>
 
-            <div class="border-b border-[#EDEDED] px-4 py-4 md:py-5">
+            <div class="border-b border-base-300 px-4 py-4 md:py-5">
                 <div class="flex justify-end">
                     <div class="w-full md:w-[420px] space-y-3">
                         <div class="flex justify-between text-gray-700">
@@ -89,7 +89,7 @@
                         </div>
                         <div class="flex justify-between font-bold">
                             <span>合計</span>
-                            <span class="text-[#82ae46]">{{ formatTwd(total) }}</span>
+                            <span class="text-primary">{{ formatTwd(total) }}</span>
                         </div>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                 </div> -->
 
                 <div class="grid md:grid-cols-2">
-                    <div class="border-b md:border-none border-[#EDEDED] pb-6 mb-6 md:border-b-0 md:border-r md:mb-0 md:pb-0 md:pr-6">
+                    <div class="border-b md:border-none border-base-300 pb-6 mb-6 md:border-b-0 md:border-r md:mb-0 md:pb-0 md:pr-6">
                         <div class="font-semibold text-lg">訂單資訊</div>
 
                         <div class="mt-2 md:mt-4 grid grid-cols-[40%_60%]">

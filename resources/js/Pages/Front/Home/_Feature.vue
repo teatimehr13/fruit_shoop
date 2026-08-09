@@ -3,7 +3,7 @@
         <div class="w-full">
             <div class="grid md:grid-cols-4">
                 <div class="mx-auto mb-4">
-                    <div class="m-auto w-26 h-26 bg-[#e4b2d6] ft-icon mb-2 hover:bg-[#82ae46]">
+                    <div class="m-auto w-26 h-26 bg-feature-pink ft-icon mb-2 hover:bg-primary">
                         <div class="shipped-icon aspect-6/3"></div>
                     </div>
                     <div class="text-center">
@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="mx-auto mb-4">
-                    <div class="m-auto w-26 h-26 bg-[#dcc698] ft-icon mb-2 hover:bg-[#82ae46]">
+                    <div class="m-auto w-26 h-26 bg-feature-tan ft-icon mb-2 hover:bg-primary">
                         <div class="vege-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
@@ -30,7 +30,7 @@
 
                 </div>
                 <div class="mx-auto mb-4">
-                    <div class="m-auto w-26 h-26 bg-[#a2d1e1] ft-icon mb-2 hover:bg-[#82ae46]">
+                    <div class="m-auto w-26 h-26 bg-feature-blue ft-icon mb-2 hover:bg-primary">
                         <div class="reward-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
@@ -44,7 +44,7 @@
 
                 </div>
                 <div class="mx-auto mb-4">
-                    <div class="m-auto w-26 h-26 bg-[#dcd691] ft-icon mb-2 hover:bg-[#82ae46]">
+                    <div class="m-auto w-26 h-26 bg-feature-olive ft-icon mb-2 hover:bg-primary">
                         <div class="customer-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
@@ -63,7 +63,7 @@
 
 <style>
 .shipped-icon {
-    background: #fff;
+    background: var(--color-base-100);
     /* 用 SVG 當遮罩 */
     mask-image: url('/images/svg/shipped.svg');
     mask-size: contain;
@@ -78,7 +78,7 @@
 }
 
 .vege-icon {
-    background: #fff;
+    background: var(--color-base-100);
     /* 用 SVG 當遮罩 */
     mask-image: url('/images/svg/vegetables.svg');
     mask-size: contain;
@@ -93,7 +93,7 @@
 }
 
 .customer-icon {
-    background: #fff;
+    background: var(--color-base-100);
     /* 用 SVG 當遮罩 */
     mask-image: url('/images/svg/customer.svg');
     mask-size: contain;
@@ -108,7 +108,7 @@
 }
 
 .reward-icon {
-    background: #fff;
+    background: var(--color-base-100);
 
     /* 用 SVG 當遮罩 */
     mask-image: url('/images/svg/reward.svg');

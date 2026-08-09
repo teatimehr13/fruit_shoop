@@ -16,12 +16,12 @@
                     <div class="w-full md:w-[50%] md:pl-4">
                         <div class="flex flex-col">
                             <div class="md:pt-10 mb-6 ">
-                                <h1 class="text-2xl md:text-4xl font-semibold tracking-wide text-[#67645e]">
+                                <h1 class="text-2xl md:text-4xl font-semibold tracking-wide text-base-content">
                                     {{ props.about.title }}
                                 </h1>
                             </div>
 
-                            <p class="tracking-wide text-sm md:text-lg text-[#67645e]" v-html="props.about.content">
+                            <p class="tracking-wide text-sm md:text-lg text-base-content" v-html="props.about.content">
                                
                             </p>
                         </div>

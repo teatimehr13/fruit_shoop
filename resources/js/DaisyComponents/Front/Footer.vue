@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <footer class="bg-[#f1f0ed] p-10">
+  <footer class="bg-base-200 p-10">
     <div class="footer sm:footer-horizontal text-base-content max-w-[var(--max-w-layout-wide)] mx-auto">
       <nav>
         <h6 class="footer-title">顧客服務</h6>

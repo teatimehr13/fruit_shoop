@@ -190,11 +190,11 @@ const save = async () => {
                 </Link>
             </div>
             <h1 class="text-2xl md:text-3xl font-semibold">個人資訊</h1>
-            <div class="border-t border-[#c4c4c4]"></div>
+            <div class="border-t border-neutral"></div>
             <div class="pt-4 md:pt-6">
                 <div class="w-full md:w-[50%] grid space-y-4">
                     <div>
-                        <input type="text" placeholder="姓名" class="input  input-lg w-full border-[#eeeeee] rounded-lg"
+                        <input type="text" placeholder="姓名" class="input  input-lg w-full border-base-300 rounded-lg"
                             v-model="form.name" @change="clearError('name')" :class="{ 'input-error': errors.name }"
                             :ref="el => fieldRefs.name = el" />
                         <p v-if="errors.name" class="errors-hint">{{ errors.name }}</p>
@@ -202,7 +202,7 @@ const save = async () => {
 
                     <div>
                         <input type="email" placeholder="Email"
-                            class="input input-lg w-full border-[#eeeeee] rounded-lg" v-model="form.email"
+                            class="input input-lg w-full border-base-300 rounded-lg" v-model="form.email"
                             @change="clearError('email')" :class="{ 'input-error': errors.email }"
                             :ref="el => fieldRefs.email = el" />
                         <p v-if="errors.email" class="errors-hint">{{ errors.email }}</p>
@@ -210,7 +210,7 @@ const save = async () => {
 
                     <div class="grid gap-4 grid-flow-col">
                         <div>
-                            <select class="select select-lg w-full border-[#eeeeee] rounded-lg" v-model="form.city"
+                            <select class="select select-lg w-full border-base-300 rounded-lg" v-model="form.city"
                                 @change="clearError('city')" :class="{ 'input-error': errors.city }"
                                 :ref="el => fieldRefs.city = el">
                                 <option disabled selected value="">城市 / 縣</option>
@@ -220,7 +220,7 @@ const save = async () => {
                         </div>
 
                         <div>
-                            <select class="select select-lg w-full border-[#eeeeee] rounded-lg" v-model="form.district"
+                            <select class="select select-lg w-full border-base-300 rounded-lg" v-model="form.district"
                                 @change="clearError('district')" :class="{ 'input-error': errors.district }"
                                 :ref="el => fieldRefs.district = el">
                                 <option disabled selected value="">地區</option>
@@ -233,7 +233,7 @@ const save = async () => {
                     </div>
 
                     <div>
-                        <input type="text" placeholder="地址" class="input input-lg w-full border-[#eeeeee] rounded-lg"
+                        <input type="text" placeholder="地址" class="input input-lg w-full border-base-300 rounded-lg"
                             v-model="form.address_detail" @change="clearError('address_detail')"
                             :class="{ 'input-error': errors.address_detail }"
                             :ref="el => fieldRefs.address_detail = el" />
@@ -241,7 +241,7 @@ const save = async () => {
                     </div>
 
                     <div>
-                        <input type="text" placeholder="電話號碼" class="input input-lg w-full border-[#eeeeee] rounded-lg"
+                        <input type="text" placeholder="電話號碼" class="input input-lg w-full border-base-300 rounded-lg"
                             v-model="form.phone" @change="clearError('phone')" :class="{ 'input-error': errors.phone }"
                             :ref="el => fieldRefs.phone = el"
                             @input="form.phone = $event.target.value.replace(/[^0-9]/g, '')" />
@@ -252,7 +252,7 @@ const save = async () => {
 
             <div class="block mt-8 w-full md:w-[50%]">
                 <button type="button" :disabled="saving" @click="save"
-                    class="btn btn-sm w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+                    class="btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
                     {{ saving ? '儲存中...' : '儲存' }}
                 </button>
             </div>

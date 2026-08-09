@@ -11,11 +11,11 @@
       />
 
       <aside
-        class="relative z-10 w-full md:max-w-xl h-full bg-[#fafafa] shadow-xl flex flex-col border-l border-[#f1f0ed] transition-transform duration-500 cubic-bezier"
+        class="relative z-10 w-full md:max-w-xl h-full bg-base-200 shadow-xl flex flex-col border-l border-base-200 transition-transform duration-500 cubic-bezier"
         :class="open ? 'translate-x-0 delay-100' : 'translate-x-full'"
       >
         <header class="flex items-center justify-between px-4 py-3 border-b border-stone-300 bg-white">
-          <h2 class="text-lg font-semibold text-[#67645e]">{{ hasItems ? '購物車' : '' }}</h2>
+          <h2 class="text-lg font-semibold text-base-content">{{ hasItems ? '購物車' : '' }}</h2>
           <button
             type="button"
             class="btn btn-ghost btn-circle text-sm text-gray-500 hover:text-gray-800"

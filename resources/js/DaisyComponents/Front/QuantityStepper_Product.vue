@@ -6,7 +6,7 @@
       −
     </button>
 
-    <input readonly class="w-20 text-center text-lg font-semibold focus:border-[#82ae46] bg-white focus:outline-none" type="text" name="quantity" :value="modelValue" data-old-value="1">
+    <input readonly class="w-20 text-center text-lg font-semibold focus:border-primary bg-white focus:outline-none" type="text" name="quantity" :value="modelValue" data-old-value="1">
 
     <button class="flex-shrink-0 px-3 py-1 text-xl font-medium  rounded-r-md 
       hover:bg-gray-100 transition duration-150 ease-in-out 
@@ -46,4 +46,3 @@ const increase = () => {
   }
 }
 </script>
-<!-- class="inline-flex items-center rounded-[12px] border border-[#b8b5ae] bg-[#f9f7f2] px-3 " -->

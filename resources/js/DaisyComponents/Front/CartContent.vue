@@ -1,9 +1,9 @@
 <template>
     <div v-if="!items.length" class="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center"
-        :class="layoutMode === 'drawer' ? 'bg-[#fafafa]' : ''">
-        <div class="text-lg font-semibold text-[#67645e]">你的購物車為空</div>
+        :class="layoutMode === 'drawer' ? 'bg-base-200' : ''">
+        <div class="text-lg font-semibold text-base-content">你的購物車為空</div>
         <button type="button" @click="continueShop"
-            class="btn mt-6 border-[#82ae46] text-[#82ae46] hover:bg-[#82ae46] hover:text-white rounded-[40px] w-30">
+            class="btn mt-6 border-primary text-primary hover:bg-primary hover:text-white rounded-[40px] w-30">
             去逛逛
         </button>
     </div>
@@ -12,7 +12,7 @@
 
         <section :class="listSectionClass">
             <div v-for="item in items" :key="item.id ?? item.product_option_id"
-                class="grid gap-3 p-3 bg-white border border-[#f1f0ed] rounded-xl items-center" :class="itemGridClass">
+                class="grid gap-3 p-3 bg-white border border-base-200 rounded-xl items-center" :class="itemGridClass">
                 <div class="flex-shrink-0 rounded bg-gray-100 overflow-hidden" :class="imageSizeClass">
                     <div v-if="item.img_url" class="w-full h-full">
                         <img :src="item.img_url" alt="" class="w-full h-full object-cover" />
@@ -24,17 +24,17 @@
 
                 <div class="flex flex-col justify-center min-w-0">
                     <div>
-                        <div class="text-md font-semibold text-[#67645e] line-clamp-2">
+                        <div class="text-md font-semibold text-base-content line-clamp-2">
                             {{ item.product_name }}
                         </div>
-                        <div class="text-xs font-medium text-[#67645e] line-clamp-2">
+                        <div class="text-xs font-medium text-base-content line-clamp-2">
                             {{ item.option_text }}
                         </div>
                     </div>
-                    <!-- <div class="text-xs text-[#67645e] mt-2 block">
+                    <!-- <div class="text-xs text-base-content mt-2 block">
              {{ item.qty }} x {{ item.price < item.original_price ? formatTwd(item.price) : formatTwd(item.original_price) }}
           </div> -->
-                    <div class="text-sm text-[#67645e] mt-2 md:mt-4">
+                    <div class="text-sm text-base-content mt-2 md:mt-4">
                         {{ item.price < item.original_price ? formatTwd(item.price) : formatTwd(item.original_price) }}
                             </div>
                     </div>
@@ -48,7 +48,7 @@
                         <button type="button" class="btn btn-ghost btn-circle btn-xs text-xs"
                             @click="delCartItem(item.product_option_id)">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-5 text-[#67645e]">
+                                stroke="currentColor" class="size-5 text-base-content">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -60,13 +60,13 @@
         <footer :class="summaryContainerClass">
             <div :class="summaryCardClass">
 
-                <h2 v-if="layoutMode === 'page'" class="text-lg font-bold text-[#67645e] mb-4 hidden lg:block">
+                <h2 v-if="layoutMode === 'page'" class="text-lg font-bold text-base-content mb-4 hidden lg:block">
                     訂單摘要
                 </h2>
 
                 <div class="flex items-center justify-between text-sm mb-4">
                     <span class="text-gray-600">小計</span>
-                    <span class="font-semibold text-[#333]">{{ formatTwd(subtotal) }}</span>
+                    <span class="font-semibold text-base-content">{{ formatTwd(subtotal) }}</span>
                 </div>
 
                 <div v-if="layoutMode === 'page'" class="text-xs text-gray-500 mb-4">
@@ -74,7 +74,7 @@
                 </div>
 
                 <button type="button" @click="handleButtonClick"
-                    class="btn  w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors"
+                    class="btn  w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors"
                     :class="layoutMode === 'drawer' ? 'mt-4 mb-2' : ''">
                     {{ layoutMode === 'drawer' ? '查看購物車' : '結帳' }}
                 </button>
@@ -142,7 +142,7 @@ const listSectionClass = computed(() => {
         return 'lg:col-span-8 space-y-3'
     }
     // Drawer 模式：佔滿剩餘空間並可滾動
-    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-[#fafafa] mb-[190px]'
+    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-base-200 mb-[190px]'
 })
 
 // 3. 摘要區塊容器樣式

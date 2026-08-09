@@ -41,36 +41,36 @@ const submit = () => {
         <form @submit.prevent="submit" class="grid gap-4">
             <div>
                 <input id="email" type="text"
-                    class="mt-1 block w-full rounded-[12px] border border-[#cccccc80] py-2 px-4" v-model="form.email"
+                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.email"
                     required autofocus autocomplete="username" placeholder="Email">
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div>
                 <input id="password" type="password"
-                    class="mt-1 block w-full rounded-[12px] border border-[#cccccc80] py-2 px-4" v-model="form.password"
+                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.password"
                     required autofocus autocomplete="username" placeholder="密碼">
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div>
                 <input id="password" type="password"
-                    class="mt-1 block w-full rounded-[12px] border border-[#cccccc80] py-2 px-4"
+                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4"
                     v-model="form.password_confirmation" required autofocus autocomplete="username" placeholder="密碼確認">
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
             <div class="text-center">
                 <button class="rounded-[40px] 
-                text-[#82ae46] 
-                shadow-[inset_0_0_0_1px_#82ae46] 
+                text-primary 
+                shadow-[inset_0_0_0_1px_var(--color-primary)] 
                 px-12 
                 py-1.5 
                 font-semibold 
                 transition-all 
                 duration-500 
                 ease-in-out
-                hover:bg-[#82ae46] 
+                hover:bg-primary 
                 hover:text-white
                 cursor-pointer" role="button" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     重設密碼

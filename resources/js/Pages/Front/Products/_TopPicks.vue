@@ -16,9 +16,9 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
 
 <template>
     <section class="pb-16 md:pb-18">
-        <div class="border border-[#f1f0ed] rounded-[12px] py-6 px-4 pr-0 lg:pr-0 lg:px-6">
+        <div class="border border-base-200 rounded-[12px] py-6 px-4 pr-0 lg:pr-0 lg:px-6">
             <div class="md:mb-8 mb-4 md:pt-4">
-                <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-[#67645e]">
+                <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-base-content">
                     精選好物 +
                 </h2>
             </div>
@@ -146,12 +146,12 @@ const modules = [Scrollbar, EffectFade, Pagination, Navigation];
 .custom-progressbar {
     position: relative !important;
     height: 2px !important;
-    background: #d8d8d8 !important;
+    background: var(--color-neutral) !important;
 
 }
 
 .custom-progressbar .swiper-pagination-progressbar-fill {
-    background: #67645e !important;
+    background: var(--color-base-content) !important;
     height: 2px !important;
 }
 </style>

@@ -61,27 +61,27 @@ const submitCheckout = async () => {
     <div class="min-h-screen flex flex-col mx-auto">
         <!-- <form @submit.prevent="submitCheckout"> -->
         <div class="flex-1 grid md:grid-cols-[53fr_47fr] md:after:content-[''] md:after:absolute md:after:inset-y-0
-                md:after:left-[53%] md:after:-translate-x-1/2 md:after:w-px md:after:bg-[#f5f5f5] relative">
+                md:after:left-[53%] md:after:-translate-x-1/2 md:after:w-px md:after:bg-base-300 relative">
             <div class="checkout-section checkout-left">
                 <div class="content items-start gap-8 px-6 py-8 md:max-w-[580px] md:grid md:p-9">
                     <DeliveryForm v-model="form" :memberData="memberData" ref="deliveryRef" />
 
                     <div class="mt-4 hidden md:block">
                         <button type="button" @click="submitCheckout"
-                            class="btn w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
+                            class="btn w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
                             前往結帳
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="checkout-section checkout-right bg-[#f5f5f5] ">
+            <div class="checkout-section checkout-right bg-base-300 ">
                 <div class="sticky top-0">
                     <div class="content px-6 py-8 md:max-w-[480px] md:grid md:p-9">
                         <OrderSummary />
 
                         <div class="block md:hidden mt-8">
                             <button type="button" @click="submitCheckout"
-                                class="btn w-full py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
+                                class="btn w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
                                 前往結帳
                             </button>
                         </div>

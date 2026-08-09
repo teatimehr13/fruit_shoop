@@ -167,21 +167,21 @@ const formatTwd = (price) => {
 
         <div class="md:flex md:mt-8 md:mb-8 lg:mt-12">
             <div class="hidden md:block md:basis-2/5 lg:basis-1/4">
-                <aside class="mr-8 p-4 border border-[#f1f0ed] rounded-[12px] bg-[#fafafa]">
+                <aside class="mr-8 p-4 border border-base-200 rounded-[12px] bg-base-200">
                     <div class="mb-4 relative before:content-[''] before:absolute before:inset-x-0 before:-bottom-2
-                before:h-[1px] before:bg-[#67645e] before:block">
-                        <h3 class="text-md md:text-lg lg:text-xl font-semibold text-[#67645e]">
+                before:h-[1px] before:bg-base-content before:block">
+                        <h3 class="text-md md:text-lg lg:text-xl font-semibold text-base-content">
                             產品分類
                         </h3>
                     </div>
                     <ul>
-                        <li class="text-[#67645e] px-2 py-1 rounded-sm"
-                            :class="{ 'bg-[#82ae46] text-base-100': categoryName == 'ALL' }">
+                        <li class="text-base-content px-2 py-1 rounded-sm"
+                            :class="{ 'bg-primary text-base-100': categoryName == 'ALL' }">
                             <a href="#" class="block w-full" :class="{ 'hover:text-zinc-400': categoryName !== 'ALL' }"
                                 @click.prevent="onSelectCategory('ALL')">全部</a>
                         </li>
-                        <li v-for="value in props.categories_tab" class="text-[#67645e] px-2 py-1 rounded-sm"
-                            :class="{ 'bg-[#82ae46] text-base-100': value.name == categoryName }">
+                        <li v-for="value in props.categories_tab" class="text-base-content px-2 py-1 rounded-sm"
+                            :class="{ 'bg-primary text-base-100': value.name == categoryName }">
                             <a href="#" class="block w-full "
                                 :class="{ 'hover:text-zinc-400': value.name !== categoryName }" @click.prevent="
                                     onSelectCategory(value.name)">
@@ -196,7 +196,7 @@ const formatTwd = (price) => {
                 <div class="py-2 my-4 flex w-full items-center rounded-[12px]">
                     <div class="w-[50%] flex items-center ">
                         <label for="sort_product" class="align-middle whitespace-nowrap">排序:</label>
-                        <select class="border-b-1 border-[#67645e] w-full md:w-50 lg:w-58 py-1" id="sort_product"
+                        <select class="border-b-1 border-base-content w-full md:w-50 lg:w-58 py-1" id="sort_product"
                             v-model="selectedSort" @change="sortData">
                             <option v-for="(opt, idx) in sortOptions" :key="idx" :value="opt">
                                 {{ opt.label }}
@@ -205,7 +205,7 @@ const formatTwd = (price) => {
                     </div>
 
                     <div class="w-[50%] text-end">
-                        <span class="text-[#82ae46] text-lg md:text-xl xl:text-2xl">
+                        <span class="text-primary text-lg md:text-xl xl:text-2xl">
                             {{ props.products?.length }}
                         </span>
                         件商品
@@ -213,7 +213,7 @@ const formatTwd = (price) => {
                 </div>
                 <div class="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3 mb-4">
                     <div v-for="value in props.products"
-                        class="relative border border-[#f0f0f0] rounded-[12px] overflow-hidden flex flex-col"
+                        class="relative border border-base-300 rounded-[12px] overflow-hidden flex flex-col"
                         :key="value.id">
                         <div class="overflow-hidden">
                             <a :href="route('products.show', value.slug)">
@@ -228,7 +228,7 @@ const formatTwd = (price) => {
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <div class="text-[#82ae46] text-sm sm:text-base md:text-lg">
+                                    <div class="text-primary text-sm sm:text-base md:text-lg">
                                         {{ formatTwd(value.cheapest_price) }}
                                     </div>
                                     <div v-if="value.has_discount"
@@ -238,7 +238,7 @@ const formatTwd = (price) => {
                                 </div>
                                 <div>
                                     <button @click="quickAddToCart(value)"
-                                        class="btn btn-ghost btn-circle text-[#67645e] hover:bg-[#82ae46] hover:text-base-100">
+                                        class="btn btn-ghost btn-circle text-base-content hover:bg-primary hover:text-base-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor" class="size-5">
                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -278,7 +278,7 @@ const formatTwd = (price) => {
                                 <div class="flex flex-1 flex-col justify-between gap-4">
                                     <div>
                                         <label>選項</label>
-                                        <select class="select-md border-b-1 border-[#67645e] px-0 py-1 w-full outline-none focus:border-gray-500
+                                        <select class="select-md border-b-1 border-base-content px-0 py-1 w-full outline-none focus:border-gray-500
                                             appearance-none bg-select-arrow bg-no-repeat bg-right"
                                             v-model="selectedOptions[value.id]" @change="handleOptionChange(value)">
                                             <option v-for="(opt, idx) in value.product_options" :key="idx"
@@ -290,8 +290,8 @@ const formatTwd = (price) => {
 
                                     <div class="">
                                         <button type="button" @click="confirmAddToCart(value)"
-                                            class="btn btn-md md:btn-sm w-full border-[#82ae46] bg-transparent text-[#82ae46] rounded-[40px]
-                                                    hover:bg-[#82ae46] hover:text-white hover:border-[#82ae46] transition-colors">
+                                            class="btn btn-md md:btn-sm w-full border-primary bg-transparent text-primary rounded-[40px]
+                                                    hover:bg-primary hover:text-white hover:border-primary transition-colors">
                                             加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
                                         </button>
                                     </div>
@@ -339,7 +339,7 @@ select::-ms-expand {
     top: .5rem;
     cursor: pointer;
     border-radius: 50%;
-    background: #82ae46;
+    background: var(--color-primary);
     width: 1.25rem;
     height: 1.25rem;
     opacity: 1;
@@ -351,7 +351,7 @@ select::-ms-expand {
 .options-close span {
     width: 55%;
     height: 2px;
-    background-color: #fff;
+    background-color: var(--color-base-100);
     position: absolute;
     top: 50%;
     left: 50%;

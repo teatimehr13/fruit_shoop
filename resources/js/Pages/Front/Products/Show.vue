@@ -216,7 +216,7 @@ const submitToCart = async () => {
                                     <SwiperSlide v-for="(image, index) in props.product.product_images" :key="image.id || index"
                                         class="cursor-pointer !h-auto">
                                         <div
-                                            class="aspect-square overflow-hidden border-2 border-gray-200 rounded-lg hover:border-[#82ae46] transition-colors">
+                                            class="aspect-square overflow-hidden border-2 border-gray-200 rounded-lg hover:border-primary transition-colors">
                                             <img :src="image.img_url" :alt="image.alt_text || `產品圖片 ${index + 1}`"
                                                 class="w-full h-full object-cover">
                                         </div>
@@ -276,8 +276,8 @@ const submitToCart = async () => {
                                         <label class="inline-flex items-center cursor-pointer w-full">
                                             <input type="radio" class="peer hidden" name="gift" :value="opt.id"
                                                 v-model="selectedOptionForm.id" @change="handleOptionChange(opt)">
-                                            <span class="text-center w-full px-6 py-2 rounded-full text-sm border border-[#f1f0ed] text-[#67645e]
-                                peer-checked:bg-[#82ae46] peer-checked:text-white transition-colors">
+                                            <span class="text-center w-full px-6 py-2 rounded-full text-sm border border-base-200 text-base-content
+                                peer-checked:bg-primary peer-checked:text-white transition-colors">
                                                 {{ opt.option_text }}
                                             </span>
                                         </label>
@@ -285,14 +285,14 @@ const submitToCart = async () => {
                                 </div>
                             </div>
 
-                            <div class="mt-8 text-[#82ae46]" style="font-size: clamp(24px, 1.75vw, 32px);">
+                            <div class="mt-8 text-primary" style="font-size: clamp(24px, 1.75vw, 32px);">
                                 {{ formatTwd(selectedOptionForm.price) }}
                             </div>                           
 
                             <!-- 加入購物車按鈕 -->
                             <div class="mt-8 w-full">
-                                <button type="button" class="btn w-full py-2 bg-transparent border-1 text-[#82ae46] border-[#82ae46] rounded-full 
-                        hover:bg-[#82ae46] hover:text-white transition-colors text-lg font-semibold" @click="submitToCart">
+                                <button type="button" class="btn w-full py-2 bg-transparent border-1 text-primary border-primary rounded-full 
+                        hover:bg-primary hover:text-white transition-colors text-lg font-semibold" @click="submitToCart">
                                     加入購物車 
                                 </button>
                             </div>
@@ -307,7 +307,7 @@ const submitToCart = async () => {
 
 <style>
 .pdp-media__pagination {
-    --swiper-pagination-color: #fff;
+    --swiper-pagination-color: var(--color-base-100);
 }
 
 /* 確保 Swiper 縮圖在垂直模式下正確顯示 */
@@ -321,6 +321,6 @@ const submitToCart = async () => {
 
 /* 選中的縮圖高亮 */
 .swiper--thumbs .swiper-slide-thumb-active div {
-    border-color: #82ae46 !important;
+    border-color: var(--color-primary) !important;
 }
 </style>

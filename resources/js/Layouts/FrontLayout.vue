@@ -45,7 +45,7 @@ provide('openCart', openCart)
 
 <style>
 body {
-    color: #67645e;
+    color: var(--color-base-content);
     padding: 0;
     margin: 0;
     list-style-type: none;

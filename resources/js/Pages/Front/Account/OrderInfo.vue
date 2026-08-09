@@ -58,15 +58,15 @@ function retryPayment(orderNumber) {
       </Link>
     </div>
     <h1 class="text-2xl md:text-3xl font-semibold">訂單</h1>
-    <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr_.75fr] border-t border-[#c4c4c4] pt-6">
-      <div class="contents font-semibold text-[#67645e]">
+    <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr_.75fr] border-t border-neutral pt-6">
+      <div class="contents font-semibold text-base-content">
         <div class="p-3">訂單號碼</div>
         <div class="p-3">日期</div>
         <div class="p-3">合計</div>
         <div class="p-3">訂單狀態</div>
         <div class="p-3"></div>
 
-        <div class="col-span-5 h-px bg-[#eeeeee]"></div>
+        <div class="col-span-5 h-px bg-base-300"></div>
       </div>
 
       <div v-for="row in data" :key="row.id" class="contents">
@@ -76,7 +76,7 @@ function retryPayment(orderNumber) {
         <div class="p-3">{{ row.order_status_label }}
           <div v-if="row.is_payment_pending" class="inline">
             <div v-if="!row.is_payment_expired" class="inline">
-              <a :href="route('payment.retry', row.order_number)" class="text-[#0000ee] text-sm underline ">重新付款</a>
+              <a :href="route('payment.retry', row.order_number)" class="text-primary text-sm underline ">重新付款</a>
               <div v-if="row.payment_expire_at_label" class="text-sm text-neutral-400">
                 (繳費期限：{{ row.payment_expire_at_label }})
               </div>
@@ -88,12 +88,12 @@ function retryPayment(orderNumber) {
         </div>
         <div class="p-3 text-center">
           <!-- <button type="button"
-            class="btn btn-sm w-20 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white">
+            class="btn btn-sm w-20 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
             
             查看
           </button> -->
           <a :href="route('order.show', row.order_number)"
-            class="btn btn-sm w-20 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+            class="btn btn-sm w-20 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
             查看
           </a>
         </div>
@@ -102,26 +102,26 @@ function retryPayment(orderNumber) {
 
     <!-- mobile -->
     <div class="space-y-4 md:hidden">
-      <div class="border-t border-[#c4c4c4] pt-4"></div>
-      <div v-for="row in data" :key="row.id" class="border border-[#e5e5e5] rounded-xl p-4 bg-white">
+      <div class="border-t border-neutral pt-4"></div>
+      <div v-for="row in data" :key="row.id" class="border border-base-300 rounded-xl p-4 bg-white">
         <div class="space-y-2 text-sm">
           <div class="flex justify-between gap-3">
-            <div class="text-[#67645e]">訂單號碼</div>
+            <div class="text-base-content">訂單號碼</div>
             <div class="font-medium text-right break-all">{{ row.order_number }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-[#67645e]">日期</div>
+            <div class="text-base-content">日期</div>
             <div class="font-medium">{{ formatDate(row.created_at) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-[#67645e]">合計</div>
+            <div class="text-base-content">合計</div>
             <div class="font-medium">{{ formatTwd(row.amount) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-[#67645e]">訂單狀態</div>
+            <div class="text-base-content">訂單狀態</div>
             <div class="font-medium">
               <div class="flex flex-col items-end text-right">
                 <div class="text-sm">
@@ -131,7 +131,7 @@ function retryPayment(orderNumber) {
                 <div v-if="row.is_payment_pending" class="mt-1 flex flex-col items-end gap-0.5">
                   <template v-if="!row.is_payment_expired">
                     <a :href="route('payment.retry', row.order_number)"
-                      class="text-sm text-[#0000ee] underline underline-offset-2 hover:opacity-80">
+                      class="text-sm text-primary underline underline-offset-2 hover:opacity-80">
                       重新付款
                     </a>
 
@@ -154,7 +154,7 @@ function retryPayment(orderNumber) {
 
         <div class="mt-4">
           <a :href="route('order.show', row.order_number)"
-            class="btn btn-sm w-full border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors">
+            class="btn btn-sm w-full border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
             查看
           </a>
         </div>

@@ -81,6 +81,6 @@ const heroSlides = [
 <style>
 .my-swiper {
     /* 分頁器顏色 */
-    --swiper-pagination-color: #fff;
+    --swiper-pagination-color: var(--color-base-100);
 }
 </style>

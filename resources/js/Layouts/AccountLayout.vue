@@ -10,12 +10,12 @@
                             <Link :href="route('account.index')" class="block w-full">帳號總覽</Link>
                         </li>
 
-                        <li class="border-t border-[#c4c4c4] accountSection-navigation-item"
+                        <li class="border-t border-neutral accountSection-navigation-item"
                             :class="{ 'accountSection-navigation-item-active': is('account.profile') }">
                             <Link :href="route('account.profile')" class="block w-full">個人資訊</Link>
                         </li>
 
-                        <li class="border-t border-b border-[#c4c4c4] accountSection-navigation-item"
+                        <li class="border-t border-b border-neutral accountSection-navigation-item"
                             :class="{ 'accountSection-navigation-item-active': is('account.orders') }">
                             <Link :href="route('account.orders')" class="block w-full">訂單</Link>
                         </li>
@@ -23,7 +23,7 @@
 
                     <div>
                         <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                            class="tracking-wide btn btn-sm mt-8 mb-2 w-20 py-3 border-[#82ae46] text-[#82ae46] hover:text-white rounded-[40px] hover:bg-[#82ae46] transition-colors bg-white" :class="{ 'text-[#fff]': isInHeroState }">
+                            class="tracking-wide btn btn-sm mt-8 mb-2 w-20 py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white" :class="{ 'text-base-100': isInHeroState }">
                             登出
                         </Link>
                     </div>
@@ -58,7 +58,7 @@ const is = (name) => route().current(name) // 需要 ziggy
 .accountSection-navigation a:after {
     content: "";
     position: absolute;
-    border: 1px solid #c4c4c4;
+    border: 1px solid var(--color-neutral);
     border-radius: 50%;
     width: 1.25rem;
     height: 1.25rem;
@@ -71,15 +71,15 @@ const is = (name) => route().current(name) // 需要 ziggy
 
 .accountSection-navigation-item-active a:after,
 .accountSection-navigation-item:hover a:after {
-    border-color: #82ae46;
-    background: #82ae46;
+    border-color: var(--color-primary);
+    background: var(--color-primary);
 }
 
 .accountSection-navigation-item {
     cursor: pointer;
     position: relative;
     display: block;
-    border-top: 1px solid #c4c4c4;
+    border-top: 1px solid var(--color-neutral);
 }
 
 .member-cache {
@@ -91,7 +91,7 @@ const is = (name) => route().current(name) // 需要 ziggy
     padding: 2px 10px;
     border: 1px solid rgb(255, 255, 255);
     border-radius: 300px;
-    background-color: #82ae46;
+    background-color: var(--color-primary);
     display: inline-flex;
     -webkit-box-align: center;
     align-items: center;

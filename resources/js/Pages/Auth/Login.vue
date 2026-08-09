@@ -40,29 +40,29 @@ const submit = () => {
         <form @submit.prevent="submit" class="grid gap-4">
             <div>
                 <input id="email" type="text"
-                    class="mt-1 block w-full rounded-[12px] border border-[#cccccc80] py-2 px-4" v-model="form.login"
+                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.login"
                     required autofocus autocomplete="username" placeholder="Email或手機號碼">
                 <InputError class="mt-2" :message="form.errors.login" />
             </div>
 
             <div>
                 <input id="password" type="password"
-                    class="mt-1 block w-full rounded-[12px] border border-[#cccccc80] py-2 px-4" v-model="form.password"
+                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.password"
                     required autofocus autocomplete="username" placeholder="密碼">
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="text-center">
                 <button class="rounded-[40px] 
-                text-[#82ae46] 
-                shadow-[inset_0_0_0_1px_#82ae46] 
+                text-primary 
+                shadow-[inset_0_0_0_1px_var(--color-primary)] 
                 px-12 
                 py-1.5 
                 font-semibold 
                 transition-all 
                 duration-500 
                 ease-in-out
-                hover:bg-[#82ae46] 
+                hover:bg-primary 
                 hover:text-white
                 cursor-pointer" role="button">
                     登入
@@ -73,7 +73,7 @@ const submit = () => {
         <div class="mt-8 grid gap-4">
             <div class="text-center">
                 <Link v-if="canResetPassword" :href="route('password.request')"
-                    class="tracking-wider underline text-sm text-[#82ae46] hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="tracking-wider underline text-sm text-primary hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     忘記密碼?
                 </Link>
             </div>
@@ -81,7 +81,7 @@ const submit = () => {
             <div class="text-center">
                 <span>還不是會員? </span>
                 <Link v-if="canResetPassword" :href="route('register')"
-                    class="tracking-wider underline text-sm text-[#82ae46] hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="tracking-wider underline text-sm text-primary hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     前往註冊
                 </Link>
             </div>
