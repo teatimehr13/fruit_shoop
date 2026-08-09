@@ -217,7 +217,7 @@ const formatTwd = (price) => {
                         :key="value.id">
                         <div class="overflow-hidden">
                             <a :href="route('products.show', value.slug)">
-                                <img :src="value.primary_image?.img_url || '/images/categories/ChatGPT Image 2025年11月29日 下午02_44_25.png'"
+                                <img :src="value.primary_image?.img_url || '/images/categories/ChatGPT Image 2025年11月29日 下午02_44_25.webp'"
                                     alt="" loading="lazy" decoding="async"
                                     class="transition-all duration-200 hover:scale-110 object-cover aspect-3/2 w-full h-full">
                             </a>

@@ -35,7 +35,7 @@
 | `neutral` | `#c4c4c4` | `#c4c4c4`、`#d8d8d8`(`neutral/50` 取代 `#cccccc80`) |
 | `feature-pink`/`feature-tan`/`feature-blue`/`feature-olive` | `#e4b2d6`/`#dcc698`/`#a2d1e1`/`#dcd691` | 同值,僅正式收編為 token(`_Feature.vue` 四個特色圖示裝飾色,非語意色) |
 | `--radius-field` | `0.75rem`(12px) | 對應決策的「中等圓角」 |
-| `--depth: 0` / `--noise: 0` | — | 對應 Econis 扁平無陰影風格 |
+| `--depth: 0` / `--noise: 0` | — | 關閉 DaisyUI 元件內建的立體光影效果,走乾淨風格(⚠️ 見下方更正:Econis 實際上不是完全無陰影) |
 | `--font-sans` | Poppins | 取代 Figtree(`app.blade.php` 字體連結、DaisyUI 均已切換) |
 
 **驗證**:`npm run build` 成功;抽查編譯後 CSS 確認 `bg-primary`/`text-base-content`/`border-neutral\/50`/`bg-feature-pink` 等 utility 皆正確產生對應 CSS 變數。`php artisan test` 此次因環境 MySQL 連線問題(`Access denied for user 'root'`)整批失敗,與本次純前端 CSS/Vue 改動無關,未進一步排查(本階段沒有動任何 PHP/DB 相關程式碼)。
@@ -47,6 +47,20 @@
 - ⬜ 剩餘 Options API 檔案轉為 `<script setup>`
 - ⬜ 套用新 token 逐頁改版前台(Layouts → Home → Products → Cart → Checkout → Account → Auth)
 - 註:後台(`Back/*`)頁面故意跳過,將於 Phase 4 由 Filament 取代
+
+**Econis 版面規格參考**(2026-08-09 額外拉 Elementor 產生的實際 CSS 檔案(`post-14148.css`、`elementor/frontend.min.css`)量出來的具體數值,不是憑肉眼猜的,供 Phase 2 動工時對照):
+
+| 項目 | 數值 | 備註 |
+|---|---|---|
+| 容器最大寬度 | `1140px` | 剛好等於本專案既有的 `--max-w-layout-normal`(71.25rem),不用新增 token |
+| Grid/區塊間距 | `30px` | 多個 grid 區塊一致用這個 gap |
+| 卡片/圖片區塊圓角 | `20px` | 跟按鈕的 9999px 全圓角是分開的規格 |
+| 大型膠囊/標籤圓角 | `50px` | 次常見,用在較大的膠囊型元素 |
+| 圓形元素 | `50%` | icon/頭像類 |
+| 卡片陰影 | `0 9px 15px 0 rgba(0,0,0,.05)`、`0 8px 21px 3px rgba(0,0,0,.05)` | **更正 Phase 1 決策紀錄裡「扁平無陰影」的說法**:Econis 其實有用陰影,只是很淡(5% 透明度的黑),不是完全沒有陰影。Phase 1 設的 `--depth: 0` 只影響 DaisyUI 元件自帶的立體光影,不影響 Phase 2 卡片可以自訂這種淡陰影 |
+| 標題字級 | `82px`(hero 大標)/`50px`(區塊標題)/`34px`/`30px`(次標題) | |
+| 內文字級 | `25px`/`22px`/`20px`/`18px`(卡片標題/內文)/`16px`/`14px`/`12px`(輔助文字) | |
+| Section 水平內距 | `0 15px`(最常見)、`0 30px`、`0 7.5px` | |
 
 ## Phase 3 — 後端 Service 層清理
 
