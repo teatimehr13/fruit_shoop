@@ -10,15 +10,12 @@ use App\Services\EcpayPaymentService;
 
 class PaymentController extends Controller
 {
-    // private EcpayPaymentService $ecpay;
     public function __construct(private EcpayPaymentService $ecpay)
     {
-        // $this->ecpay = $ecpay;
     }
 
     public function checkout(string $order)
     {
-        // Log::info(1233);
         $orderModel = Order::where('order_number', $order)->firstOrFail();
 
         $html = $this->ecpay->generateCheckoutHtml(
@@ -28,7 +25,6 @@ class PaymentController extends Controller
 
         return response($html);
     }
-
 
     // 2) 綠界後端回傳付款結果（ReturnURL）
     public function returnUrl(Request $req)
@@ -49,7 +45,6 @@ class PaymentController extends Controller
             ->orWhere('order_number', $merchantTradeNo)
             ->first();
 
-
         $method = match (true) {
             str_starts_with($paymentType, 'Credit') => 'credit_card',
             str_starts_with($paymentType, 'ATM')    => 'atm',
@@ -63,10 +58,6 @@ class PaymentController extends Controller
             // 綠界規範：沒回 1|OK 可能會重送通知
             return response('1|OK', 200);
         }
-
-        // if ($order->payment_status === 'paid') {
-        //     return response('1|OK', 200);
-        // }
 
         if ($order->order_status === Order::PAID) {
             return response('1|OK', 200);
@@ -83,7 +74,6 @@ class PaymentController extends Controller
         } else {
             $order->update([
                 'order_status' => Order::WAITING_FOR_THE_TRANSFER, // 或 Order::PAYMENT_FAILED
-                // 'payment_status' => 'failed', // 
             ]);
 
             Log::warning('綠界付款未成功', [
@@ -99,8 +89,6 @@ class PaymentController extends Controller
     // 3) 綠界前端導回（OrderResultURL）
     public function frontOrderResultURL(Request $req)
     {
-        // Log::info('OrderResult 回傳內容', $req->all());
-
         $merchantTradeNo = $req->input('MerchantTradeNo');
 
         $order = Order::where('order_number', $merchantTradeNo)
@@ -110,14 +98,11 @@ class PaymentController extends Controller
         // 從 ECPay 返回時自動重新登入
         if (!auth()->check() && $order->user_id) {
             auth()->loginUsingId($order->user_id, true);
-            // Log::info('使用者從 ECPay 返回,已重新登入', ['user_id' => $order->user_id]);
         }
 
-        Log::info('success');
         return redirect()
             ->route('order.show', ['order' => $order->order_number])
             ->with('success', '付款完成！訂單已成立');
-        //  return redirect()->route('account.orders');
     }
 
     // 4) 補繳（站內功能）

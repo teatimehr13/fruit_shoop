@@ -37,15 +37,7 @@ class ProductController extends Controller
         $validated = $request->validated();
         $product = Product::create($validated);
 
-        // if ($request->hasFile('image')) {
-        //     $dir = "products/{$product->id}";
-        //     $filename = $request->file('image')->hashName();
-        //     $relativePath = $request->file('image')->storeAs($dir, $filename, 'public');
-        // }
-
-        // $product->update(['image' => $relativePath]);
-
-        return response()->json($product, 201); //新增201
+        return response()->json($product, 201);
     }
 
     public function show(string $id)
@@ -72,28 +64,7 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
 
-        // $oldPath = $product->image;  // 相對路徑
-        // $newPath = null;
-
-        // // 有新檔才處理上傳
-        // if ($request->hasFile('image')) {
-        //     $dir = "products/{$product->id}";
-        //     // hashName() 會自動產生檔名，store() 會自動建立資料夾
-        //     $newPath = $request->file('image')->store($dir, 'public');
-        //     $validated['image'] = $newPath;
-        // }
-
         $product->update($validated);
-
-        // // 新檔成功且與舊檔不同 → 刪舊檔
-        // if ($newPath && $oldPath && $oldPath !== $newPath && Storage::disk('public')->exists($oldPath)) {
-        //     Storage::disk('public')->delete($oldPath);
-        // }
-
-        // if ($request->boolean('remove_image') && $oldPath) {
-        //     $product->update(['image' => null]);
-        //     Storage::disk('public')->delete($oldPath);
-        // }
 
         return response()->json($product->fresh(), 200);
     }
@@ -120,11 +91,6 @@ class ProductController extends Controller
 
     private function fetchIndexData(Request $request)
     {
-        // $products = Product::query()
-        //     ->select(['id', 'slug', 'name', 'price', 'image', 'description', 'is_enabled'])
-        //     ->orderBy('created_at', 'asc')
-        //     ->get();
-
         $query = Product::query()
             ->select(['id', 'subcategory_id', 'slug', 'name', 'description', 'is_enabled'])
             ->with(['subcategory' => function ($query) {
@@ -145,10 +111,6 @@ class ProductController extends Controller
         if ($subcategory_id !== null && $subcategory_id !== '') {
             $query->where('subcategory_id', (int)$subcategory_id);
         }
-
-        // $query->when($request->boolean('enabled'), fn($q) => $q->where('is_enabled', true));
-        // $query->when($request->filled('min_price'), fn($q) => $q->where('price', '>=', (int)$request->min_price));
-        // $query->when($request->filled('max_price'), fn($q) => $q->where('price', '<=', (int)$request->max_price));
 
         $products = $query->paginate(10)->withQueryString()->through(function ($item) {
             // 這裡就是「打平」的地方
@@ -171,16 +133,6 @@ class ProductController extends Controller
         $product->load('subcategory');
 
         return response()->json([
-            // 'product' => array_merge($product->only([
-            //     'id',
-            //     'slug',
-            //     'name',
-            //     'description',
-            //     'is_enabled',
-            //     'subcategory_id'
-            // ]), [
-            //     'subcategory_name' => $product->subcategory?->name ?? '未分類'
-            // ]),
             'product' => $product->only([
                 'id',
                 'slug',
@@ -201,12 +153,6 @@ class ProductController extends Controller
                 ->get(),
         ]);
     }
-
-    // public function indexJson()
-    // {
-    //     $products = $this->fetchIndexData();
-    //     return response()->json(['data' => $products]);
-    // }
 
     public function changeStatus(Product $product)
     {
