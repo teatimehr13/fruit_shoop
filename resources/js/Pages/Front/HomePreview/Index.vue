@@ -54,24 +54,14 @@ const topProducts = [
         </div>
     </section>
 
-    <!-- Hot categories:標題/文字排版保留,圓圈內容改成 Feature 色塊圖示,只有 4 個 -->
+    <!-- Hot categories:圖示不用卡片外框,直接排成一排 -->
     <section class="px-4 py-16 md:py-20 max-w-layout-wide mx-auto text-center">
-        <p class="flex items-center justify-center gap-2 text-sm text-primary my-3">
-            <img src="/images/econis-ref/hero-leaf-1.png" alt="" class="w-5 h-5 object-contain">
-            Promises we keep
-            <img src="/images/econis-ref/hero-leaf-2.png" alt="" class="w-5 h-5 object-contain">
-        </p>
-        <h2 class="text-2xl md:text-4xl font-medium tracking-wide text-heading mb-2">
-            我們的承諾
-        </h2>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-[30px] mt-8 md:mt-20">
-            <div v-for="f in categoryFeatures" :key="f.title"
-                class="group relative mt-[60px] bg-base-100 rounded-[10px] px-4 pb-8">
-                <div class="relative -mt-[60px] w-26 h-26 mx-auto mb-3 ft-icon hover:bg-primary" :class="f.iconBg">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-[30px] text-center">
+            <div v-for="f in categoryFeatures" :key="f.title" class="group">
+                <div class="w-26 h-26 mx-auto mb-3 ft-icon hover:bg-primary" :class="f.iconBg">
                     <div class="aspect-6/3" :class="f.iconMask"></div>
                 </div>
-                <h3 class="text-lg font-medium mt-5 mb-2 text-heading">{{ f.title }}</h3>
+                <h3 class="text-lg font-medium mb-2 text-heading">{{ f.title }}</h3>
                 <span class="block text-sm text-[#818995]">{{ f.subtitle }}</span>
             </div>
         </div>
@@ -98,21 +88,21 @@ const topProducts = [
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">鮮榨果汁</h3>
                     <p class="text-base text-heading/70 mb-4">冷壓工法，鎖住營養</p>
-                    <CtaButton as="span">選購去 →</CtaButton>
+                    <CtaButton as="span" class="!bg-[#fff] !text-primary hover:!bg-accent hover:!text-accent-content">選購去 →</CtaButton>
                 </div>
             </a>
         </div>
     </section>
 
     <!-- Top products:跟「我們的承諾」同一套標題樣式(英文小標+葉子裝飾 → 中文主標) -->
-    <section class="px-4 pb-16 md:pb-20 max-w-layout-wide mx-auto text-center">
+    <section class="px-4 pb-24 md:pb-32 max-w-layout-wide mx-auto text-center">
         <p class="flex items-center justify-center gap-2 text-sm text-primary my-3">
             <img src="/images/econis-ref/hero-leaf-1.png" alt="" class="w-5 h-5 object-contain">
-            Handpicked for you
+            Top products
             <img src="/images/econis-ref/hero-leaf-2.png" alt="" class="w-5 h-5 object-contain">
         </p>
-        <h2 class="text-2xl md:text-4xl font-medium tracking-wide text-heading mb-8 md:mb-12">
-            精選商品
+        <h2 class="text-2xl md:text-4xl font-medium tracking-wide text-heading mb-8 md:mb-16">
+            人氣商品
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-[30px] text-left">
             <div v-for="p in topProducts" :key="p.name"
@@ -140,6 +130,31 @@ const topProducts = [
                             d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
                     </svg>
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 區:深色底 + 左側文字(小標語/大標題/播放鍵+按鈕)。
+         背景目前用純深色頂著,還沒有實際的深色蔬果攝影照片,之後換真實圖片 -->
+    <section class="relative w-full py-20 md:py-32 overflow-hidden bg-[#0d0d0d]">
+        <div class="relative max-w-layout-wide mx-auto px-4">
+            <div class="max-w-xl">
+                <p class="text-sm md:text-base font-semibold tracking-[0.15em] text-base-100 uppercase mb-4">
+                    Good taste &amp; great crunchy
+                </p>
+                <h2 class="text-4xl md:text-6xl font-bold text-base-100 leading-[1.15] mb-8">
+                    Wake Up Early,<br>Eat Fresh &amp; Healthy
+                </h2>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="w-13 h-13 rounded-full bg-accent flex items-center justify-center flex-shrink-0 hover:bg-accent/90 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="w-5 h-5 text-accent-content ml-0.5">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                    </button>
+                    <CtaButton>Shop now</CtaButton>
+                </div>
             </div>
         </div>
     </section>
