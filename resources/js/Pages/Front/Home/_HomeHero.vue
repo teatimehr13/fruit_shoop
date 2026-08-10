@@ -51,18 +51,18 @@ const heroSlides = [
                 <div class="relative h-full ">
                     <img :src="slide.image" :alt="slide.title" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent">
-                        <div class="max-w-8xl mx-auto h-full flex items-center px-4 max-w-[var(--max-w-layout-wide)]">
+                        <div class="max-w-layout-wide mx-auto h-full flex items-center px-4">
                             <div>
                                 <h1
-                                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl 3xl:text-6xl font-bold text-white mb-4">
+                                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl 3xl:text-8xl font-bold text-base-100 mb-6">
                                     {{ slide.title }}
                                 </h1>
-                                <p class="text-sm sm:text-base md:text-lg lg:text-xl 3xl:text-2xl text-white mb-6">
+                                <p class="text-base sm:text-lg md:text-xl lg:text-2xl 3xl:text-3xl text-base-100 mb-8">
                                     {{ slide.subtitle }}
                                 </p>
 
                                 <!-- <a :href="slide.link" class="
-                                    inline-block bg-green-600 text-white rounded-lg 
+                                    inline-block bg-green-600 text-base-100 rounded-lg 
                                     hover:bg-green-700 transition-colors
                                     px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4
                                     text-sm md:text-base lg:text-lg">

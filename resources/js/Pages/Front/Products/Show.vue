@@ -193,7 +193,7 @@ const submitToCart = async () => {
 </script>
 
 <template>
-    <section class="py-8 px-4 mt-[var(--spacing-header-space)] max-w-[var(--max-w-layout-wide)] mx-auto">
+    <section class="py-8 px-4 mt-[var(--spacing-header-space)] max-w-layout-wide mx-auto">
         <div class="mt-header">
             <div class="mx-auto h-full">
                 <div class="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
@@ -216,7 +216,7 @@ const submitToCart = async () => {
                                     <SwiperSlide v-for="(image, index) in props.product.product_images" :key="image.id || index"
                                         class="cursor-pointer !h-auto">
                                         <div
-                                            class="aspect-square overflow-hidden border-2 border-gray-200 rounded-lg hover:border-primary transition-colors">
+                                            class="aspect-square overflow-hidden border-2 border-base-300 rounded-lg hover:border-primary transition-colors">
                                             <img :src="image.img_url" :alt="image.alt_text || `產品圖片 ${index + 1}`"
                                                 class="w-full h-full object-cover">
                                         </div>
@@ -237,7 +237,7 @@ const submitToCart = async () => {
                                             clickable: true
                                         }" @swiper="setMainSwiper">
                                         <SwiperSlide v-for="(image, index) in props.product.product_images" :key="image.id || index">
-                                            <div class="aspect-3/2 h-full bg-gray-100 rounded-lg overflow-hidden pdp-media__carousel_img">
+                                            <div class="aspect-3/2 h-full bg-base-200 rounded-lg overflow-hidden pdp-media__carousel_img">
                                                 <img :src="image.img_url" :alt="image.alt_text"
                                                     class="w-full h-full object-cover" @load="updateThumbsHeight">
                                             </div>
@@ -277,7 +277,7 @@ const submitToCart = async () => {
                                             <input type="radio" class="peer hidden" name="gift" :value="opt.id"
                                                 v-model="selectedOptionForm.id" @change="handleOptionChange(opt)">
                                             <span class="text-center w-full px-6 py-2 rounded-full text-sm border border-base-200 text-base-content
-                                peer-checked:bg-primary peer-checked:text-white transition-colors">
+                                peer-checked:bg-primary peer-checked:text-primary-content transition-colors">
                                                 {{ opt.option_text }}
                                             </span>
                                         </label>
@@ -292,7 +292,7 @@ const submitToCart = async () => {
                             <!-- 加入購物車按鈕 -->
                             <div class="mt-8 w-full">
                                 <button type="button" class="btn w-full py-2 bg-transparent border-1 text-primary border-primary rounded-full 
-                        hover:bg-primary hover:text-white transition-colors text-lg font-semibold" @click="submitToCart">
+                        hover:bg-primary hover:text-primary-content transition-colors text-lg font-semibold" @click="submitToCart">
                                     加入購物車 
                                 </button>
                             </div>

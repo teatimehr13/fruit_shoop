@@ -161,7 +161,7 @@ const formatTwd = (price) => {
 <template>
     <PageHero />
 
-    <section class="mt-4 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
+    <section class="mt-4 max-w-layout-wide mx-auto px-4">
         <PillsSwiper class="md:hidden mt-4" :categories="props.categories_tab" :activeCategory="categoryName"
             @select-category="onSelectCategory" />
 
@@ -177,13 +177,13 @@ const formatTwd = (price) => {
                     <ul>
                         <li class="text-base-content px-2 py-1 rounded-sm"
                             :class="{ 'bg-primary text-base-100': categoryName == 'ALL' }">
-                            <a href="#" class="block w-full" :class="{ 'hover:text-zinc-400': categoryName !== 'ALL' }"
+                            <a href="#" class="block w-full" :class="{ 'hover:text-base-content/60': categoryName !== 'ALL' }"
                                 @click.prevent="onSelectCategory('ALL')">全部</a>
                         </li>
                         <li v-for="value in props.categories_tab" class="text-base-content px-2 py-1 rounded-sm"
                             :class="{ 'bg-primary text-base-100': value.name == categoryName }">
                             <a href="#" class="block w-full "
-                                :class="{ 'hover:text-zinc-400': value.name !== categoryName }" @click.prevent="
+                                :class="{ 'hover:text-base-content/60': value.name !== categoryName }" @click.prevent="
                                     onSelectCategory(value.name)">
                                 {{ value.name }}
                             </a>
@@ -232,7 +232,7 @@ const formatTwd = (price) => {
                                         {{ formatTwd(value.cheapest_price) }}
                                     </div>
                                     <div v-if="value.has_discount"
-                                        class="line-through text-gray-400 text-xs sm:text-sm ">
+                                        class="line-through text-base-content/50 text-xs sm:text-sm ">
                                         {{ formatTwd(value.cheapest_original_price) }}
                                     </div>
                                 </div>
@@ -249,7 +249,7 @@ const formatTwd = (price) => {
                             </div>
                         </div>
 
-                        <div class="fixed left-0 md:absolute bottom-0 h-[45%] md:h-[80%] w-full rounded-[12px] p-4 bg-neutral-100/95 transition-transform duration-500 z-10"
+                        <div class="fixed left-0 md:absolute bottom-0 h-[45%] md:h-[80%] w-full rounded-[12px] p-4 bg-base-100/95 transition-transform duration-500 z-10"
                             :class="selectToCartId == value.id ? 'translate-y-[0%]' : 'translate-y-[100%]'">
 
                             <div class="flex flex-col h-full gap-3">
@@ -257,7 +257,7 @@ const formatTwd = (price) => {
                                 <div class="flex-1">
                                     <div
                                         class="grid grid-cols-[minmax(auto,100px)_1fr_32px] md:grid-cols-[1fr_1fr_32px] items-start gap-4">
-                                        <div class="w-full aspect-square overflow-hidden rounded bg-white">
+                                        <div class="w-full aspect-square overflow-hidden rounded bg-base-100">
                                             <img :src="value.primary_image?.img_url" alt=""
                                                 class="w-full h-full object-cover" />
                                         </div>
@@ -278,7 +278,7 @@ const formatTwd = (price) => {
                                 <div class="flex flex-1 flex-col justify-between gap-4">
                                     <div>
                                         <label>選項</label>
-                                        <select class="select-md border-b-1 border-base-content px-0 py-1 w-full outline-none focus:border-gray-500
+                                        <select class="select-md border-b-1 border-base-content px-0 py-1 w-full outline-none focus:border-primary
                                             appearance-none bg-select-arrow bg-no-repeat bg-right"
                                             v-model="selectedOptions[value.id]" @change="handleOptionChange(value)">
                                             <option v-for="(opt, idx) in value.product_options" :key="idx"
@@ -291,7 +291,7 @@ const formatTwd = (price) => {
                                     <div class="">
                                         <button type="button" @click="confirmAddToCart(value)"
                                             class="btn btn-md md:btn-sm w-full border-primary bg-transparent text-primary rounded-[40px]
-                                                    hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                                                    hover:bg-primary hover:text-primary-content hover:border-primary transition-colors">
                                             加入購物車 - {{ formatTwd(getSelectedOption(value)?.price) }}
                                         </button>
                                     </div>

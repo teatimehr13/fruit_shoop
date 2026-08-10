@@ -88,8 +88,14 @@ class ProductController extends Controller
             ->values();
 
 
+        $categories = Category::select(['id', 'name'])
+            ->where('is_enabled', 1)
+            ->orderBy('sort_order')
+            ->get();
+
         return Inertia::render('Front/Home/Index', [
-            'featured' => $featured,
+            'featured'   => $featured,
+            'categories' => $categories,
         ]);
     }
 

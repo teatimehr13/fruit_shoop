@@ -17,10 +17,10 @@ const props = defineProps({
 </script>
 
 <template>
-    <section class="px-4 pb-16 md:pb-18 max-w-[var(--max-w-layout-wide)] mx-auto">
-        <div class="border border-base-200 rounded-[12px] py-6 px-4 pr-0 lg:pr-0 lg:px-6">
+    <section class="px-4 pb-16 md:pb-18 max-w-layout-wide mx-auto">
+        <div class="border border-base-200 bg-base-200 rounded-[20px] py-8 px-4 pr-0 lg:pr-0 lg:px-8">
             <div class="md:mb-8 mb-4 md:pt-4">
-                <h2 class="text-2xl md:text-4xl font-semibold tracking-wide text-base-content">
+                <h2 class="text-3xl md:text-5xl font-semibold tracking-wide text-base-content">
                     精選好物 +
                 </h2>
             </div>
@@ -57,7 +57,7 @@ const props = defineProps({
                         <swiper-slide v-for="featured in props.featured">
                         <a :href="route('products.show', featured.slug)">
                             <img :src="featured.image"
-                                class="aspect-square object-cover rounded-[12px]">
+                                class="aspect-square object-cover rounded-[20px]">
                         </a>
                     </swiper-slide>
                 </swiper>
@@ -93,7 +93,7 @@ const props = defineProps({
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-soft);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,7 +105,7 @@ const props = defineProps({
 /* Hover 效果 */
 .custom-button-prev:hover,
 .custom-button-next:hover {
-    background: white;
+    background: var(--color-base-100);
 }
 
 /* 禁用狀態 */

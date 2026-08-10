@@ -8,23 +8,23 @@
                 <div class="grid grid-flow-col grid-rows-6 gap-4 h-full w-full">
                     <div class="row-span-4 relative col-span-3">
                        <img src="/images/categories/unnamed.webp" alt=""
-                            class="rounded-[12px] object-cover w-full h-full absolute inset-0">
+                            class="rounded-[20px] object-cover w-full h-full absolute inset-0">
                     </div>
                     
                     <div class="row-span-2 relative col-span-3">
                         <img src="/images/categories/thought-catalog-EMX1eJ1BcgU-unsplash.webp" alt=""
-                            class="rounded-[12px] object-cover w-full h-full absolute inset-0">
+                            class="rounded-[20px] object-cover w-full h-full absolute inset-0">
                     </div>
 
                     <div class="row-span-3 relative col-span-2">
                          <img src="/images/categories/Gemini_Generated_Image_1b8lf61b8lf61b8l.webp" alt=""
-                        class="rounded-[12px] object-cover w-full h-full absolute inset-0">
+                        class="rounded-[20px] object-cover w-full h-full absolute inset-0">
                         
                     </div>
 
                     <div class="row-span-3 relative col-span-2">
                         <img src="/images/categories/Gemini_Generated_Image_5wt40w5wt40w5wt4.webp" alt=""
-                            class="rounded-[12px] object-cover w-full h-full absolute inset-0">
+                            class="rounded-[20px] object-cover w-full h-full absolute inset-0">
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 .buy_btn:hover {
     cursor: pointer;
     background-color: var(--color-primary);
-    color: white;
+    color: var(--color-primary-content);
 
 }
 </style>

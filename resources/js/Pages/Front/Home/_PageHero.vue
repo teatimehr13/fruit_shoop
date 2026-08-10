@@ -20,11 +20,11 @@ const heroSlides = [
             <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent">
                 <div class="max-w-8xl mx-auto h-full flex items-center justify-center px-6">
                     <div class="text-center">
-                        <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl 3xl:text-5xl font-bold text-white mb-4">
+                        <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl 3xl:text-5xl font-bold text-base-100 mb-4">
                             {{ heroSlides[0].title }}
                         </h3>
 
-                        <p class="text-sm sm:text-base md:text-lg lg:text-xl 3xl:text-2xl text-white mb-6">
+                        <p class="text-sm sm:text-base md:text-lg lg:text-xl 3xl:text-2xl text-base-100 mb-6">
                             {{ heroSlides[0].subtitle }}
                         </p>
                     </div>

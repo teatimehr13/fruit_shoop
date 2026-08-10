@@ -1,7 +1,7 @@
 <template>
     <PageHero />
 
-    <section class="py-8 px-4  max-w-[var(--max-w-layout-wide)] mx-auto">
+    <section class="py-8 px-4  max-w-layout-wide mx-auto">
         <div class="mt-header">
             <div class="mx-auto h-full">
                 <div class="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">

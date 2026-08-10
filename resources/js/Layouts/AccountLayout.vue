@@ -1,6 +1,6 @@
 <template>
     <FrontLayout>
-        <section class="mt-[52px] md:mt-[88px] py-8 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
+        <section class="mt-[52px] md:mt-[88px] py-8 max-w-layout-wide mx-auto px-4">
             <div class="md:grid md:grid-cols-[25rem_1fr] items-start">
                 <!-- desktop sidebar only -->
                 <aside class="hidden md:block mr-8 p-4">

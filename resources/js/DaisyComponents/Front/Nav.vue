@@ -85,11 +85,11 @@ const { ItemsCount } = useSharedCart();
         }">
             <!-- desktop -->
             <nav
-                class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-[var(--max-w-layout-wide)]">
+                class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-layout-normal">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
-                        <a :href="route(nav.name)" class="font-semibold text-base-content"
-                            :class="{ 'text-base-100': isInHeroState }">{{ nav.label }}</a>
+                        <a :href="route(nav.name)" class="font-semibold"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">{{ nav.label }}</a>
                     </li>
                 </ul>
 
@@ -108,19 +108,19 @@ const { ItemsCount } = useSharedCart();
                         登出
                         </Link> -->
                         <a v-if="$page.props.auth.user" :href="route('account.index')" method="post" as="button"
-                            class="text-base-content font-semibold cursor-pointer"
-                            :class="{ 'text-base-100': isInHeroState }">
+                            class="font-semibold cursor-pointer"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
                             會員中心
                         </a>
-                        <a v-else :href="route('login')" class="text-base-content font-semibold"
-                            :class="{ 'text-base-100': isInHeroState }">
+                        <a v-else :href="route('login')" class="font-semibold"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
                             登入會員
                         </a>
 
                     </li>
                     <li class="">
-                        <a href="#" @click.prevent="emit('open-cart')" class="text-base-content font-semibold"
-                            :class="{ 'text-base-100': isInHeroState }">
+                        <a href="#" @click.prevent="emit('open-cart')" class="font-semibold"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
                             購物車
                             <span v-if="ItemsCount" class="text-primary">
                                 ({{ ItemsCount }})
@@ -210,11 +210,11 @@ const { ItemsCount } = useSharedCart();
                                 class="p-4 space-y-8 overflow-y-auto flex-1 content-center mt-[-72px]">
                                 <!-- <a href="#" class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center">所有商品</a>
                                 <a href="#" class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center">關於我們</a> -->
-                                <a class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center"
-                                    :class="{ 'text-base-100': isInHeroState }" :href="route('front.home.index')">首頁</a>
+                                <a class="block text-lg font-semibold px-4 py-2 rounded-[8px] text-center"
+                                    :class="isInHeroState ? 'text-base-100' : 'text-base-content'" :href="route('front.home.index')">首頁</a>
                                 <a v-for="nav in navLinks"
-                                    class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center"
-                                    :class="{ 'text-base-100': isInHeroState }" :href="route(nav.name)">{{ nav.label
+                                    class="block text-lg font-semibold px-4 py-2 rounded-[8px] text-center"
+                                    :class="isInHeroState ? 'text-base-100' : 'text-base-content'" :href="route(nav.name)">{{ nav.label
                                     }}</a>
                             </div>
                         </div>
@@ -235,7 +235,7 @@ const { ItemsCount } = useSharedCart();
     color: var(--color-base-content);
     background: var(--color-base-100);
     transition: all .5s cubic-bezier(.76, 0, .24, 1), color 0s;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .06);
+    box-shadow: var(--shadow-soft);
 }
 
 .Header__sticky nav {

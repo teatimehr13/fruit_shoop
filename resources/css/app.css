@@ -56,22 +56,28 @@
     --spacing-header: 108px;
     --spacing-header-mobile: 80px;
     --spacing-header-space: 88px;
-    --max-w-layout-wide: 90rem;
+    --max-width-layout-wide: 90rem;
     /* 1440px */
-    --max-w-layout-normal: 71.25rem;
+    --max-width-layout-normal: 71.25rem;
     /* 1140px */
-    --max-w-8xl: 1600px;
-    --max-w-9xl: 1920px;
+    --max-width-8xl: 1600px;
+    --max-width-9xl: 1920px;
     --width-8xl: 1600px;
     --width-9xl: 1920px;
 
-    --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+    --font-sans: "Poppins", "Noto Sans TC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", "Noto Color Emoji";
 
     /* Home/Products _Feature.vue 的四個特色圖示底色，維持既有的裝飾性配色,不併入語意色票 */
     --color-feature-pink: #e4b2d6;
     --color-feature-tan: #dcc698;
     --color-feature-blue: #a2d1e1;
     --color-feature-olive: #dcd691;
+
+    /* 對應 Econis 實測的卡片淡陰影,Header/卡片類元件共用 */
+    --shadow-soft: 0 9px 15px 0 rgba(0, 0, 0, 0.05);
+
+    /* /home-preview 標題色,深藍灰,用在淺底標題上(深色/彩色底的標題不適用,仍走 base-100/primary-content) */
+    --color-heading: #3e4a5e;
 }

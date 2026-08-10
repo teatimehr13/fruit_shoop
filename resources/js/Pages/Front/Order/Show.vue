@@ -1,7 +1,7 @@
 <template>
     <!-- <PageHero /> -->
 
-    <section class="mt-[88px] mb-8 md:py-8 max-w-[var(--max-w-layout-wide)] mx-auto px-4">
+    <section class="mt-[88px] mb-8 md:py-8 max-w-layout-wide mx-auto px-4">
         <!-- <h1 class="font-semibold text-xl">
             訂單詳情
         </h1> -->

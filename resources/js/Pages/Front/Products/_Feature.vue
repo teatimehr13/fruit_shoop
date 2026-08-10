@@ -10,7 +10,7 @@
                         <h3 class="text-base font-semibold mb-3">
                             產地直送
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-sm font-medium text-base-content/60">
                             當日採收冷鏈保鮮
                         </p>
                     </div>
@@ -23,7 +23,7 @@
                         <h3 class="text-base font-semibold mb-3">
                             季節蔬果精選
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-sm font-medium text-base-content/60">
                             跟著產季吃得剛剛好
                         </p>
                     </div>
@@ -37,7 +37,7 @@
                         <h3 class="text-base font-semibold mb-3">
                             生產履歷
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-sm font-medium text-base-content/60">
                             吃的安心
                         </p>
                     </div>
@@ -51,7 +51,7 @@
                         <h3 class="text-base font-semibold mb-3">
                             24小時線上下單
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-sm font-medium text-base-content/60">
                             新鮮不遲到
                         </p>
                     </div>

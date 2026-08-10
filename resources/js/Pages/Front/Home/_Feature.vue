@@ -1,16 +1,16 @@
 <template>
-    <section class="py-14 my-8 max-w-[var(--max-w-layout-wide)] mx-auto">
-        <div class="w-full">
-            <div class="grid md:grid-cols-4">
+    <section class="bg-base-200">
+        <div class="w-full py-14 md:py-20 max-w-layout-wide mx-auto">
+            <div class="grid gap-8 md:grid-cols-4">
                 <div class="mx-auto mb-4">
                     <div class="m-auto w-26 h-26 bg-feature-pink ft-icon mb-2 hover:bg-primary">
                         <div class="shipped-icon aspect-6/3"></div>
                     </div>
                     <div class="text-center">
-                        <h3 class="text-base font-semibold mb-3">
+                        <h3 class="text-lg md:text-xl font-semibold mb-3">
                             產地直送
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-base font-medium text-base-content/60">
                             當日採收冷鏈保鮮
                         </p>
                     </div>
@@ -20,10 +20,10 @@
                         <div class="vege-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
-                        <h3 class="text-base font-semibold mb-3">
+                        <h3 class="text-lg md:text-xl font-semibold mb-3">
                             季節蔬果精選
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-base font-medium text-base-content/60">
                             跟著產季吃得剛剛好
                         </p>
                     </div>
@@ -34,10 +34,10 @@
                         <div class="reward-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
-                        <h3 class="text-base font-semibold mb-3">
+                        <h3 class="text-lg md:text-xl font-semibold mb-3">
                             生產履歷
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-base font-medium text-base-content/60">
                             吃的安心
                         </p>
                     </div>
@@ -48,10 +48,10 @@
                         <div class="customer-icon aspect-6/3 object-contain"></div>
                     </div>
                     <div class="text-center">
-                        <h3 class="text-base font-semibold mb-3">
+                        <h3 class="text-lg md:text-xl font-semibold mb-3">
                             24小時線上下單
                         </h3>
-                        <p class="text-sm font-medium text-stone-400">
+                        <p class="text-base font-medium text-base-content/60">
                             新鮮不遲到
                         </p>
                     </div>

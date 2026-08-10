@@ -3,35 +3,23 @@ import FrontLayout from '@/Layouts/FrontLayout.vue';
 import HomeHero from './_HomeHero.vue';
 import Feature from './_Feature.vue';
 import Category from './_Category.vue';
+import Promo from './_Promo.vue';
 import TopPicks from './_TopPicks.vue';
-import PageHero from './_PageHero.vue';
 
 defineOptions({
     layout: FrontLayout,
 })
 
 const props = defineProps({
-    featured: Object
+    featured: Object,
+    categories: Object,
 });
-
-console.log(props.featured);
-
-
 </script>
 
 <template>
-    <!-- <PageHero /> -->
-     <!-- <section> -->
-         <HomeHero />
-     <!-- </section> -->
-    <!-- icon feature-->
-        <Feature />
-
-    <!-- category gallery -->
-    <!-- <section></section>
-      -->
-     <Category />
-    <!-- recommand -->
-    <!-- <section></section> -->
-     <TopPicks :featured="featured"/>
+    <HomeHero />
+    <Feature />
+    <Category :categories="categories" />
+    <Promo />
+    <TopPicks :featured="featured" />
 </template>

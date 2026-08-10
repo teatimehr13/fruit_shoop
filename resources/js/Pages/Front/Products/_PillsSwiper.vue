@@ -33,8 +33,8 @@ const handleClickCategory = (name) => {
             class="w-full h-full">
             <swiper-slide
                 class="!w-auto  rounded-full border text-sm whitespace-nowrap transition-colors duration-200" :class="props.activeCategory == 'ALL'
-                    ? 'bg-base-content text-white border-gray-600'
-                    : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'">
+                    ? 'bg-base-content text-base-100 border-base-content'
+                    : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'">
                 <a href="#" class="block w-full px-4 py-2" @click.prevent="handleClickCategory('ALL')">
                     全部
                 </a>
@@ -42,8 +42,8 @@ const handleClickCategory = (name) => {
 
             <swiper-slide v-for="cat in categories" :key="cat.id"
                 class="!w-auto  rounded-full border text-sm whitespace-nowrap transition-colors duration-200" :class="props.activeCategory == cat.name
-                    ? 'bg-base-content text-white border-gray-600'
-                    : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'">
+                    ? 'bg-base-content text-base-100 border-base-content'
+                    : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'">
                 <a href="#" class="block w-full px-4 py-2" @click.prevent="handleClickCategory(cat.name)">
                     {{ cat.name }}
                 </a>
