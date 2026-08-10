@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 // Route::resource('product', ProductController::class);
 
 Route::get('/', [ProductController::class, 'home'])->name('front.home.index');
+
+// Econis 參考版首頁預覽,純前端靜態內容,不影響正式首頁,之後改完就可以刪掉
+Route::get('/home-preview', fn() => \Inertia\Inertia::render('Front/HomePreview/Index'))
+    ->name('front.home-preview');
 // Route::get('/products/{categoryName?}', [ProductController::class, 'index'])
 //     ->name('product.index');
 // Route::get('/products/{category?}', [ProductController::class, 'index'])
