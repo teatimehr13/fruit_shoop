@@ -14,11 +14,11 @@ import CtaButton from '@/DaisyComponents/Front/CtaButton.vue';
         </div>
 
         <div class="relative max-w-layout-wide mx-auto px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-10">
-            <div class="max-w-xl">
+            <div class="max-w-xl text-center md:text-left">
                 <p class="text-sm md:text-base font-medium tracking-[0.15em] text-base-100 uppercase mb-5 md:mb-4">
                     嚴選新鮮，安心每一口
                 </p>
-                <h2 class="text-3xl md:text-5xl font-medium text-base-100 leading-[1.45] md:leading-[1.3] tracking-[0.02em] [text-shadow:0_2px_12px_rgba(0,0,0,0.35)] mb-10 md:mb-8">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-medium text-base-100 leading-[1.45] md:leading-[1.3] tracking-[0.02em] [text-shadow:0_2px_12px_rgba(0,0,0,0.35)] mb-6 md:mb-8">
                     把健康好味道<br>帶進日常生活
                 </h2>
                 <CtaButton as="a" :href="route('products.index')"
