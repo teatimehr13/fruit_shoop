@@ -96,13 +96,20 @@ const confirmAddToCart = async (p) => {
                     </button>
                 </div>
 
-                <!-- 規格選擇滑出面板 -->
-                <div class="absolute left-0 bottom-0 w-full rounded-b-[20px] p-4 bg-base-100/95 transition-transform duration-500 z-10"
+                <!-- 規格選擇滑出面板:手機是貼螢幕底部的 fixed 選單(跟 Products/Index.vue 一致),
+                     桌機以上才改回 absolute 卡在卡片自己底部 -->
+                <div class="fixed left-0 md:absolute bottom-0 w-full rounded-t-[20px] md:rounded-t-none md:rounded-b-[20px] px-4 pt-5 pb-6 md:p-4 bg-base-100 border border-base-300 md:border-0 transition-transform duration-500 z-10"
                     :class="selectToCartId === p.id ? 'translate-y-0' : 'translate-y-full'">
-                    <div class="flex flex-col gap-3">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="text-sm font-medium leading-snug line-clamp-2 text-heading">{{ p.name }}</div>
-                            <button type="button" class="w-5 h-5 options-close" @click="toggleSelectCard(null)">
+                    <div class="flex flex-col gap-4 md:gap-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-base-200">
+                                <img :src="p.image" :alt="p.name" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0 text-sm font-medium leading-snug line-clamp-2 text-heading pt-1">
+                                {{ p.name }}
+                            </div>
+                            <button type="button" class="w-5 h-5 options-close flex-shrink-0 mt-1"
+                                @click="toggleSelectCard(null)">
                                 <span></span>
                             </button>
                         </div>
@@ -124,6 +131,13 @@ const confirmAddToCart = async (p) => {
                 </div>
             </div>
         </div>
+
+        <!-- 手機規格選單的背景遮罩,桌機是卡在卡片內的面板不需要 -->
+        <Transition enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+            leave-active-class="transition-opacity duration-200 ease-in" leave-to-class="opacity-0">
+            <div v-if="selectToCartId" class="fixed inset-0 z-[5] bg-black/40 md:hidden"
+                @click="toggleSelectCard(null)"></div>
+        </Transition>
 
         <a :href="route('products.index')"
             class="mt-10 md:mt-12 btn btn-outline border-primary text-primary rounded-full px-8 font-medium tracking-[0.06em] hover:bg-primary hover:text-primary-content transition-colors">
