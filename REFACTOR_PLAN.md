@@ -129,3 +129,30 @@
 - **[改動]** 依附圖新增 CTA 區塊(深色底,左側「GOOD TASTE & GREAT CRUNCHY」小標語 + 大標題「Wake Up Early, Eat Fresh & Healthy」+ 橘色圓形播放鍵 + 綠色「Shop now」按鈕),放在 Top products 之後,不含下方 4 個 feature icon(使用者明確表示只要上半部)。新建共用元件 `HomePreview/_CtaButton.vue` 統一按鈕樣式並套用到 Hero/Promo banner/Feature banner/CTA 共用。
 - **[決策]** 嘗試在 CTA 上下加波浪 divider(SVG path,背景色代表其中一側、path fill 代表另一側,`my-[-1px]` 接合避免縫隙),過程中換過兩種波浪路徑(divider1 單一山丘、divider2 多層次弧線),也修過「波浪寬度貼滿整個螢幕、跟 1440px viewBox 比例不合導致形狀跑掉」的 bug(改成 `max-w-layout-wide mx-auto` 鎖寬)。最終使用者反饋「不對,改成最初的樣子」,**整個 CTA 波浪實驗回退**,CTA 區塊恢復成最初的深色實色背景版本,不含波浪。保留這個過程的紀錄,提醒之後若要再嘗試波浪造型,SVG 寬度務必跟 viewBox 原生比例對齊,不要貼滿整個 100vw。
 - **[改動]** `_CtaButton.vue` 在特定深色/彩色背景上會跟背景融在一起(例如同為 `bg-primary` 時完全看不出按鈕形狀),目前做法是在使用端額外疊加 `!bg-[#fff] !text-primary` 這類 `!important` class 覆蓋,同時要記得補上 `hover:!bg-accent hover:!text-accent-content` 覆蓋 hover 狀態,不然 `!important` 的底色會連 hover 也一起蓋掉,踩過這個坑。「鮮榨果汁」promo banner 的按鈕目前是白底綠字、hover 橘底白字;「蔬菜嚴選」維持元件預設的綠底白字。
+
+### 2026-08-11
+
+- **[改動]** `_CtaButton.vue` 基礎 class 拿掉 `border-none`(原本是死 class,daisyUI `.btn` 預設 border-width 就是 0,不影響既有畫面),CTA 區按鈕改用 `!border !border-[#fff]` 疊加白色邊框。曾一度加上 `hover:!border-primary` 又依使用者要求改回去,維持 hover 只變 `!bg-primary`/`!text-primary-content`,border 固定白色。
+- **[決策]** 「選購去」兩顆 promo banner 按鈕也補上 `!border !border-[#fff]`。用 Playwright 實際渲染+讀 computed style 排查後確認**不是 class 打架**:border 確實有套用(`border-width:1px`、`border-color:#fff`),「蔬菜嚴選」(綠底)邊框看得出來,「鮮榨果汁」是因為按鈕本身 `!bg-[#fff]` 白底配白框,顏色本身沒對比度才看起來像沒加。使用者決定維持現狀不處理對比度問題。
+- **[決策]** 這兩顆按鈕一度改成 `as="button"`(拿掉 `as="span"`)想解決上述「看起來沒套上」的疑慮,後來確認問題跟 tag 種類無關(span/button computed style 一致),使用者要求改回 `as="span"`——因為外層本來就是 `<a>` 包整張卡片當連結,裡面不該再嵌 `<button>`(interactive content 巢狀,不合法 HTML),用 `<span>` 純視覺呈現才對。
+- **[改動]** CTA 區改版:播放鍵(橘色圓形 play icon)整個移除,「立即選購」按鈕改放到原本播放鍵的位置(標題正下方),原本在右側獨立的按鈕拿掉,CTA 區變成單欄(左側文字+按鈕,右側完全露出背景圖)。
+- **[改動]** CTA 區背景加上使用者提供的蔬果空拍照(`public/images/cta/veggie-flatlay.webp`,深色桌面棚拍)。查了 CTA 背景圖融合手法(mask-image 漸層淡出、深色/主色疊色、clip-path 有機造型、縮小當裝飾插圖四種方向),採用「mask-image 淡出 + 深色漸層疊色」:圖片佔右側 70% 寬,左緣用 `mask-image: linear-gradient(to right, transparent, black 35%)` 融入 `#0d0d0d` 底色,另疊一層 `bg-gradient-to-r from-[#0d0d0d] via-[#0d0d0d]/55 to-[#0d0d0d]/15` 壓住原圖過雜的顏色、確保文字對比度,圖片本身加 `saturate-[0.85] brightness-90` 微降飽和度/亮度。之後使用者要求加 `background-attachment: fixed` 做視差,因為這個屬性只對 CSS `background-image` 生效、對 `<img>` 標籤無效,改把原本的 `<img>` 換成帶 `bg-[url(...)] bg-cover bg-center bg-fixed` 的 `<div>` 才能套用(iOS Safari 不支援 `bg-fixed`,會 fallback 成 `scroll`,不影響版面只是沒有視差效果)。
+- **[改動]** Hero 按鈕文案「立即選購 →」改成「探索更多 →」,因為使用者確認這顆按鈕實際行為是往下捲動頁面(不是導去購買流程),用「探索更多」比較符合實際行為,避免文不對題。
+- **[改動]** CTA 區英文標語換成中文,並來回調整多輪:「Good taste & great crunchy」/「Wake Up Early, Eat Fresh & Healthy」→「嚴選好滋味」/「早起吃新鮮,健康每一天」→「從產地到餐桌」/「把新鮮,帶回家」(使用者嫌太短)→「嚴選新鮮,安心每一口」/「把健康好味道,帶進日常生活」(使用者仍嫌不夠好,方向是想強調**自然/有機**,還在挑選中,截至目前尚未定案)。同時把標題字重從 `font-bold`/`font-semibold` 降到 `font-medium`(500),使用者要求字重不超過 500。
+- **[專案脈絡]** 使用者提到 `/home-preview` 這個頁面本質是「作品集」性質的參考頁(不是要接真實資料的正式頁面),內容大致告一段落。之後如果要正式套用到 `/`(正式首頁),需要重新對照 Phase 2 的既有 checklist 規劃時程,不是這次順便做。
+- **[改動]** 兩顆「選購去」按鈕一度加上 `shadow-[...]` 讓白色 border 在淺色背景上也看得出輪廓(排查發現 border 疊在照片淺色區域時,白框跟背景同色,人眼分不出交界,hover 時也一樣,因為 hover 只改按鈕內部填色、不影響按鈕外側貼著的照片顏色)。後續使用者陸續要求拿掉、加回、只留「蔬菜嚴選」一顆、透明度從 0.35 調輕到 0.18,來回調整過程都記錄在 commit 前的對話,最終狀態:只有「蔬菜嚴選」那顆有淡陰影(`shadow-[0_2px_8px_rgba(0,0,0,0.18)]`),「鮮榨果汁」沒有。
+- **[改動]** `Footer.vue` 容器寬度從 `max-w-layout-normal`(1140px)改成 `max-w-layout-wide`(1440px),對齊 `Nav.vue` 的寬度。這是共用元件,影響全站所有頁面,不只 `/home-preview`。
+- **[改動]** 人氣商品從 4 個佔位商品擴充到 8 個(2 排 x 4 欄),因為 Econis 佔位素材只有 4 張商品圖,後 4 筆重複沿用同一批圖片配上不同的佔位名稱/價格(`Cold Pressed Green Juice`/`Daily Multivitamin Pack`/`Herbal Wellness Tea`/`Free-Range Turkey Breast`),之後接真實商品時要一併換掉,不要誤認成真實資料。
+- **[改動]** 五個 `<section>` 都補上 `id`(`hero`/`features`/`promo`/`products`/`cta`),方便之後錨點導覽或除錯時定位。
+- **[決策]** 使用者反饋各區塊間距「感覺不夠」,盤點發現問題是**不一致**而非全部太窄:多數區塊只單邊設 `pb`(靠下一個區塊完全沒有 `pt` 硬接),只有 CTA(深色底,不能借用鄰居顏色)兩邊都有 padding,導致中間幾段間距 64-80px、CTA 前後卻疊加到 256px,節奏忽緊忽鬆。查了業界作法後(見下方 WebSearch 來源),結論是每個 section 應該自己負責完整的 `py`(上下都設),不要靠單邊 `pb`/`pt` 接鄰居——這樣每個區塊獨立、可預測,以後調順序/插入新區塊不用重算鄰居數值,唯一要注意的是相鄰兩區的 `py` 會相加,數值要抓小一點補償。
+- **[改動]** 依上述結論,`features`/`promo`/`products`/`cta` 四個區塊全部改成各自獨立的三段式響應 `pt`/`pb`(mobile / `md:` / `lg:`),取代原本部分區塊沒有 `pt` 或沒有 lg 斷點的舊寫法。過程中來回調了非常多輪具體數值(CTA 從 `py-20 md:py-32` 先降到 `md:py-28` 再補上 `lg:py-28`、mobile/md 分別降到 `py-12 md:py-20`;`features` 的 `pt` 單獨拉到 `pt-28` 又降回 `pt-24`,理由是「128px 感覺太高」;`products` 的 `pb` 為了 CTA 前的留白特別加大到 `pb-20`(lg),但沒有跟著加到 128px,因為疊加 CTA 自己的 `pt` 後會變 240px、太誇張;`promo`/`products` 中間兩段原本 `lg` 都是 16(64px)相加 128px,使用者覺得偏大,最後拿掉 `lg:` override 讓它們沿用 `md:` 的 14(56px),兩兩相加變 112px)。最終定案(mobile / md / lg,單位 px):
+  | 區塊 | pt | pb |
+  |---|---|---|
+  | `#features` | 48/64/96 | 40/56/56(無 lg override,沿用 md)|
+  | `#promo` | 40/56/56(無 lg override) | 40/56/56 |
+  | `#products` | 40/56/56(無 lg override) | 48/56/80 |
+  | `#cta` | 48/80/112 | 48/80/112 |
+  - Hero 本身跟 Footer 的 `p-10` 刻意沒有跟進這套三段式(Hero 全螢幕影片背景、Footer 米色底,使用者認為顏色邊界本身已經有區隔,不需要額外留白撐開),只有中間四個同為白底的區塊需要靠 padding 做視覺區隔。
+- **[改動]** 「人氣商品」`h2` 的 `mb-8 md:mb-16` 改成 `mb-8 md:mb-12`,跟標題下方的間距配合上面 products 區重新調整過的 padding 一起微調。
+
+**WebSearch 參考來源**(2026-08-11,section spacing 業界作法):[Web Design Spacing and Sizing Best Practices](https://www.conceptfusion.co.uk/post/web-design-spacing-and-sizing-best-practices)、[Automatic CSS - Section Padding Classes](https://docs.automaticcss.com/spacing/section-padding-classes)、[FED Mentor - padding vs margin](https://fedmentor.dev/posts/padding-margin/)、[Elementor - Margin vs Padding](https://elementor.com/blog/margin-vs-padding/)

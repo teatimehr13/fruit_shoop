@@ -8,7 +8,7 @@ defineProps({
 
 <template>
     <component :is="as"
-        class="btn bg-primary text-primary-content border-none rounded-full px-8 font-medium tracking-[0.06em] hover:bg-accent transition-colors">
+        class="btn bg-primary text-primary-content rounded-full px-8 font-medium tracking-[0.06em] hover:bg-accent transition-colors">
         <slot />
     </component>
 </template>

@@ -34,28 +34,32 @@ const topProducts = [
     { name: 'Organic Chicken Tenders', price: '$200.00', image: '/images/econis-ref/prod-chicken.jpg', hot: true },
     { name: 'Whole Leaf Aloe Juice', price: '$100.00', image: '/images/econis-ref/prod-aloe-juice.jpg', hot: false },
     { name: 'Antioxidant Skin Protection', price: '$200.00', image: '/images/econis-ref/prod-antioxidant.jpg', hot: false },
+    { name: 'Cold Pressed Green Juice', price: '$95.00', image: '/images/econis-ref/prod-aloe-juice.jpg', hot: false },
+    { name: 'Daily Multivitamin Pack', price: '$150.00', image: '/images/econis-ref/prod-probiotic.jpg', hot: false },
+    { name: 'Herbal Wellness Tea', price: '$85.00', image: '/images/econis-ref/prod-antioxidant.jpg', hot: true },
+    { name: 'Free-Range Turkey Breast', price: '$220.00', image: '/images/econis-ref/prod-chicken.jpg', hot: false },
 ]
 
 </script>
 
 <template>
     <!-- Hero:實拍影片背景版本(測試用) -->
-    <section :ref="setHeroRef" class="relative w-full h-screen overflow-hidden">
+    <section id="hero" :ref="setHeroRef" class="relative w-full aspect-[4/3] md:h-screen overflow-hidden ">
         <video autoplay muted loop playsinline poster="/videos/hero-fruit-poster.jpg"
             class="absolute inset-0 w-full h-full object-cover">
             <source src="/videos/hero-fruit.mp4" type="video/mp4">
         </video>
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/40"></div>
 
-        <div class="relative h-full max-w-layout-wide mx-auto px-4 pb-12 md:pb-16 flex flex-col items-center justify-end text-center">
+        <div class="relative h-full max-w-layout-wide mx-auto px-4 pb-8 md:pb-16 flex flex-col items-center justify-end text-center">
             <h1 class="text-2xl md:text-3xl font-medium text-base-100 mb-6">嚴選新鮮蔬果，讓日常採買更簡單。</h1>
 
-            <CtaButton>立即選購 →</CtaButton>
+            <CtaButton>探索更多 →</CtaButton>
         </div>
     </section>
 
     <!-- Hot categories:圖示不用卡片外框,直接排成一排 -->
-    <section class="px-4 py-16 md:py-20 max-w-layout-wide mx-auto text-center">
+    <section id="features" class="px-4 pt-12 md:pt-16 lg:pt-24 pb-10 md:pb-14 max-w-layout-wide mx-auto text-center">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-[30px] text-center">
             <div v-for="f in categoryFeatures" :key="f.title" class="group">
                 <div class="w-26 h-26 mx-auto mb-3 ft-icon hover:bg-primary" :class="f.iconBg">
@@ -68,7 +72,7 @@ const topProducts = [
     </section>
 
     <!-- Promo banner (2 col):不是特定商品,是分類層級的促銷入口(蔬菜類/果汁類目前有什麼活動) -->
-    <section class="px-4 pb-16 md:pb-20 max-w-layout-wide mx-auto">
+    <section id="promo" class="px-4 py-10 md:py-14 max-w-layout-wide mx-auto">
         <div class="grid md:grid-cols-2 gap-[30px]">
             <a :href="route('categories.products', { category: '蔬菜' })"
                 class="group relative rounded-[20px] overflow-hidden aspect-16/9 block">
@@ -77,7 +81,7 @@ const topProducts = [
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">蔬菜嚴選</h3>
                     <p class="text-base text-heading/70 mb-4">當季現採，每日到貨</p>
-                    <CtaButton as="span">選購去 →</CtaButton>
+                    <CtaButton as="span" class="!border !border-[#fff] shadow-[0_2px_8px_rgba(0,0,0,0.18)]">選購去 →</CtaButton>
                 </div>
             </a>
 
@@ -88,20 +92,20 @@ const topProducts = [
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">鮮榨果汁</h3>
                     <p class="text-base text-heading/70 mb-4">冷壓工法，鎖住營養</p>
-                    <CtaButton as="span" class="!bg-[#fff] !text-primary hover:!bg-accent hover:!text-accent-content">選購去 →</CtaButton>
+                    <CtaButton as="span" class="!bg-[#fff] !text-primary !border !border-[#fff] hover:!bg-accent hover:!text-accent-content">選購去 →</CtaButton>
                 </div>
             </a>
         </div>
     </section>
 
     <!-- Top products:跟「我們的承諾」同一套標題樣式(英文小標+葉子裝飾 → 中文主標) -->
-    <section class="px-4 pb-24 md:pb-32 max-w-layout-wide mx-auto text-center">
+    <section id="products" class="px-4 pt-10 md:pt-14 pb-12 md:pb-14 lg:pb-20 max-w-layout-wide mx-auto text-center">
         <p class="flex items-center justify-center gap-2 text-sm text-primary my-3">
-            <img src="/images/econis-ref/hero-leaf-1.png" alt="" class="w-5 h-5 object-contain">
+            <img src="/images/econis-ref/hero-leaf-1.png" alt="" class="w-4 h-4 object-contain">
             Top products
-            <img src="/images/econis-ref/hero-leaf-2.png" alt="" class="w-5 h-5 object-contain">
+            <img src="/images/econis-ref/hero-leaf-2.png" alt="" class="w-4 h-4 object-contain">
         </p>
-        <h2 class="text-2xl md:text-4xl font-medium tracking-wide text-heading mb-8 md:mb-16">
+        <h2 class="text-2xl md:text-4xl font-medium tracking-wide text-heading mb-8 md:mb-12">
             人氣商品
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-[30px] text-left">
@@ -134,27 +138,25 @@ const topProducts = [
         </div>
     </section>
 
-    <!-- CTA 區:深色底 + 左側文字(小標語/大標題/播放鍵+按鈕)。
-         背景目前用純深色頂著,還沒有實際的深色蔬果攝影照片,之後換真實圖片 -->
-    <section class="relative w-full py-20 md:py-32 overflow-hidden bg-[#0d0d0d]">
-        <div class="relative max-w-layout-wide mx-auto px-4">
+    <!-- CTA 區:深色底,左側文字+CTA按鈕。
+         背景右側疊蔬果空拍照,邊緣用 mask 漸層融入深色底,再疊一層深色漸層壓住雜色、保留文字對比度 -->
+    <section id="cta" class="relative w-full py-12 md:py-20 lg:py-28 overflow-hidden bg-[#0d0d0d]">
+        <div class="absolute inset-y-0 right-0 w-full md:w-[70%] h-full bg-[url('/images/cta/veggie-flatlay.webp')] bg-cover bg-center bg-fixed saturate-[0.85] brightness-90 [mask-image:linear-gradient(to_right,transparent,black_35%)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_35%)]">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0d0d0d] via-[#0d0d0d]/55 to-[#0d0d0d]/15"></div>
+
+        <div class="relative max-w-layout-wide mx-auto px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-10">
             <div class="max-w-xl">
-                <p class="text-sm md:text-base font-semibold tracking-[0.15em] text-base-100 uppercase mb-4">
-                    Good taste &amp; great crunchy
+                <p class="text-sm md:text-base font-medium tracking-[0.15em] text-base-100 uppercase mb-4">
+                    嚴選新鮮，安心每一口
                 </p>
-                <h2 class="text-4xl md:text-6xl font-bold text-base-100 leading-[1.15] mb-8">
-                    Wake Up Early,<br>Eat Fresh &amp; Healthy
+                <h2 class="text-4xl md:text-6xl font-medium text-base-100 leading-[1.15] mb-8">
+                    把健康好味道，<br>帶進日常生活
                 </h2>
-                <div class="flex items-center gap-4">
-                    <button
-                        class="w-13 h-13 rounded-full bg-accent flex items-center justify-center flex-shrink-0 hover:bg-accent/90 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            class="w-5 h-5 text-accent-content ml-0.5">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
-                    </button>
-                    <CtaButton>Shop now</CtaButton>
-                </div>
+                <CtaButton
+                    class="!bg-transparent !text-base-100 !border !border-[#fff] hover:!bg-primary hover:!text-primary-content">
+                    立即選購
+                </CtaButton>
             </div>
         </div>
     </section>

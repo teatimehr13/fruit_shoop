@@ -3,7 +3,7 @@
 
 <template>
   <footer class="bg-base-200 p-10">
-    <div class="footer sm:footer-horizontal text-base-content max-w-layout-normal mx-auto">
+    <div class="footer sm:footer-horizontal text-base-content max-w-layout-wide mx-auto">
       <nav>
         <h6 class="footer-title">顧客服務</h6>
         <a class="link link-hover">常見Q&A</a>

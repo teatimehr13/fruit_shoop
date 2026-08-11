@@ -85,7 +85,7 @@ const { ItemsCount } = useSharedCart();
         }">
             <!-- desktop -->
             <nav
-                class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-layout-normal">
+                class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-layout-wide">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
                         <a :href="route(nav.name)" class="font-semibold"
@@ -141,7 +141,8 @@ const { ItemsCount } = useSharedCart();
                 </ul>
 
                 <div class="md:hidden flex flex-1 justify-start">
-                    <button class="relative btn btn-ghost btn-circle text-base-content" @click="toggleMenu">
+                    <button class="relative btn btn-ghost btn-circle"
+                        :class="isInHeroState ? 'text-base-100' : 'text-base-content'" @click="toggleMenu">
                         <span class="absolute inset-0 flex items-center justify-center
                             duration-600 ease-out" :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
@@ -169,7 +170,7 @@ const { ItemsCount } = useSharedCart();
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
                         <a v-if="$page.props.auth.user" :href="route('account.index')"
-                            class="btn btn-ghost btn-circle text-base-content">
+                            class="btn btn-ghost btn-circle" :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -177,7 +178,8 @@ const { ItemsCount } = useSharedCart();
                             </svg>
                         </a>
 
-                        <a v-else :href="route('login')" class="btn btn-ghost btn-circle text-base-content">
+                        <a v-else :href="route('login')" class="btn btn-ghost btn-circle"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -186,7 +188,8 @@ const { ItemsCount } = useSharedCart();
                         </a>
                     </li>
                     <li class="relative">
-                        <a href="#" class="btn btn-ghost btn-circle text-base-content" @click.prevent="emit('open-cart')">
+                        <a href="#" class="btn btn-ghost btn-circle"
+                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'" @click.prevent="emit('open-cart')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
