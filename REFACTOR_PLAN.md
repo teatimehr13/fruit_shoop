@@ -156,3 +156,7 @@
 - **[改動]** 「人氣商品」`h2` 的 `mb-8 md:mb-16` 改成 `mb-8 md:mb-12`,跟標題下方的間距配合上面 products 區重新調整過的 padding 一起微調。
 
 **WebSearch 參考來源**(2026-08-11,section spacing 業界作法):[Web Design Spacing and Sizing Best Practices](https://www.conceptfusion.co.uk/post/web-design-spacing-and-sizing-best-practices)、[Automatic CSS - Section Padding Classes](https://docs.automaticcss.com/spacing/section-padding-classes)、[FED Mentor - padding vs margin](https://fedmentor.dev/posts/padding-margin/)、[Elementor - Margin vs Padding](https://elementor.com/blog/margin-vs-padding/)
+
+- **[決策]** 查了業界作法後(多個主流電商平台 Shopify/WooCommerce/Avada 都把「查看全部商品」做成精選商品區塊的內建功能),確認是常見慣例,在人氣商品 8 張卡片下方新增「查看全部商品 →」連結,連到 `products.index` 路由(對應 Nav 的「所有商品」)。樣式用外框膠囊按鈕(`btn btn-outline border-primary text-primary`,非實心),避免跟上面 CtaButton 的主色實心按鈕搶視覺重量。過程中踩到一個坑:一開始加了 `inline-block` 想讓 `<a>` 置中,結果蓋掉 daisyUI `.btn` 內建的 `inline-flex` + `items-center` `justify-center`,導致文字沒有垂直置中——`.btn` 本身已經處理好置中,不需要再疊加 display 相關 class。
+- **[改動]** 把「查看全部商品」這顆外框按鈕的樣式,同步套到 Promo banner 兩顆「選購去」按鈕,統一視覺語言。「蔬菜嚴選」改成透明底+綠框綠字、hover 實心綠底白字(拿掉了原本疊加的陰影)。「鮮榨果汁」試過白字白框版本,使用者反饋「不搭」改回原本白底綠字白框、hover 綠底白字的版本。
+- **[改動]** Hero「探索更多」、CTA「立即選購」、Promo banner 兩顆按鈕,hover 時的 border 統一補上 `hover:!border-primary`(原本 hover 只變 bg/text,border 停留在原色沒跟著變,現在 hover 時 border 會融進新背景色)。Hero 按鈕另外把預設狀態從白底綠字改成透明底白字+白框,呼應 CTA 按鈕在深色/影片底的樣式邏輯。

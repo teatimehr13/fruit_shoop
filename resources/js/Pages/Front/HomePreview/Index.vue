@@ -54,7 +54,7 @@ const topProducts = [
         <div class="relative h-full max-w-layout-wide mx-auto px-4 pb-8 md:pb-16 flex flex-col items-center justify-end text-center">
             <h1 class="text-2xl md:text-3xl font-medium text-base-100 mb-6">嚴選新鮮蔬果，讓日常採買更簡單。</h1>
 
-            <CtaButton>探索更多 →</CtaButton>
+            <CtaButton class="!bg-transparent !text-[#fff] !border !border-[#fff] hover:!bg-primary hover:!text-primary-content hover:!border-primary">探索更多 →</CtaButton>
         </div>
     </section>
 
@@ -81,7 +81,7 @@ const topProducts = [
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">蔬菜嚴選</h3>
                     <p class="text-base text-heading/70 mb-4">當季現採，每日到貨</p>
-                    <CtaButton as="span" class="!border !border-[#fff] shadow-[0_2px_8px_rgba(0,0,0,0.18)]">選購去 →</CtaButton>
+                    <CtaButton as="span" class="!bg-transparent !text-primary !border !border-primary hover:!bg-primary hover:!text-primary-content">選購去 →</CtaButton>
                 </div>
             </a>
 
@@ -92,7 +92,7 @@ const topProducts = [
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">鮮榨果汁</h3>
                     <p class="text-base text-heading/70 mb-4">冷壓工法，鎖住營養</p>
-                    <CtaButton as="span" class="!bg-[#fff] !text-primary !border !border-[#fff] hover:!bg-accent hover:!text-accent-content">選購去 →</CtaButton>
+                    <CtaButton as="span" class="!bg-[#fff] !text-primary !border !border-[#fff] hover:!bg-primary hover:!text-primary-content hover:!border-primary">選購去 →</CtaButton>
                 </div>
             </a>
         </div>
@@ -136,6 +136,11 @@ const topProducts = [
                 </button>
             </div>
         </div>
+
+        <a :href="route('products.index')"
+            class="mt-10 md:mt-12 btn btn-outline border-primary text-primary rounded-full px-8 font-medium tracking-[0.06em] hover:bg-primary hover:text-primary-content transition-colors">
+            查看全部商品 →
+        </a>
     </section>
 
     <!-- CTA 區:深色底,左側文字+CTA按鈕。
@@ -154,7 +159,7 @@ const topProducts = [
                     把健康好味道，<br>帶進日常生活
                 </h2>
                 <CtaButton
-                    class="!bg-transparent !text-base-100 !border !border-[#fff] hover:!bg-primary hover:!text-primary-content">
+                    class="!bg-transparent !text-base-100 !border !border-[#fff] hover:!bg-primary hover:!text-primary-content hover:!border-primary">
                     立即選購
                 </CtaButton>
             </div>
