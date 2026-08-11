@@ -192,3 +192,5 @@
   - 用 Playwright 驗證:快速加購後抽屜自動打開,商品卡/金額/數量調整/垃圾桶移除都正常;點擊遮罩關閉、`body.style.overflow` 正確恢復;獨立的 `/cart` 全頁購物車(`layoutMode="page"`)也一併截圖確認空購物車新樣式沒有壞掉,`npm run build` 編譯成功,全程無 console 錯誤。
 
 **WebSearch 參考來源**(2026-08-11,cart drawer 設計/UX 做法):[17+ Best eCommerce Cart Drawers](https://www.commercegurus.com/best-ecommerce-cart-drawers/)、[10 Ecommerce Shopping Cart Flyouts We Love - Rebuy](https://www.rebuyengine.com/blog/cart-flyouts-we-love)、[eCommerce Cart Drawers – Examples, Technologies & UX Best Practices | Vervaunt](https://vervaunt.com/ecommerce-cart-drawers-examples-technologies-ux-best-practices)、[Mini-cart UX: 3 design patterns from leading retailers](https://ecommerceguide.com/patterns/mini-cart/)
+
+- **[改動]** 全首頁健檢一輪(build、route:list、所有連結 curl 200 檢查、桌機/手機截圖、完整互動流程 console 錯誤檢查),確認沒有明顯問題後,追加幾個小修正:①人氣商品「快速加入購物車」圖示按鈕補上 `cursor-pointer`——原因是 Tailwind Preflight 會把 `<button>` 的預設游標重置成 `default`,daisyUI 的 `.btn` class 有另外補回 `cursor:pointer`,但這顆按鈕沒套 `.btn`、純 Tailwind class,漏了這個補償,滑鼠移上去不會變成手指;②商品卡圖片 `max-w-[70%] max-h-[70%]` 改成 `75%`。

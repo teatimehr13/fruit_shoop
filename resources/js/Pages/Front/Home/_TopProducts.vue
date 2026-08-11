@@ -78,7 +78,7 @@ const confirmAddToCart = async (p) => {
                 <!-- 圖片:連到商品頁 -->
                 <a :href="route('products.show', p.slug)" class="aspect-square flex items-center justify-center mb-4">
                     <img :src="p.image" :alt="p.name"
-                        class="max-w-[70%] max-h-[70%] object-contain transition-transform duration-500 group-hover:scale-105">
+                        class="max-w-[75%] max-h-[75%] object-contain transition-transform duration-500 group-hover:scale-105">
                 </a>
 
                 <h3 class="text-base md:text-lg font-medium mb-1 text-heading">{{ p.name }}</h3>
@@ -87,7 +87,7 @@ const confirmAddToCart = async (p) => {
 
                     <!-- 快速加入購物車 -->
                     <button type="button" @click="quickAddToCart(p)"
-                        class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-primary hover:text-primary-content">
+                        class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors hover:bg-primary hover:text-primary-content">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
