@@ -1,41 +1,38 @@
 <script setup>
+import CtaButton from '@/DaisyComponents/Front/CtaButton.vue';
 </script>
+
 <template>
-    <section class="px-4 pb-16 md:pb-20 max-w-layout-wide mx-auto">
-        <div class="bg-base-200 rounded-[20px] p-8 md:p-16 flex flex-col items-start md:max-w-[40rem]">
-            <h2 class="text-3xl md:text-5xl font-semibold tracking-wide text-base-content mb-6 md:mb-8">
-                FRESH-PICK 果蔬箱
-            </h2>
+    <!-- 不是特定商品,是分類層級的促銷入口(蔬菜類/果汁類目前有什麼活動),手動指定 2 個分類 -->
+    <section class="px-4 py-10 md:py-14 max-w-layout-wide mx-auto">
+        <div class="grid md:grid-cols-2 gap-[30px]">
+            <a :href="route('categories.products', { category: '蔬菜' })"
+                class="group relative rounded-[20px] overflow-hidden aspect-16/9 block">
+                <img src="/images/promo/veggie-box.webp" alt="蔬菜嚴選"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
+                    <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">蔬菜嚴選</h3>
+                    <p class="text-base text-heading/70 mb-4">當季現採，每日到貨</p>
+                    <CtaButton as="span"
+                        class="!bg-transparent !text-primary !border !border-primary hover:!bg-primary hover:!text-primary-content">
+                        選購去 →
+                    </CtaButton>
+                </div>
+            </a>
 
-            <span class="tracking-wide text-base md:text-xl text-base-content">
-                當季蔬菜與日照剛好的水果，做成「整箱直送」或「現打冷壓果汁」。輕盈、不負擔，冰到冰箱，想喝或想料理隨手就有，無論一個人簡單開伙，或是家人一起分著吃都剛剛好。
-                <br>
-                <br>
-                P.S. 12/1 早上 9 點，期間限定的【晨光綠野冷壓汁】與【冬季產地蔬果箱】同步開賣，只開放指定配送區，售完就沒了。
-            </span>
-
-            <a :href="route('products.index')">
-                <button class="buy_btn mt-6 md:mt-12 tracking-wider">
-                    搶鮮去!
-                </button>
+            <a :href="route('categories.products', { category: '果汁' })"
+                class="group relative rounded-[20px] overflow-hidden aspect-16/9 block">
+                <img src="/images/promo/cold-pressed-juice.webp" alt="鮮榨果汁"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
+                    <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">鮮榨果汁</h3>
+                    <p class="text-base text-heading/70 mb-4">冷壓工法，鎖住營養</p>
+                    <CtaButton as="span"
+                        class="!bg-[#fff] !text-primary !border !border-[#fff] hover:!bg-primary hover:!text-primary-content hover:!border-primary">
+                        選購去 →
+                    </CtaButton>
+                </div>
             </a>
         </div>
     </section>
 </template>
-
-<style>
-.buy_btn {
-    border-radius: 40px;
-    color: var(--color-primary);
-    box-shadow: inset 0 0 0 1px var(--color-primary);
-    padding: 6px 38px;
-    font-weight: 600;
-    transition: all .4s cubic-bezier(.76, 0, .24, 1), color 1s;
-}
-
-.buy_btn:hover {
-    cursor: pointer;
-    background-color: var(--color-primary);
-    color: var(--color-primary-content);
-}
-</style>

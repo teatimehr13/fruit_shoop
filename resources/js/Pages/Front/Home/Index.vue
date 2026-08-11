@@ -1,25 +1,24 @@
 <script setup>
 import FrontLayout from '@/Layouts/FrontLayout.vue';
-import HomeHero from './_HomeHero.vue';
-import Feature from './_Feature.vue';
-import Category from './_Category.vue';
+import Hero from './_Hero.vue';
+import Features from './_Features.vue';
 import Promo from './_Promo.vue';
-import TopPicks from './_TopPicks.vue';
+import TopProducts from './_TopProducts.vue';
+import Cta from './_Cta.vue';
 
 defineOptions({
     layout: FrontLayout,
 })
 
-const props = defineProps({
-    featured: Object,
-    categories: Object,
+defineProps({
+    popularProducts: Object,
 });
 </script>
 
 <template>
-    <HomeHero />
-    <Feature />
-    <Category :categories="categories" />
+    <Hero />
+    <Features />
     <Promo />
-    <TopPicks :featured="featured" />
+    <TopProducts :popular-products="popularProducts" />
+    <Cta />
 </template>

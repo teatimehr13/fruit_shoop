@@ -1,36 +1,32 @@
 <template>
   <Teleport to="body">
-    <div
-      class="fixed inset-0 z-40 flex justify-end"
-      :class="open ? 'pointer-events-auto' : 'pointer-events-none'"
-    >
-      <div
-        class="absolute inset-0 bg-black/40 transition-opacity duration-100 ease-out"
-        :class="open ? 'opacity-100' : 'opacity-0 delay-100'"
-        @click="emit('close')"
-      />
+    <!-- 背景遮罩 -->
+    <Transition enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+      leave-active-class="transition-opacity duration-200 ease-in" leave-to-class="opacity-0">
+      <div v-if="open" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]" @click="emit('close')" />
+    </Transition>
 
-      <aside
-        class="relative z-10 w-full md:max-w-xl h-full bg-base-200 shadow-xl flex flex-col border-l border-base-200 transition-transform duration-500 cubic-bezier"
-        :class="open ? 'translate-x-0 delay-100' : 'translate-x-full'"
-      >
-        <header class="flex items-center justify-between px-4 py-3 border-b border-stone-300 bg-white">
-          <h2 class="text-lg font-semibold text-base-content">{{ hasItems ? '購物車' : '' }}</h2>
-          <button
-            type="button"
-            class="btn btn-ghost btn-circle text-sm text-gray-500 hover:text-gray-800"
-            @click="emit('close')"
-          >
-            ✕
+    <!-- 抽屜本體:從右邊滑入 -->
+    <Transition enter-active-class="transition-transform duration-300 ease-[cubic-bezier(.76,0,.24,1)]"
+      enter-from-class="translate-x-full" leave-active-class="transition-transform duration-250 ease-[cubic-bezier(.76,0,.24,1)]"
+      leave-to-class="translate-x-full">
+      <aside v-if="open" class="fixed inset-y-0 right-0 z-50 w-full md:max-w-md bg-base-200 shadow-2xl flex flex-col">
+        <header class="flex items-center justify-between px-5 py-4 border-b border-base-300 bg-base-100">
+          <h2 class="text-lg font-semibold text-heading">
+            購物車
+            <span v-if="itemCount" class="text-primary">({{ itemCount }})</span>
+          </h2>
+          <button type="button" class="btn btn-ghost btn-circle btn-sm text-heading hover:text-primary transition-colors" @click="emit('close')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
           </button>
         </header>
 
-        <CartContent
-          @checkout="goCheckout"
-          @continue="emit('close')"
-        />
+        <CartContent @checkout="goCheckout" @continue="emit('close')" />
       </aside>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -47,15 +43,9 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const { cartItems } = useSharedCart()
-const hasItems = computed(() => (cartItems.value?.items?.length ?? 0) > 0)
+const itemCount = computed(() => cartItems.value?.items?.length ?? 0)
 
 const goCheckout = () => {
   router.visit(route('checkout.index'))
 }
 </script>
-
-<style scoped>
-.cubic-bezier {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-</style>

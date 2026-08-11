@@ -1,7 +1,7 @@
 <script setup>
 import { inject } from 'vue';
 import FrontLayout from '@/Layouts/FrontLayout.vue';
-import CtaButton from './_CtaButton.vue';
+import CtaButton from '@/DaisyComponents/Front/CtaButton.vue';
 
 defineOptions({
     layout: FrontLayout,
@@ -168,7 +168,7 @@ const topProducts = [
 </template>
 
 <style>
-/* Hot categories 的 Feature 圖示,跟 Home/_Feature.vue 用同一套 SVG 遮罩 */
+/* Hot categories 的 Feature 圖示,跟 Home/_Features.vue 用同一套 SVG 遮罩 */
 .shipped-icon {
     background: var(--color-base-100);
     mask-image: url('/images/svg/shipped.svg');

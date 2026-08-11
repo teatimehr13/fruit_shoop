@@ -1,8 +1,7 @@
 <script setup>
-import { ref, onMounted, watch, onUnmounted, inject, computed, toRefs } from 'vue'
+import { ref, computed, toRefs } from 'vue'
 import { useHeroNavState } from '@/Composables/useHeroNavState'
 import { useSharedCart } from '@/Composables/useSharedCart';
-import { Link } from '@inertiajs/vue3';
 
 const navLinks = ref([
     // { name: 'product.index', label: '首頁' },
@@ -11,49 +10,17 @@ const navLinks = ref([
 ])
 
 const isOpen = ref(false)
-const wrapperRef = ref(null)
-const contentRef = ref(null)
-const mobileNavRef = ref();
-const showMenuHeader = ref(false);
 
 const toggleMenu = () => {
     isOpen.value = !isOpen.value
-    // console.log(isInHeroOverride.value);
-    if (isOpen.value) {
-        isInHeroOverride.value = false
-        showMenuHeader.value = true;
-
-    } else {
-        isInHeroOverride.value = null
-        showMenuHeader.value = false;
-        customNav.value = false;
-    }
+    document.body.style.overflow = isOpen.value ? 'hidden' : ''
 }
 
-watch(isOpen, (open) => {
-    const wrapper = wrapperRef.value
-    const content = contentRef.value
-    const mobileNav = mobileNavRef.value
-    if (!wrapper || !content || !mobileNav) return
-
-    const headerHeight = mobileNav.scrollHeight
-    const viewportHeight = window.innerHeight - headerHeight
-    const contentHeight = content.scrollHeight
-
-    // 至少佔滿螢幕
-    const targetHeight = Math.max(viewportHeight, contentHeight)
-
-    if (open) {
-        wrapper.style.height = `${targetHeight}px`
-        document.body.style.overflow = 'hidden'
-    } else {
-        wrapper.style.height = '0px'
-        document.body.style.overflow = ''
-    }
-
-    // console.log(props.isScrollingDown);
-    // console.log(isInHeroState.value);
-})
+// 手機選單連結清單,首頁 + navLinks 合併成一份,面板 template 只需要迴圈一次
+const mobileNavLinks = computed(() => [
+    { key: 'home', href: route('front.home.index'), label: '首頁' },
+    ...navLinks.value.map(nav => ({ key: nav.name, href: route(nav.name), label: nav.label })),
+])
 
 const props = defineProps({
     isInHero: {
@@ -66,7 +33,7 @@ const props = defineProps({
 })
 
 const { isInHero, isScrollingDown } = toRefs(props)
-const { isInHeroState, isInHeroOverride } = useHeroNavState({ isInHero, isScrollingDown })
+const { isInHeroState } = useHeroNavState({ isInHero, isScrollingDown })
 
 //cartdrawer 開關
 const emit = defineEmits(['open-cart'])
@@ -79,17 +46,16 @@ const { ItemsCount } = useSharedCart();
 <template>
     <div>
         <header class="box-shadow fixed z-5 w-full translate-y-0 " :class="{
-            'Header__hidden': props.isScrollingDown && !showMenuHeader,
-            'Header__sticky ': !props.isScrollingDown && !isInHeroState || showMenuHeader,
-            // 'header': isInHeroState && !showMenuHeader,
+            'Header__hidden': props.isScrollingDown,
+            'Header__sticky ': !props.isScrollingDown && !isInHeroState,
         }">
             <!-- desktop -->
             <nav
                 class="px-4 mx-auto w-full relative hidden md:flex items-center justify-between sticky py-4 transition-all duration-700 ease-[cubic-bezier(.76,0,.24,1)] max-w-layout-wide">
                 <ul class="flex flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
-                        <a :href="route(nav.name)" class="font-semibold"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">{{ nav.label }}</a>
+                        <a :href="route(nav.name)" class="font-semibold hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'">{{ nav.label }}</a>
                     </li>
                 </ul>
 
@@ -99,28 +65,28 @@ const { ItemsCount } = useSharedCart();
                 <ul class="flex flex-1 justify-end gap-4">
                     <li class="mr-12">
                         <!-- <a v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                            class="text-base-content font-semibold" :class="{ 'text-base-100': isInHeroState }">
+                            class="text-heading font-semibold" :class="{ 'text-base-100': isInHeroState }">
                             登出
                         </a> -->
                         <!-- <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                            class="text-base-content font-semibold cursor-pointer"
+                            class="text-heading font-semibold cursor-pointer"
                             :class="{ 'text-base-100': isInHeroState }">
                         登出
                         </Link> -->
                         <a v-if="$page.props.auth.user" :href="route('account.index')" method="post" as="button"
-                            class="font-semibold cursor-pointer"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
+                            class="font-semibold cursor-pointer hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             會員中心
                         </a>
-                        <a v-else :href="route('login')" class="font-semibold"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
+                        <a v-else :href="route('login')" class="font-semibold hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             登入會員
                         </a>
 
                     </li>
                     <li class="">
-                        <a href="#" @click.prevent="emit('open-cart')" class="font-semibold"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
+                        <a href="#" @click.prevent="emit('open-cart')" class="font-semibold hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             購物車
                             <span v-if="ItemsCount" class="text-primary">
                                 ({{ ItemsCount }})
@@ -132,17 +98,17 @@ const { ItemsCount } = useSharedCart();
             </nav>
 
             <!-- mobile -->
-            <nav ref="mobileNavRef"
+            <nav
                 class="relative flex md:hidden w-full items-center justify-between sticky py-4 px-2 md:px-8 rounded-t-[12px] transition-all duration-300 ease-[cubic-bezier(.76,0,.24,1)]">
                 <ul class="hidden md:flex md:flex-1">
                     <li v-for="nav in navLinks" class="mr-12">
-                        <a :href="route(nav.name)" class="font-semibold text-base-content">{{ nav.label }}</a>
+                        <a :href="route(nav.name)" class="font-semibold text-heading">{{ nav.label }}</a>
                     </li>
                 </ul>
 
                 <div class="md:hidden flex flex-1 justify-start">
-                    <button class="relative btn btn-ghost btn-circle"
-                        :class="isInHeroState ? 'text-base-100' : 'text-base-content'" @click="toggleMenu">
+                    <button class="relative btn btn-ghost btn-circle hover:text-primary transition-colors"
+                        :class="isInHeroState ? 'text-base-100' : 'text-heading'" @click="toggleMenu">
                         <span class="absolute inset-0 flex items-center justify-center
                             duration-600 ease-out" :class="isOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
@@ -170,7 +136,7 @@ const { ItemsCount } = useSharedCart();
                 <ul class="flex flex-1 justify-end gap-2">
                     <li class="">
                         <a v-if="$page.props.auth.user" :href="route('account.index')"
-                            class="btn btn-ghost btn-circle" :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
+                            class="btn btn-ghost btn-circle hover:text-primary transition-colors" :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -178,8 +144,8 @@ const { ItemsCount } = useSharedCart();
                             </svg>
                         </a>
 
-                        <a v-else :href="route('login')" class="btn btn-ghost btn-circle"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'">
+                        <a v-else :href="route('login')" class="btn btn-ghost btn-circle hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -188,8 +154,8 @@ const { ItemsCount } = useSharedCart();
                         </a>
                     </li>
                     <li class="relative">
-                        <a href="#" class="btn btn-ghost btn-circle"
-                            :class="isInHeroState ? 'text-base-100' : 'text-base-content'" @click.prevent="emit('open-cart')">
+                        <a href="#" class="btn btn-ghost btn-circle hover:text-primary transition-colors"
+                            :class="isInHeroState ? 'text-base-100' : 'text-heading'" @click.prevent="emit('open-cart')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -204,25 +170,52 @@ const { ItemsCount } = useSharedCart();
                     </li>
                 </ul>
 
-                <!-- 手機選單外框 -->
-                <div ref="wrapperRef" class="absolute left-0 right-0 z-50 overflow-hidden 
-             transition-[height] duration-400 ease-[cubic-bezier(.76,0,.24,1)]" style="top: 71px; height: 0">
-                    <div class="w-full h-full bg-white pb-8">
-                        <div class="w-full h-full bg-base-200 rounded-b-[12px] overflow-hidden relative flex flex-col">
-                            <div ref="contentRef"
-                                class="p-4 space-y-8 overflow-y-auto flex-1 content-center mt-[-72px]">
-                                <!-- <a href="#" class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center">所有商品</a>
-                                <a href="#" class="block text-lg font-semibold text-base-content px-4 py-2 rounded-[8px] text-center">關於我們</a> -->
-                                <a class="block text-lg font-semibold px-4 py-2 rounded-[8px] text-center"
-                                    :class="isInHeroState ? 'text-base-100' : 'text-base-content'" :href="route('front.home.index')">首頁</a>
-                                <a v-for="nav in navLinks"
-                                    class="block text-lg font-semibold px-4 py-2 rounded-[8px] text-center"
-                                    :class="isInHeroState ? 'text-base-100' : 'text-base-content'" :href="route(nav.name)">{{ nav.label
-                                    }}</a>
+                <!-- 手機選單:offcanvas 抽屜,從漢堡圖示同一側(左邊)滑入,而不是原本從 header 下方往下展開的面板。
+                     <Teleport to="body"> 是必要的:header 本身有 translate-y-0(transform),會讓子孫的
+                     position:fixed 改成相對 header 定位而不是相對 viewport,傳送到 body 底下才能正確蓋滿整個畫面 -->
+                <Teleport to="body">
+                    <!-- 背景遮罩,點擊可關閉 -->
+                    <Transition enter-active-class="transition-opacity duration-300 ease-out"
+                        enter-from-class="opacity-0" leave-active-class="transition-opacity duration-200 ease-in"
+                        leave-to-class="opacity-0">
+                        <div v-if="isOpen" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
+                            @click="toggleMenu"></div>
+                    </Transition>
+
+                    <!-- 抽屜本體:從左邊滑入 -->
+                    <Transition enter-active-class="transition-transform duration-300 ease-[cubic-bezier(.76,0,.24,1)]"
+                        enter-from-class="-translate-x-full"
+                        leave-active-class="transition-transform duration-250 ease-[cubic-bezier(.76,0,.24,1)]"
+                        leave-to-class="-translate-x-full">
+                        <div v-if="isOpen"
+                            class="fixed inset-y-0 left-0 z-50 w-[80%] max-w-xs bg-base-100 shadow-2xl flex flex-col">
+                            <div class="flex items-center justify-between px-5 py-4 border-b border-base-300">
+                                <img class="h-8" src="/images/logo/c3837bce-a01c-45e8-aa45-5b820428fe29.png"
+                                    alt="vege">
+                                <button type="button" class="btn btn-ghost btn-circle btn-sm text-heading"
+                                    @click="toggleMenu">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.75" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
                             </div>
+                            <TransitionGroup tag="nav" appear class="flex-1 overflow-y-auto p-3 space-y-1"
+                                enter-active-class="transition-all duration-300 ease-out"
+                                enter-from-class="opacity-0 -translate-x-3">
+                                <a v-for="(link, idx) in mobileNavLinks" :key="link.key"
+                                    class="mobile-nav-link flex items-center justify-between gap-2 px-4 py-3 rounded-xl text-base font-semibold text-heading hover:bg-primary/10 hover:text-primary active:scale-[0.98] transition-colors"
+                                    :style="{ transitionDelay: `${idx * 0.05}s` }" :href="link.href">
+                                    {{ link.label }}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" class="w-4 h-4 opacity-40">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </a>
+                            </TransitionGroup>
                         </div>
-                    </div>
-                </div>
+                    </Transition>
+                </Teleport>
             </nav>
         </header>
     </div>
@@ -264,6 +257,15 @@ const { ItemsCount } = useSharedCart();
 .header nav {
     transition: all .5s cubic-bezier(.76, 0, .24, 1) .3s, color .5s;
 
+}
+
+/* 手機選單連結錯開進場動畫由 <TransitionGroup> + template 內聯 transitionDelay 處理,
+   這裡只處理對動態敏感的使用者:關掉位移、只留淡入 */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-nav-link {
+        transition-property: opacity, background-color, color !important;
+        transform: none !important;
+    }
 }
 
 .header nav a,

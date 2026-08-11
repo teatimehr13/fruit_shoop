@@ -68,34 +68,32 @@ class ProductController extends Controller
 
     public function home()
     {
-         $featured = Product::query()
-            ->select(['id', 'name', 'slug', 'featured_sort'])
+        $popularProducts = Product::query()
+            ->select(['id', 'name', 'slug'])
             ->where([
                 'is_featured' => 1,
                 'is_enabled'  => 1,
             ])
             ->orderByRaw('featured_sort IS NULL')
             ->orderBy('featured_sort')
-            ->with(['primaryImage:id,product_id,image'])
-            ->limit(9)
-            ->get()
-            // ->map(fn($p) => $p->primaryImage?->img_url)
-            ->map(fn($p) => [
-                'slug'  => $p->slug,
-                'image' => $p->primaryImage?->img_url,
+            ->with([
+                'primaryImage:id,product_id,image',
+                'productOptions:id,product_id,option_text,price',
             ])
-            ->filter()
+            ->limit(8)
+            ->get()
+            ->map(fn($p) => [
+                'id'              => $p->id,
+                'slug'            => $p->slug,
+                'name'            => $p->name,
+                'image'           => $p->primaryImage?->img_url,
+                'product_options' => $p->productOptions,
+            ])
+            ->filter(fn($p) => $p['image'] && $p['product_options']->isNotEmpty())
             ->values();
 
-
-        $categories = Category::select(['id', 'name'])
-            ->where('is_enabled', 1)
-            ->orderBy('sort_order')
-            ->get();
-
         return Inertia::render('Front/Home/Index', [
-            'featured'   => $featured,
-            'categories' => $categories,
+            'popularProducts' => $popularProducts,
         ]);
     }
 

@@ -5,7 +5,7 @@
   <footer class="bg-base-200 p-10">
     <div class="footer sm:footer-horizontal text-base-content max-w-layout-wide mx-auto">
       <nav>
-        <h6 class="footer-title">顧客服務</h6>
+        <h4 class="footer-title text-base text-heading opacity-100">顧客服務</h4>
         <a class="link link-hover">常見Q&A</a>
         <a class="link link-hover">運送服務方式</a>
         <a class="link link-hover">付款服務方式</a>
@@ -13,13 +13,13 @@
         <a class="link link-hover">隱私政策</a>
       </nav>
       <nav>
-        <h6 class="footer-title">聯絡我們</h6>
+        <h4 class="footer-title text-base text-heading opacity-100">聯絡我們</h4>
         <a class="link link-hover">客服時間｜週一至週五 09:00-18:00</a>
         <a class="link link-hover">客服信箱｜customerservice@vege.com</a>
         <a class="link link-hover">地址｜新北市大都會地區</a>
       </nav>
       <nav>
-        <h6 class="footer-title">社群</h6>
+        <h4 class="footer-title text-base text-heading opacity-100">社群</h4>
         <div class="grid grid-flow-col gap-4">
           <a>
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
