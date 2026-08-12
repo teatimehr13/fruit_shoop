@@ -9,6 +9,7 @@ import { computed, reactive, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import PillsSwiper from './_PillsSwiper.vue';
 import ProductCard from '@/DaisyComponents/Front/ProductCard.vue';
+import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
 // import CartDrawer from '@/DaisyComponents/Front/CartDrawer.vue';
 
 const handleRemove = (id) => {
@@ -77,9 +78,23 @@ const sortOptions = [
 ]
 
 const selectedSort = ref(sortOptions[0])
+
+const breadcrumbItems = computed(() => {
+    const items = [
+        { label: '首頁', href: route('front.home.index') },
+        { label: '所有商品', href: route('products.index') },
+    ]
+
+    if (categoryName.value !== 'ALL') {
+        items.push({ label: categoryName.value })
+    }
+
+    return items
+})
 </script>
 
 <template>
+    <Breadcrumb :items="breadcrumbItems" />
     <PageHero />
 
     <section class="mt-4 max-w-layout-wide mx-auto px-4">
@@ -88,24 +103,26 @@ const selectedSort = ref(sortOptions[0])
 
         <div class="md:flex md:mt-8 md:mb-8 lg:mt-12">
             <div class="hidden md:block md:basis-2/5 lg:basis-1/4">
-                <aside class="mr-8 p-4 border border-base-200 rounded-[12px] bg-base-200">
-                    <div class="mb-4 relative before:content-[''] before:absolute before:inset-x-0 before:-bottom-2
-                before:h-[1px] before:bg-base-content before:block">
-                        <h3 class="text-md md:text-lg lg:text-xl font-semibold text-base-content">
-                            產品分類
-                        </h3>
-                    </div>
-                    <ul>
-                        <li class="text-base-content px-2 py-1 rounded-sm"
-                            :class="{ 'bg-primary text-base-100': categoryName == 'ALL' }">
-                            <a href="#" class="block w-full" :class="{ 'hover:text-base-content/60': categoryName !== 'ALL' }"
-                                @click.prevent="onSelectCategory('ALL')">全部</a>
+                <aside class="mr-8 p-5 border border-base-300 rounded-[20px] bg-base-100">
+                    <h3 class="text-base lg:text-lg font-medium text-heading pb-3 mb-3 border-b border-base-300">
+                        產品分類
+                    </h3>
+                    <ul class="flex flex-col gap-1">
+                        <li>
+                            <a href="#" class="block w-full px-3 py-2 rounded-xl transition-colors"
+                                :class="categoryName == 'ALL'
+                                    ? 'bg-primary/10 text-primary font-medium'
+                                    : 'text-base-content hover:bg-primary/10 hover:text-primary'"
+                                @click.prevent="onSelectCategory('ALL')">
+                                全部
+                            </a>
                         </li>
-                        <li v-for="value in props.categories_tab" class="text-base-content px-2 py-1 rounded-sm"
-                            :class="{ 'bg-primary text-base-100': value.name == categoryName }">
-                            <a href="#" class="block w-full "
-                                :class="{ 'hover:text-base-content/60': value.name !== categoryName }" @click.prevent="
-                                    onSelectCategory(value.name)">
+                        <li v-for="value in props.categories_tab" :key="value.id">
+                            <a href="#" class="block w-full px-3 py-2 rounded-xl transition-colors"
+                                :class="value.name == categoryName
+                                    ? 'bg-primary/10 text-primary font-medium'
+                                    : 'text-base-content hover:bg-primary/10 hover:text-primary'"
+                                @click.prevent="onSelectCategory(value.name)">
                                 {{ value.name }}
                             </a>
                         </li>
