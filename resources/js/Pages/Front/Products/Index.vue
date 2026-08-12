@@ -7,9 +7,8 @@ import TopPicks from './_TopPicks.vue';
 import PageHero from './_PageHero.vue';
 import { computed, reactive, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
-import PillsSwiper from './_PillsSwiper.vue';
 import ProductCard from '@/DaisyComponents/Front/ProductCard.vue';
-import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
+import FilterDrawer from './_FilterDrawer.vue';
 // import CartDrawer from '@/DaisyComponents/Front/CartDrawer.vue';
 
 const handleRemove = (id) => {
@@ -79,6 +78,8 @@ const sortOptions = [
 
 const selectedSort = ref(sortOptions[0])
 
+const isFilterOpen = ref(false)
+
 const breadcrumbItems = computed(() => {
     const items = [
         { label: '首頁', href: route('front.home.index') },
@@ -94,68 +95,39 @@ const breadcrumbItems = computed(() => {
 </script>
 
 <template>
-    <Breadcrumb :items="breadcrumbItems" />
-    <PageHero />
+    <PageHero :breadcrumb-items="breadcrumbItems" />
 
-    <section class="mt-4 max-w-layout-wide mx-auto px-4">
-        <PillsSwiper class="md:hidden mt-4" :categories="props.categories_tab" :activeCategory="categoryName"
-            @select-category="onSelectCategory" />
+    <section class="mt-8 md:mt-12 mb-12 max-w-layout-wide mx-auto px-4">
+        <div class="flex items-center justify-between gap-3 flex-wrap pb-4 mb-6 border-b border-base-300">
+            <button type="button" @click="isFilterOpen = true"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-base-300 rounded-full text-sm font-medium text-heading hover:border-primary hover:text-primary transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m9 12h3.75M16.5 18a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0m-9 0H12m-8.25-6H12m8.25 0h-3" />
+                </svg>
+                篩選
+            </button>
 
-        <div class="md:flex md:mt-8 md:mb-8 lg:mt-12">
-            <div class="hidden md:block md:basis-2/5 lg:basis-1/4">
-                <aside class="mr-8 p-5 border border-base-300 rounded-[20px] bg-base-100">
-                    <h3 class="text-base lg:text-lg font-medium text-heading pb-3 mb-3 border-b border-base-300">
-                        產品分類
-                    </h3>
-                    <ul class="flex flex-col gap-1">
-                        <li>
-                            <a href="#" class="block w-full px-3 py-2 rounded-xl transition-colors"
-                                :class="categoryName == 'ALL'
-                                    ? 'bg-primary/10 text-primary font-medium'
-                                    : 'text-base-content hover:bg-primary/10 hover:text-primary'"
-                                @click.prevent="onSelectCategory('ALL')">
-                                全部
-                            </a>
-                        </li>
-                        <li v-for="value in props.categories_tab" :key="value.id">
-                            <a href="#" class="block w-full px-3 py-2 rounded-xl transition-colors"
-                                :class="value.name == categoryName
-                                    ? 'bg-primary/10 text-primary font-medium'
-                                    : 'text-base-content hover:bg-primary/10 hover:text-primary'"
-                                @click.prevent="onSelectCategory(value.name)">
-                                {{ value.name }}
-                            </a>
-                        </li>
-                    </ul>
-                </aside>
-            </div>
+            <p class="order-3 md:order-2 w-full md:w-auto text-center md:text-left text-sm text-base-content/60">
+                <span class="text-primary font-medium">{{ props.products?.length }}</span> 件商品
+            </p>
 
-            <div class="md:basis-3/5 lg:basis-3/4">
-                <div class="py-2 my-4 flex w-full items-center rounded-[12px]">
-                    <div class="w-[50%] flex items-center ">
-                        <label for="sort_product" class="align-middle whitespace-nowrap">排序:</label>
-                        <select class="border-b-1 border-base-content w-full md:w-50 lg:w-58 py-1" id="sort_product"
-                            v-model="selectedSort" @change="sortData">
-                            <option v-for="(opt, idx) in sortOptions" :key="idx" :value="opt">
-                                {{ opt.label }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="w-[50%] text-end">
-                        <span class="text-primary text-lg md:text-xl xl:text-2xl">
-                            {{ props.products?.length }}
-                        </span>
-                        件商品
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3 mb-4">
-                    <ProductCard v-for="value in props.products" :key="value.id" :product="value" />
-                </div>
-            </div>
+            <select class="border-b border-base-content py-1 text-sm outline-none" id="sort_product"
+                v-model="selectedSort" @change="sortData">
+                <option v-for="(opt, idx) in sortOptions" :key="idx" :value="opt">
+                    {{ opt.label }}
+                </option>
+            </select>
         </div>
 
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            <ProductCard v-for="value in props.products" :key="value.id" :product="value" />
+        </div>
     </section>
+
+    <FilterDrawer :open="isFilterOpen" :categories="props.categories_tab" :active-category="categoryName"
+        @close="isFilterOpen = false" @select-category="onSelectCategory" />
     <!-- <section> -->
     <!-- <HomeHero /> -->
     <!-- </section> -->

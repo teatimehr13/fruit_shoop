@@ -1,32 +1,24 @@
 <script setup>
-const heroSlides = [
-    {
-        id: 1,
-        image: '/images/hero/Gemini_Generated_Image_xut2fvxut2fvxut2.webp',
-        title: '所有產品',
-        subtitle: '嚴選在地小農-高品質國產、進口蔬果',
+import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
+
+defineProps({
+    breadcrumbItems: {
+        type: Array,
+        required: true,
     },
-];
+})
 </script>
 
 <template>
-    <section class="w-full h-[220px] md:h-[320px]">
-        <div v-if="heroSlides.length" class="relative h-full overflow-hidden">
-            <img :src="heroSlides[0].image" :alt="heroSlides[0].title" class="w-full h-full object-cover" />
-
-            <div class="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent">
-                <div class="max-w-layout-wide mx-auto h-full flex items-center px-4">
-                    <div class="text-center md:text-left">
-                        <h3 class="text-2xl md:text-4xl font-medium tracking-[0.02em] text-base-100 mb-2 md:mb-3">
-                            {{ heroSlides[0].title }}
-                        </h3>
-
-                        <p class="text-sm md:text-base text-base-100/85">
-                            {{ heroSlides[0].subtitle }}
-                        </p>
-                    </div>
-                </div>
+    <section class="w-full mt-[var(--spacing-header-space)] bg-base-200 overflow-hidden">
+        <div class="max-w-layout-wide mx-auto px-4 relative">
+            <div class="relative z-10 py-10 md:py-16 md:max-w-[55%]">
+                <h1 class="text-3xl md:text-4xl font-medium text-heading mb-3">所有產品</h1>
+                <Breadcrumb :items="breadcrumbItems" bare />
             </div>
+
+            <img src="/images/promo/veggie-box.webp" alt=""
+                class="hidden md:block absolute right-0 top-8 bottom-0 w-[300px] lg:w-[360px] h-[calc(100%-2rem)] object-cover rounded-t-[28px]" />
         </div>
     </section>
 </template>
