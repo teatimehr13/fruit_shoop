@@ -160,8 +160,8 @@ const submitToCart = async () => {
                 </button>
 
                 <div class="mt-10 pt-6 border-t border-base-300">
-                    <h2 class="text-base font-medium text-heading mb-2">商品介紹</h2>
-                    <div class="text-sm text-base-content/80 leading-relaxed" v-html="product.description"></div>
+                    <h2 class="text-[18px] font-medium text-heading mb-2">商品介紹</h2>
+                    <div class="text-[16px] text-base-content/80 leading-relaxed" v-html="product.description"></div>
                 </div>
             </div>
         </div>

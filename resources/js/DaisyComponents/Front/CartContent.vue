@@ -136,8 +136,11 @@ const containerClass = computed(() => {
     if (props.layoutMode === 'page') {
         return 'flex flex-col lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start'
     }
-    // Drawer 模式：維持原本的 Flex Column
-    return 'flex flex-col h-full'
+    // Drawer 模式：這個 div 本身是 CartDrawer.vue 那個 <aside flex flex-col> 底下的一個 flex item，
+    // 沒有 flex-1 的話它只會照內容自然高度撐開，商品一多整塊就會超出 aside 的 100vh 邊界，
+    // 把 footer 一起頂到畫面外。flex-1 讓它吃滿剩餘高度，min-h-0 解除 flexbox 預設的
+    // min-height:auto（否則裡面的 overflow-y-auto 商品列表沒辦法真正捲動，一樣會把整體撐高）
+    return 'flex flex-col flex-1 min-h-0'
 })
 
 // 2. 列表區塊樣式
@@ -148,7 +151,7 @@ const listSectionClass = computed(() => {
     // Drawer 模式:佔滿剩餘空間並可滾動,footer 走一般 flex 排版貼在底部,不用 fixed
     // (fixed 定位曾經意外依賴 aside 本身常駐 translate-x-0 造成的 containing block 才會位置正確,
     // 換掉那個寫法後 fixed 會直接跳出去對齊整個 viewport,改成單純 flex-col 排版更穩)
-    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-base-200'
+    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-[#f5f5f5]'
 })
 
 // 3. 摘要區塊容器樣式
