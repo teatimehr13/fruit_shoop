@@ -85,10 +85,11 @@ const { ItemsCount } = useSharedCart();
 
                     </li>
                     <li class="">
-                        <a href="#" @click.prevent="emit('open-cart')" class="font-semibold hover:text-primary transition-colors"
+                        <a href="#" @click.prevent="emit('open-cart')" class="group font-semibold hover:text-primary transition-colors"
                             :class="isInHeroState ? 'text-base-100' : 'text-heading'">
                             購物車
-                            <span v-if="ItemsCount" class="text-primary">
+                            <span v-if="ItemsCount" class="transition-colors"
+                                :class="isInHeroState ? 'text-base-100 group-hover:text-primary' : 'text-primary'">
                                 ({{ ItemsCount }})
                             </span>
 
