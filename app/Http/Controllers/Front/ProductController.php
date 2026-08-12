@@ -78,7 +78,7 @@ class ProductController extends Controller
             ->orderBy('featured_sort')
             ->with([
                 'primaryImage:id,product_id,image',
-                'productOptions:id,product_id,option_text,price',
+                'productOptions:id,product_id,option_text,price,original_price',
             ])
             ->limit(8)
             ->get()
