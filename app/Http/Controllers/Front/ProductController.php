@@ -15,6 +15,7 @@ class ProductController extends Controller
     {
         $categories_tab = Category::select(['id', 'name'])
             ->where('is_enabled', 1)
+            ->withCount(['products' => fn($q) => $q->where('products.is_enabled', 1)])
             ->orderBy('sort_order')
             ->get();
 
@@ -56,11 +57,14 @@ class ProductController extends Controller
 
         $products = $query->get();
 
+        // 「全部」選項的件數要固定顯示總數，不能用當下被分類篩過的 $products->count()
+        $totalProductsCount = Product::where('is_enabled', 1)->count();
 
         return Inertia::render('Front/Products/Index', [
-            'categories_tab' => $categories_tab,
-            'products'       => $products,
-            'activeCategory'  => $category?->name,
+            'categories_tab'      => $categories_tab,
+            'products'            => $products,
+            'activeCategory'      => $category?->name,
+            'totalProductsCount'  => $totalProductsCount,
         ]);
     }
 

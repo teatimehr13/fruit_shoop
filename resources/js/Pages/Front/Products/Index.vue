@@ -8,7 +8,7 @@ import PageHero from './_PageHero.vue';
 import { computed, reactive, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import ProductCard from '@/DaisyComponents/Front/ProductCard.vue';
-import FilterDrawer from './_FilterDrawer.vue';
+import FilterDropdown from './_FilterDropdown.vue';
 // import CartDrawer from '@/DaisyComponents/Front/CartDrawer.vue';
 
 const handleRemove = (id) => {
@@ -22,7 +22,8 @@ defineOptions({
 const props = defineProps({
     categories_tab: Object,
     products: Object,
-    activeCategory: String
+    activeCategory: String,
+    totalProductsCount: Number,
 })
 
 
@@ -78,8 +79,6 @@ const sortOptions = [
 
 const selectedSort = ref(sortOptions[0])
 
-const isFilterOpen = ref(false)
-
 const breadcrumbItems = computed(() => {
     const items = [
         { label: '首頁', href: route('front.home.index') },
@@ -99,15 +98,8 @@ const breadcrumbItems = computed(() => {
 
     <section class="mt-8 md:mt-12 mb-12 max-w-layout-wide mx-auto px-4">
         <div class="flex items-center justify-between gap-3 flex-wrap pb-4 mb-6 border-b border-base-300">
-            <button type="button" @click="isFilterOpen = true"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-base-300 rounded-full text-sm font-medium text-heading hover:border-primary hover:text-primary transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                    stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m9 12h3.75M16.5 18a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0m-9 0H12m-8.25-6H12m8.25 0h-3" />
-                </svg>
-                篩選
-            </button>
+            <FilterDropdown :categories="props.categories_tab" :active-category="categoryName"
+                :total-count="props.totalProductsCount" @select-category="onSelectCategory" />
 
             <p class="order-3 md:order-2 w-full md:w-auto text-center md:text-left text-sm text-base-content/60">
                 <span class="text-primary font-medium">{{ props.products?.length }}</span> 件商品
@@ -125,9 +117,6 @@ const breadcrumbItems = computed(() => {
             <ProductCard v-for="value in props.products" :key="value.id" :product="value" />
         </div>
     </section>
-
-    <FilterDrawer :open="isFilterOpen" :categories="props.categories_tab" :active-category="categoryName"
-        @close="isFilterOpen = false" @select-category="onSelectCategory" />
     <!-- <section> -->
     <!-- <HomeHero /> -->
     <!-- </section> -->
