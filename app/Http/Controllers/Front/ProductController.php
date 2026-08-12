@@ -110,17 +110,34 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        // $productRow = $product->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
-        //     ->with('primaryImage')
-        //     ->with('cheapestOption')
-        //     ->with('productOptions')
-        //     ->findOrFail($product->id);
         abort_unless($product->is_enabled, 404);
 
-        $product->load(['primaryImage', 'cheapestOption', 'productOptions', 'productImages' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id')]);
+        $product->load([
+            'primaryImage',
+            'cheapestOption',
+            'productOptions',
+            'productImages' => fn($q) => $q->orderByDesc('is_primary')->orderBy('id'),
+            'subcategory.category',
+        ]);
+
+        // 用「分類」而不是「子分類」找相關商品：子分類底下常常只有小貓兩三隻（甚至像羽衣甘藍這種
+        // 子分類「葉菜」目前只有自己一筆），範圍抓子分類容易整區塊直接空著，分類的範圍才夠找到東西。
+        $categoryId = $product->subcategory?->category_id;
+
+        $relatedProducts = Product::query()
+            ->select(['id', 'subcategory_id', 'slug', 'name', 'price', 'description'])
+            ->where('is_enabled', 1)
+            ->where('id', '!=', $product->id)
+            ->when($categoryId, fn($q) => $q->whereHas('subcategory', fn($sq) => $sq->where('category_id', $categoryId)))
+            ->with(['primaryImage', 'productOptions'])
+            ->latest()
+            ->limit(5)
+            ->get();
 
         return Inertia::render('Front/Products/Show', [
-            'product' => $product
+            'product'         => $product,
+            'relatedProducts' => $relatedProducts,
+            'categoryName'    => $product->subcategory?->category?->name,
         ]);
     }
 
