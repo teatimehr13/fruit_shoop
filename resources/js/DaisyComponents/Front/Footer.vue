@@ -2,8 +2,8 @@
 </script>
 
 <template>
-  <footer class="bg-base-200 p-10">
-    <div class="footer sm:footer-horizontal text-base-content max-w-layout-wide mx-auto">
+  <footer class="bg-base-200 py-10">
+    <div class="footer sm:footer-horizontal text-base-content max-w-layout-wide mx-auto px-4">
       <nav>
         <h4 class="footer-title text-base text-heading opacity-100">顧客服務</h4>
         <a class="link link-hover">常見Q&A</a>
