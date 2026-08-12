@@ -77,11 +77,9 @@
                     運費與優惠代碼將於結帳步驟計算。
                 </div>
 
-                <button type="button" @click="handleButtonClick"
-                    class="btn w-full py-3 bg-primary border-primary text-primary-content hover:bg-primary/90 rounded-full transition-colors"
-                    :class="layoutMode === 'drawer' ? 'mt-4 mb-2' : ''">
+                <PrimaryButton @click="handleButtonClick" :class="layoutMode === 'drawer' ? 'mt-4 mb-2' : ''">
                     {{ layoutMode === 'drawer' ? '查看購物車' : '結帳' }}
-                </button>
+                </PrimaryButton>
             </div>
         </footer>
 
@@ -94,6 +92,7 @@ import { computed, inject } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useSharedCart } from '@/Composables/useSharedCart'
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue'
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue'
 
 
 

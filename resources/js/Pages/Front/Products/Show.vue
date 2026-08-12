@@ -6,6 +6,7 @@ import { router } from '@inertiajs/vue3';
 import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue';
 import ProductCard from '@/DaisyComponents/Front/ProductCard.vue';
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue';
 
 defineOptions({
     layout: FrontLayout,
@@ -89,9 +90,9 @@ const submitToCart = async () => {
     </div>
 
     <section class="py-8 px-4 max-w-layout-wide mx-auto">
-        <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+        <div class="flex flex-col md:flex-row gap-8 md:gap-12 xl:gap-16">
             <!-- 圖片區 -->
-            <div class="w-full md:w-1/2">
+            <div class="w-full md:w-[45%]">
                 <div class="relative w-full aspect-square bg-base-100 rounded-2xl overflow-hidden">
                     <img v-if="currentImage" :src="currentImage.img_url" :alt="product.name"
                         class="w-full h-full object-contain" />
@@ -123,7 +124,7 @@ const submitToCart = async () => {
             </div>
 
             <!-- 商品資訊 -->
-            <div class="w-full md:w-1/2">
+            <div class="w-full md:w-[55%]">
                 <h1 class="text-2xl md:text-3xl font-medium text-heading">{{ product.name }}</h1>
 
                 <p class="mt-4 flex items-center gap-2">
@@ -154,10 +155,9 @@ const submitToCart = async () => {
                     </div>
                 </div>
 
-                <button type="button" @click="submitToCart"
-                    class="mt-8 w-full btn py-3 bg-transparent border border-primary text-primary rounded-[4px] hover:bg-primary hover:text-primary-content transition-colors text-base font-medium">
+                <PrimaryButton class="mt-8" @click="submitToCart">
                     加入購物車
-                </button>
+                </PrimaryButton>
 
                 <div class="mt-10 pt-6 border-t border-base-300">
                     <h2 class="text-[18px] font-medium text-heading mb-2">商品介紹</h2>

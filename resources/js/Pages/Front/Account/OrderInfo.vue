@@ -86,7 +86,7 @@ function retryPayment(orderNumber) {
         </div>
         <div class="p-3 text-center">
           <a :href="route('order.show', row.order_number)"
-            class="tracking-wide btn btn-sm w-20 py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[12px]">
+            class="tracking-wide btn btn-sm w-16 py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[12px]">
             查看
           </a>
         </div>

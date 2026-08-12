@@ -5,6 +5,7 @@ import OrderSummary from './_OrderSummary.vue';
 import PaymentInfo from './_PaymentInfo.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue';
 
 
 const page = usePage()
@@ -67,10 +68,9 @@ const submitCheckout = async () => {
                     <DeliveryForm v-model="form" :memberData="memberData" ref="deliveryRef" />
 
                     <div class="mt-4 hidden md:block">
-                        <button type="button" @click="submitCheckout"
-                            class="btn w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
+                        <PrimaryButton @click="submitCheckout">
                             前往結帳
-                        </button>
+                        </PrimaryButton>
                     </div>
                 </div>
             </div>
@@ -80,10 +80,9 @@ const submitCheckout = async () => {
                         <OrderSummary />
 
                         <div class="block md:hidden mt-8">
-                            <button type="button" @click="submitCheckout"
-                                class="btn w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
+                            <PrimaryButton @click="submitCheckout">
                                 前往結帳
-                            </button>
+                            </PrimaryButton>
                         </div>
                     </div>
                 </div>

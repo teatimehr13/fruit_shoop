@@ -1,8 +1,6 @@
 <script setup>
 import FrontLayout from '@/Layouts/FrontLayout.vue';
-import HomeHero from './_HomeHero.vue';
 import Feature from './_Feature.vue';
-import Category from './_Category.vue';
 import TopPicks from './_TopPicks.vue';
 import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
 import { computed, reactive, ref } from 'vue';
@@ -125,16 +123,9 @@ const breadcrumbItems = computed(() => {
             <ProductCard v-for="value in props.products" :key="value.id" :product="value" />
         </div>
     </section>
-    <!-- <section> -->
-    <!-- <HomeHero /> -->
-    <!-- </section> -->
     <!-- icon feature-->
     <!-- <Feature /> -->
 
-    <!-- category gallery -->
-    <!-- <section></section>
-      -->
-    <!-- <Category /> -->
     <!-- recommand -->
     <!-- <section></section> -->
     <!-- <TopPicks /> -->
