@@ -9,7 +9,7 @@ import CtaButton from '@/DaisyComponents/Front/CtaButton.vue';
             <a :href="route('categories.products', { category: '蔬菜' })"
                 class="group relative rounded-[20px] overflow-hidden aspect-16/9 block">
                 <img src="/images/promo/veggie-box.webp" alt="蔬菜嚴選"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    class="w-full h-full object-cover">
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">蔬菜嚴選</h3>
                     <p class="text-base text-heading/70 mb-4">當季現採，每日到貨</p>
@@ -23,7 +23,7 @@ import CtaButton from '@/DaisyComponents/Front/CtaButton.vue';
             <a :href="route('categories.products', { category: '果汁' })"
                 class="group relative rounded-[20px] overflow-hidden aspect-16/9 block">
                 <img src="/images/promo/cold-pressed-juice.webp" alt="鮮榨果汁"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    class="w-full h-full object-cover">
                 <div class="absolute inset-0 flex flex-col justify-center items-start px-8">
                     <h3 class="text-2xl md:text-3xl font-medium text-heading mb-2">鮮榨果汁</h3>
                     <p class="text-base text-heading/70 mb-4">冷壓工法，鎖住營養</p>

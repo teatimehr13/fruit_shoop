@@ -199,3 +199,7 @@
 - **[改動]** CTA 標題「把健康好味道,帶進日常生活」:字級 `text-4xl md:text-6xl` 降到 `text-3xl md:text-5xl`(使用者覺得太大),拿掉句中逗號。手機版背景遮罩改動時踩到一個 Tailwind 陷阱並修正:一開始用同一個 `<div>` 疊 `bg-black/60 md:bg-gradient-to-r ...` 想做「手機純黑、桌機漸層」,但 `bg-black/60` 是 `background-color`、`bg-gradient-to-r` 是 `background-image`,兩個不同 CSS 屬性不會互相取代、只會疊加,導致桌機版意外被額外加深。使用者發現桌機畫面跟印象不同,要求「其他斷點不要改」,改成兩個各自獨立、用 `md:hidden`/`hidden md:block` 互斥切換的 `<div>` 才徹底分開,不互相污染。
 - **[決策]** 使用者覺得 CTA 標題文字「有點醜」,要求上網查 CJK 排版做法再調整。查到的結論:中文字彼此緊貼、需要比英文更寬鬆的字距/行距才不會看起來像瀏覽器預設硬擠;小標語本來就有 `tracking-[0.15em]` 但主標題完全沒設字距,風格不一致。改動:主標題補上 `tracking-[0.02em]`、行距從 `leading-[1.3]/[1.15]` 放寬到 `leading-[1.45]/[1.3]`(手機/桌機)、加淡淡 `text-shadow` 增加跟背景照片的層次感。字重維持 `font-medium`(500)不動,因為使用者先前明確要求標題字重上限 500。
 - **[改動]** CTA 區手機版微調幾輪(此分支 `restructure` 上進行):①手機暗化遮罩一度改成左到右漸層(`from-black via-black/60 to-transparent`,黑色範圍延伸到 65% 再淡出),使用者最後決定拿掉、改回單純 `bg-black/60`;②文字區塊(`嚴選新鮮...`/標題/按鈕)手機版改成 `text-center`(桌機維持 `md:text-left`);③標題字級改成三段式 `text-3xl md:text-4xl lg:text-5xl`(原本只有手機/桌機兩段);④標題手機版下方間距從 `mb-10` 調小到 `mb-6`。
+
+### 2026-08-12
+
+- **[改動]** 促銷 banner(蔬菜嚴選/鮮榨果汁)圖片拿掉 hover 放大效果(`transition-transform duration-500 group-hover:scale-105`),正式頁 `Home/_Promo.vue`、草稿頁 `HomePreview/Index.vue` 兩處(各 2 張圖,共 4 處)一併拿掉,維持兩頁一致。
