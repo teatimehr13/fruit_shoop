@@ -102,7 +102,7 @@ const breadcrumbItems = computed(() => {
 <template>
     <div class="max-w-layout-wide mx-auto px-4 mt-[var(--spacing-header-space)]">
         <div class="pt-8 md:pt-10 pb-6 border-b border-base-300">
-            <h1 class="text-2xl md:text-3xl font-medium text-heading">所有產品</h1>
+            <h1 class="text-2xl md:text-3xl font-medium text-heading">所有商品</h1>
             <Breadcrumb :items="breadcrumbItems" bare class="mt-2" />
         </div>
     </div>
