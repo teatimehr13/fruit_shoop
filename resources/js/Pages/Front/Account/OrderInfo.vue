@@ -14,9 +14,7 @@ const props = defineProps({
   orders: Object
 });
 
-console.log(props.orders);
 const { data } = props.orders;
-console.log(data);
 
 //載入頁面時刷新資料
 onMounted(() => {
@@ -43,10 +41,10 @@ function retryPayment(orderNumber) {
 
 
 <template>
-  <div class="order-info px-2 md:px-10 pt-6  items-center grid gap-4">
+  <div class="order-info px-2 md:px-0 pt-6  items-center grid gap-4">
     <!-- desktop -->
     <div class="mb-2 md:hidden ">
-      <Link :href="route('account.index')" class="inline-flex">
+      <Link :href="route('account.index')" class="inline-flex text-heading">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
           <path fill-rule="evenodd"
             d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
@@ -57,9 +55,9 @@ function retryPayment(orderNumber) {
         </span>
       </Link>
     </div>
-    <h1 class="text-2xl md:text-3xl font-semibold">訂單</h1>
-    <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr_.75fr] border-t border-neutral pt-6">
-      <div class="contents font-semibold text-base-content">
+    <h1 class="text-2xl md:text-3xl font-medium text-heading">訂單</h1>
+    <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr_.75fr] border-t border-base-300 pt-6">
+      <div class="contents font-medium text-heading">
         <div class="p-3">訂單號碼</div>
         <div class="p-3">日期</div>
         <div class="p-3">合計</div>
@@ -87,13 +85,8 @@ function retryPayment(orderNumber) {
           </div>
         </div>
         <div class="p-3 text-center">
-          <!-- <button type="button"
-            class="btn btn-sm w-20 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white">
-            
-            查看
-          </button> -->
           <a :href="route('order.show', row.order_number)"
-            class="btn btn-sm w-20 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
+            class="tracking-wide btn btn-sm w-20 py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[12px]">
             查看
           </a>
         </div>
@@ -102,8 +95,8 @@ function retryPayment(orderNumber) {
 
     <!-- mobile -->
     <div class="space-y-4 md:hidden">
-      <div class="border-t border-neutral pt-4"></div>
-      <div v-for="row in data" :key="row.id" class="border border-base-300 rounded-xl p-4 bg-white">
+      <div class="border-t border-base-300 pt-4"></div>
+      <div v-for="row in data" :key="row.id" class="border border-base-300 rounded-xl p-4 bg-base-100">
         <div class="space-y-2 text-sm">
           <div class="flex justify-between gap-3">
             <div class="text-base-content">訂單號碼</div>
@@ -148,13 +141,12 @@ function retryPayment(orderNumber) {
 
             </div>
 
-            <!-- <span v-if="row.is_payment_pending">...543543</span> -->
           </div>
         </div>
 
         <div class="mt-4">
           <a :href="route('order.show', row.order_number)"
-            class="btn btn-sm w-full border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
+            class="tracking-wide btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]">
             查看
           </a>
         </div>

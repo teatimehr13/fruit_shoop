@@ -129,8 +129,6 @@ const createdDate = computed(() => {
     return String(v).slice(0, 10)
 })
 
-console.log(user);
-
 const save = async () => {
     const ok = await validateForm();
     if (!ok) return;
@@ -176,9 +174,9 @@ const save = async () => {
 
 <template>
     <div class="form-layout ">
-        <div class="grid gap-4 px-2 md:px-10 pt-6">
+        <div class="grid gap-4 px-2 md:px-0 pt-6">
             <div class="mb-2 md:hidden ">
-                <Link :href="route('account.index')" class="inline-flex">
+                <Link :href="route('account.index')" class="inline-flex text-heading">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
                         <path fill-rule="evenodd"
                             d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
@@ -189,8 +187,8 @@ const save = async () => {
                     </span>
                 </Link>
             </div>
-            <h1 class="text-2xl md:text-3xl font-semibold">個人資訊</h1>
-            <div class="border-t border-neutral"></div>
+            <h1 class="text-2xl md:text-3xl font-medium text-heading">個人資訊</h1>
+            <div class="border-t border-base-300"></div>
             <div class="pt-4 md:pt-6">
                 <div class="w-full md:w-[50%] grid space-y-4">
                     <div>
@@ -252,7 +250,7 @@ const save = async () => {
 
             <div class="block mt-8 w-full md:w-[50%]">
                 <button type="button" :disabled="saving" @click="save"
-                    class="btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
+                    class="btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]">
                     {{ saving ? '儲存中...' : '儲存' }}
                 </button>
             </div>
