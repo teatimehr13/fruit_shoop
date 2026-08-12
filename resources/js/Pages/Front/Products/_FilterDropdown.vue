@@ -35,7 +35,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 <template>
     <div ref="rootRef" class="relative">
         <button type="button" @click="toggle"
-            class="inline-flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-medium transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2 border rounded-[4px] text-sm font-medium transition-colors"
             :class="isOpen ? 'border-primary text-primary' : 'border-base-300 text-heading hover:border-primary hover:text-primary'">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
                 stroke="currentColor" class="w-4 h-4">
@@ -59,11 +59,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
                         <button type="button" @click="select('ALL')"
                             class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors"
                             :class="activeCategory == 'ALL' ? 'text-primary font-medium' : 'text-base-content hover:bg-primary/10 hover:text-primary'">
-                            <span class="flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full border flex-shrink-0"
-                                    :class="activeCategory == 'ALL' ? 'border-primary bg-primary' : 'border-base-300'"></span>
-                                全部
-                            </span>
+                            全部
                             <span class="text-base-content/40">({{ totalCount }})</span>
                         </button>
                     </li>
@@ -71,11 +67,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
                         <button type="button" @click="select(value.name)"
                             class="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm transition-colors"
                             :class="value.name == activeCategory ? 'text-primary font-medium' : 'text-base-content hover:bg-primary/10 hover:text-primary'">
-                            <span class="flex items-center gap-2">
-                                <span class="w-3.5 h-3.5 rounded-full border flex-shrink-0"
-                                    :class="value.name == activeCategory ? 'border-primary bg-primary' : 'border-base-300'"></span>
-                                {{ value.name }}
-                            </span>
+                            {{ value.name }}
                             <span class="text-base-content/40">({{ value.products_count }})</span>
                         </button>
                     </li>

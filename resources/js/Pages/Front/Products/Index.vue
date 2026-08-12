@@ -4,11 +4,12 @@ import HomeHero from './_HomeHero.vue';
 import Feature from './_Feature.vue';
 import Category from './_Category.vue';
 import TopPicks from './_TopPicks.vue';
-import PageHero from './_PageHero.vue';
+import Breadcrumb from '@/DaisyComponents/Front/Breadcrumb.vue';
 import { computed, reactive, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import ProductCard from '@/DaisyComponents/Front/ProductCard.vue';
 import FilterDropdown from './_FilterDropdown.vue';
+import SortDropdown from './_SortDropdown.vue';
 // import CartDrawer from '@/DaisyComponents/Front/CartDrawer.vue';
 
 const handleRemove = (id) => {
@@ -71,6 +72,11 @@ const onSelectCategory = (name) => {
     sortData()
 }
 
+const onSelectSort = (opt) => {
+    selectedSort.value = opt
+    sortData()
+}
+
 const sortOptions = [
     { label: '最新上市優先', by: 'created_at', dir: 'desc' },
     { label: '價格由高到低', by: 'price', dir: 'desc' },
@@ -94,23 +100,25 @@ const breadcrumbItems = computed(() => {
 </script>
 
 <template>
-    <PageHero :breadcrumb-items="breadcrumbItems" />
+    <div class="max-w-layout-wide mx-auto px-4 mt-[var(--spacing-header-space)]">
+        <div class="pt-8 md:pt-10 pb-6 border-b border-base-300">
+            <h1 class="text-2xl md:text-3xl font-medium text-heading">所有產品</h1>
+            <Breadcrumb :items="breadcrumbItems" bare class="mt-2" />
+        </div>
+    </div>
 
-    <section class="mt-8 md:mt-12 mb-12 max-w-layout-wide mx-auto px-4">
-        <div class="flex items-center justify-between gap-3 flex-wrap pb-4 mb-6 border-b border-base-300">
+    <section class="mt-6 md:mt-8 mb-12 max-w-layout-wide mx-auto px-4">
+        <div class="flex items-center justify-between gap-3 flex-wrap mb-6">
             <FilterDropdown :categories="props.categories_tab" :active-category="categoryName"
                 :total-count="props.totalProductsCount" @select-category="onSelectCategory" />
 
-            <p class="order-3 md:order-2 w-full md:w-auto text-center md:text-left text-sm text-base-content/60">
-                <span class="text-primary font-medium">{{ props.products?.length }}</span> 件商品
-            </p>
+            <div class="flex items-center gap-3">
+                <p class="text-sm text-base-content/60">
+                    <span class="text-primary font-medium text-[20px]">{{ props.products?.length }}</span> 件商品
+                </p>
 
-            <select class="border-b border-base-content py-1 text-sm outline-none" id="sort_product"
-                v-model="selectedSort" @change="sortData">
-                <option v-for="(opt, idx) in sortOptions" :key="idx" :value="opt">
-                    {{ opt.label }}
-                </option>
-            </select>
+                <SortDropdown :options="sortOptions" :model-value="selectedSort" @select="onSelectSort" />
+            </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">

@@ -24,10 +24,7 @@ defineProps({
                     </a>
                     <span v-else class="text-primary font-medium">{{ item.label }}</span>
 
-                    <svg v-if="idx !== items.length - 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-base-content/30">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                    </svg>
+                    <span v-if="idx !== items.length - 1" class="text-base-content/30">/</span>
                 </li>
             </ol>
         </div>

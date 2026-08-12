@@ -64,7 +64,7 @@ const confirmAddToCart = async () => {
     <div class="group relative overflow-hidden bg-base-100 border border-base-300 rounded-[20px] p-4">
         <a :href="route('products.show', product.slug)" class="aspect-square flex items-center justify-center mb-4">
             <img :src="imageUrl" :alt="product.name"
-                class="max-w-[75%] max-h-[75%] object-contain transition-transform duration-500 group-hover:scale-105">
+                class="object-contain transition-transform duration-500 group-hover:scale-105">
         </a>
 
         <h3 class="text-base md:text-lg font-medium mb-1 text-heading">{{ product.name }}</h3>
