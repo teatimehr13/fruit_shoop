@@ -197,65 +197,88 @@ defineExpose({
                 </div>
             </div>
             <div>
-                <h1 class="text-xl font-semibold text-base-content">顧客資料</h1>
-            </div>
-            <div v-if="$page.props.auth.user">
-                <select class="select select-lg w-full" v-model="form.filling_mode">
-                    <option value="member">顧客資料同會員資料</option>
-                    <option value="custom">自行輸入</option>
-                </select>
-            </div>
-            <div>
-                <input type="text" placeholder="姓名" class="input input-lg w-full" v-model="form.recipient_name"
-                    @change="clearError('recipient_name')" :class="{ 'input-error': errors.recipient_name }"
-                    :ref="el => fieldRefs.recipient_name = el" />
-                <p v-if="errors.recipient_name" class="errors-hint">{{ errors.recipient_name }}</p>
-            </div>
-            <div>
-                <input type="email" placeholder="Email" class="input input-lg w-full" v-model="form.shipping_email"
-                    @change="clearError('shipping_email')" :class="{ 'input-error': errors.shipping_email }"
-                    :ref="el => fieldRefs.shipping_email = el" />
-                <p v-if="errors.shipping_email" class="errors-hint">{{ errors.shipping_email }}</p>
-            </div>
-            <div class="grid gap-4 grid-flow-col">
-                <div>
-                    <select class="select select-lg  w-full" v-model="form.shipping_city"
-                        @change="clearError('shipping_city')" :class="{ 'input-error': errors.shipping_city }"
-                        :ref="el => fieldRefs.shipping_city = el">
-                        <option disabled selected value="">城市 / 縣</option>
-                        <option v-for="city in cityOptions" :value="city" :key="city">{{ city }}</option>
-                    </select>
-                    <p v-if="errors.shipping_city" class="errors-hint">{{ errors.shipping_city }}</p>
-                </div>
-                <div>
-                    <select class="select select-lg  w-full" v-model="form.shipping_district"
-                        @change="clearError('shipping_district')" :class="{ 'input-error': errors.shipping_district }"
-                        :ref="el => fieldRefs.shipping_district = el">
-                        <option disabled selected value="">地區</option>
-                        <option v-for="(zip, district) in districtOptions" :value="district" :key="zip">{{ zip + ' ' +
-                            district }}</option>
-                    </select>
-                    <p v-if="errors.shipping_district" class="errors-hint">{{ errors.shipping_district }}</p>
-                </div>
-            </div>
-            <div>
-                <input type="text" placeholder="地址" class="input input-lg w-full" v-model="form.shipping_address_detail"
-                    @change="clearError('shipping_address_detail')"
-                    :class="{ 'input-error': errors.shipping_address_detail }"
-                    :ref="el => fieldRefs.shipping_address_detail = el" />
-                <p v-if="errors.shipping_address_detail" class="errors-hint">{{ errors.shipping_address_detail }}</p>
-            </div>
-            <div>
-                <input type="text" placeholder="電話號碼" class="input input-lg w-full" v-model="form.recipient_phone"
-                    @change="clearError('recipient_phone')"
-                    @input="form.recipient_phone = $event.target.value.replace(/[^0-9]/g, '')"
-                    :class="{ 'input-error': errors.recipient_phone }" :ref="el => fieldRefs.recipient_phone = el" />
-                <p v-if="errors.recipient_phone" class="errors-hint">{{ errors.recipient_phone }}</p>
-            </div>
-            <div>
-                <textarea class="textarea w-full textarea-lg" placeholder="備註" v-model="form.note"></textarea>
+                <h1 class="text-xl font-semibold text-heading">顧客資料</h1>
             </div>
 
+            <div class="border border-base-300 rounded-2xl bg-base-100 p-6 grid gap-4">
+
+                <div v-if="$page.props.auth.user">
+                    <label for="delivery-mode" class="field-label">填寫方式</label>
+                    <select id="delivery-mode" class="select select-primary select-lg w-full border-base-300 rounded-lg"
+                        v-model="form.filling_mode">
+                        <option value="member">顧客資料同會員資料</option>
+                        <option value="custom">自行輸入</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="delivery-name" class="field-label">姓名</label>
+                    <input id="delivery-name" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                        v-model="form.recipient_name" @change="clearError('recipient_name')"
+                        :class="{ 'input-error': errors.recipient_name }" :ref="el => fieldRefs.recipient_name = el" />
+                    <p v-if="errors.recipient_name" class="errors-hint">{{ errors.recipient_name }}</p>
+                </div>
+
+                <div>
+                    <label for="delivery-email" class="field-label">Email</label>
+                    <input id="delivery-email" type="email" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                        v-model="form.shipping_email" @change="clearError('shipping_email')"
+                        :class="{ 'input-error': errors.shipping_email }" :ref="el => fieldRefs.shipping_email = el" />
+                    <p v-if="errors.shipping_email" class="errors-hint">{{ errors.shipping_email }}</p>
+                </div>
+
+                <div class="grid gap-4 grid-flow-col">
+                    <div>
+                        <label for="delivery-city" class="field-label">城市 / 縣</label>
+                        <select id="delivery-city" class="select select-primary select-lg w-full border-base-300 rounded-lg"
+                            v-model="form.shipping_city" @change="clearError('shipping_city')"
+                            :class="{ 'input-error': errors.shipping_city }" :ref="el => fieldRefs.shipping_city = el">
+                            <option disabled selected value="">城市 / 縣</option>
+                            <option v-for="city in cityOptions" :value="city" :key="city">{{ city }}</option>
+                        </select>
+                        <p v-if="errors.shipping_city" class="errors-hint">{{ errors.shipping_city }}</p>
+                    </div>
+                    <div>
+                        <label for="delivery-district" class="field-label">地區</label>
+                        <select id="delivery-district" class="select select-primary select-lg w-full border-base-300 rounded-lg"
+                            v-model="form.shipping_district" @change="clearError('shipping_district')"
+                            :class="{ 'input-error': errors.shipping_district }"
+                            :ref="el => fieldRefs.shipping_district = el">
+                            <option disabled selected value="">地區</option>
+                            <option v-for="(zip, district) in districtOptions" :value="district" :key="zip">{{ zip + ' ' +
+                                district }}</option>
+                        </select>
+                        <p v-if="errors.shipping_district" class="errors-hint">{{ errors.shipping_district }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="delivery-address" class="field-label">地址</label>
+                    <input id="delivery-address" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                        v-model="form.shipping_address_detail" @change="clearError('shipping_address_detail')"
+                        :class="{ 'input-error': errors.shipping_address_detail }"
+                        :ref="el => fieldRefs.shipping_address_detail = el" />
+                    <p v-if="errors.shipping_address_detail" class="errors-hint">{{ errors.shipping_address_detail }}</p>
+                </div>
+
+                <div>
+                    <label for="delivery-phone" class="field-label">電話號碼</label>
+                    <input id="delivery-phone" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                        v-model="form.recipient_phone" @change="clearError('recipient_phone')"
+                        @input="form.recipient_phone = $event.target.value.replace(/[^0-9]/g, '')"
+                        :class="{ 'input-error': errors.recipient_phone }" :ref="el => fieldRefs.recipient_phone = el" />
+                    <p v-if="errors.recipient_phone" class="errors-hint">{{ errors.recipient_phone }}</p>
+                </div>
+
+                <div>
+                    <label for="delivery-note" class="field-label">備註</label>
+                    <textarea id="delivery-note" class="textarea textarea-lg w-full border-base-300 rounded-lg"
+                        v-model="form.note"></textarea>
+                </div>
+
+                <slot name="submit" />
+
+            </div>
         </div>
     </div>
 </template>
@@ -272,5 +295,13 @@ defineExpose({
     margin-top: .25rem;
     font-size: .75rem;
     color: oklch(71% .194 13.428);
+}
+
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
 }
 </style>

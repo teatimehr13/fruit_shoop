@@ -65,13 +65,15 @@ const submitCheckout = async () => {
                 md:after:left-[53%] md:after:-translate-x-1/2 md:after:w-px md:after:bg-base-300 relative">
             <div class="checkout-section checkout-left">
                 <div class="content items-start gap-8 px-6 py-8 md:max-w-[580px] md:grid md:p-9">
-                    <DeliveryForm v-model="form" :memberData="memberData" ref="deliveryRef" />
-
-                    <div class="mt-4 hidden md:block">
-                        <PrimaryButton @click="submitCheckout">
-                            前往結帳
-                        </PrimaryButton>
-                    </div>
+                    <DeliveryForm v-model="form" :memberData="memberData" ref="deliveryRef">
+                        <template #submit>
+                            <div class="hidden md:block mt-2">
+                                <PrimaryButton @click="submitCheckout">
+                                    前往結帳
+                                </PrimaryButton>
+                            </div>
+                        </template>
+                    </DeliveryForm>
                 </div>
             </div>
             <div class="checkout-section checkout-right bg-base-300 ">
