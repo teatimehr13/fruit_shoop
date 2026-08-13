@@ -190,7 +190,7 @@ const save = async () => {
             </div>
             <h1 class="text-2xl md:text-3xl font-medium text-heading">個人資訊</h1>
             <div class="border-t border-base-300"></div>
-            <div class="pt-4 md:pt-6">
+            <div class="">
                 <div class="w-full md:w-[50%]">
                     <div class="border border-base-300 rounded-2xl bg-base-100 p-6 grid gap-4">
 
