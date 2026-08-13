@@ -100,23 +100,33 @@ const fullShippingAddress = computed(() => {
         <h1 class="text-3xl font-medium text-heading mb-4">Hi, {{ user.name }}</h1>
         <div class="border-t border-base-300"></div>
 
-        <div class="grid space-y-2 info p-6">
+        <div class="grid space-y-2 info py-4">
             <p class="member-cache">一般會員</p>
 
             <div class="mt-4">
-                <label class="font-medium text-heading">姓名</label>
-                <span class="block mt-1 text-base-content/80 text-sm">{{ user.name }}</span>
+                <label class="field-label">姓名</label>
+                <span class="block mt-1  text-base-content">{{ user.name }}</span>
             </div>
 
             <div class="mt-2">
-                <label class="font-medium text-heading">Email</label>
-                <span class="block mt-1 text-base-content/80 text-sm">{{ user.email }}</span>
+                <label class="field-label">Email</label>
+                <span class="block mt-1 text-base-content">{{ user.email }}</span>
             </div>
             <div class="mt-2">
-                <label class="font-medium text-heading">加入日期</label>
-                <span class="block mt-1 text-base-content/80 text-sm">{{ createdDate }}</span>
+                <label class="field-label">加入日期</label>
+                <span class="block mt-1 text-base-content">{{ createdDate }}</span>
             </div>
         </div>
     </div>
 
 </template>
+
+<style scoped>
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
+}
+</style>

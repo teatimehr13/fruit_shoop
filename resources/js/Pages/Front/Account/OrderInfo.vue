@@ -99,25 +99,25 @@ function retryPayment(orderNumber) {
       <div v-for="row in data" :key="row.id" class="border border-base-300 rounded-xl p-4 bg-base-100">
         <div class="space-y-2 text-sm">
           <div class="flex justify-between gap-3">
-            <div class="text-heading font-medium">訂單號碼</div>
-            <div class=" text-right break-all">{{ row.order_number }}</div>
+            <div>訂單號碼</div>
+            <div class="text-base text-right break-all">{{ row.order_number }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-heading font-medium">日期</div>
-            <div class="">{{ formatDate(row.created_at) }}</div>
+            <div>日期</div>
+            <div class="text-base">{{ formatDate(row.created_at) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-heading font-medium">合計</div>
-            <div class="">{{ formatTwd(row.amount) }}</div>
+            <div>合計</div>
+            <div class="text-base">{{ formatTwd(row.amount) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-heading font-medium">訂單狀態</div>
+            <div>訂單狀態</div>
             <div class="">
               <div class="flex flex-col items-end text-right">
-                <div class="text-sm">
+                <div class="text-base">
                   {{ row.order_status_label }}
                 </div>
 
