@@ -4,6 +4,7 @@ defineOptions({ layout: AccountLayout })
 
 import { computed, onMounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import OutlineButton from '@/DaisyComponents/Front/OutlineButton.vue'
 
 
 
@@ -75,20 +76,19 @@ function retryPayment(orderNumber) {
           <div v-if="row.is_payment_pending" class="inline">
             <div v-if="!row.is_payment_expired" class="inline">
               <a :href="route('payment.retry', row.order_number)" class="text-primary text-sm underline ">重新付款</a>
-              <div v-if="row.payment_expire_at_label" class="text-sm text-neutral-400">
+              <div v-if="row.payment_expire_at_label" class="text-sm text-base-content/50">
                 (繳費期限：{{ row.payment_expire_at_label }})
               </div>
             </div>
-            <div v-else class="text-sm text-neutral-400">
+            <div v-else class="text-sm text-base-content/50">
               (訂單已取消)
             </div>
           </div>
         </div>
         <div class="p-3 text-center">
-          <a :href="route('order.show', row.order_number)"
-            class="tracking-wide btn btn-sm w-16 py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[12px]">
+          <OutlineButton tag="a" :href="route('order.show', row.order_number)" width="w-16" size="text-xs">
             查看
-          </a>
+          </OutlineButton>
         </div>
       </div>
     </div>
@@ -99,23 +99,23 @@ function retryPayment(orderNumber) {
       <div v-for="row in data" :key="row.id" class="border border-base-300 rounded-xl p-4 bg-base-100">
         <div class="space-y-2 text-sm">
           <div class="flex justify-between gap-3">
-            <div class="text-base-content">訂單號碼</div>
-            <div class="font-medium text-right break-all">{{ row.order_number }}</div>
+            <div class="text-heading font-medium">訂單號碼</div>
+            <div class=" text-right break-all">{{ row.order_number }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-base-content">日期</div>
-            <div class="font-medium">{{ formatDate(row.created_at) }}</div>
+            <div class="text-heading font-medium">日期</div>
+            <div class="">{{ formatDate(row.created_at) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-base-content">合計</div>
-            <div class="font-medium">{{ formatTwd(row.amount) }}</div>
+            <div class="text-heading font-medium">合計</div>
+            <div class="">{{ formatTwd(row.amount) }}</div>
           </div>
 
           <div class="flex justify-between gap-3">
-            <div class="text-base-content">訂單狀態</div>
-            <div class="font-medium">
+            <div class="text-heading font-medium">訂單狀態</div>
+            <div class="">
               <div class="flex flex-col items-end text-right">
                 <div class="text-sm">
                   {{ row.order_status_label }}
@@ -128,12 +128,12 @@ function retryPayment(orderNumber) {
                       重新付款
                     </a>
 
-                    <div v-if="row.payment_expire_at_label" class="text-xs text-neutral-400">
+                    <div v-if="row.payment_expire_at_label" class="text-xs text-base-content/50">
                       (繳費期限：{{ row.payment_expire_at_label }})
                     </div>
                   </template>
 
-                  <div v-else class="text-xs text-neutral-400">
+                  <div v-else class="text-xs text-base-content/50">
                     (訂單已取消)
                   </div>
                 </div>
@@ -145,10 +145,9 @@ function retryPayment(orderNumber) {
         </div>
 
         <div class="mt-4">
-          <a :href="route('order.show', row.order_number)"
-            class="tracking-wide btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]">
+          <OutlineButton tag="a" :href="route('order.show', row.order_number)">
             查看
-          </a>
+          </OutlineButton>
         </div>
       </div>
     </div>

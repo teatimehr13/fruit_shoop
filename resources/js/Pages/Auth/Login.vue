@@ -53,17 +53,7 @@ const submit = () => {
             </div>
 
             <div class="text-center">
-                <button class="rounded-[40px] 
-                text-primary 
-                shadow-[inset_0_0_0_1px_var(--color-primary)] 
-                px-12 
-                py-1.5 
-                font-semibold 
-                transition-all 
-                duration-500 
-                ease-in-out
-                hover:bg-primary 
-                hover:text-white
+                <button class="btn btn-sm w-full border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]
                 cursor-pointer" role="button">
                     登入
                 </button>

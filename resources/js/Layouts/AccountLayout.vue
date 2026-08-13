@@ -22,10 +22,10 @@
                     </ul>
 
                     <div>
-                        <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                            class="tracking-wide btn btn-sm mt-4 w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]">
+                        <OutlineButton v-if="$page.props.auth.user" :tag="Link" :href="route('logout')" method="post"
+                            as="button" class="mt-4">
                             登出
-                        </Link>
+                        </OutlineButton>
                     </div>
                 </aside>
 
@@ -41,6 +41,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import FrontLayout from './FrontLayout.vue';
+import OutlineButton from '@/DaisyComponents/Front/OutlineButton.vue';
 
 const is = (name) => route().current(name) // 需要 ziggy
 </script>
@@ -78,14 +79,15 @@ const is = (name) => route().current(name) // 需要 ziggy
     position: relative;
     display: block;
     border-top: 1px solid var(--color-neutral);
+    color: var(--color-heading);
 }
 
 .member-cache {
     font-size: 14px;
     margin-bottom: 0px;
-    color: rgb(255, 255, 255);
+    color: var(--color-base-100);
     padding: 2px 16px;
-    border: 1px solid rgb(255, 255, 255);
+    border: 1px solid var(--color-base-100);
     border-radius: 300px;
     background-color: var(--color-primary);
     display: inline-flex;

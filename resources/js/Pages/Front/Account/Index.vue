@@ -4,6 +4,7 @@ defineOptions({ layout: AccountLayout })
 
 import { computed, onMounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import OutlineButton from '@/DaisyComponents/Front/OutlineButton.vue'
 
 const user = computed(() => usePage().props.auth.user);
 
@@ -67,10 +68,9 @@ const fullShippingAddress = computed(() => {
             </div>
 
             <div>
-                <Link :href="route('account.profile')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors w-full">
+                <OutlineButton :tag="Link" :href="route('account.profile')" :preserve-state="false" class="mt-4 mb-2">
                     編輯個人資訊
-                </Link>
+                </OutlineButton>
 
             </div>
         </div>
@@ -83,38 +83,38 @@ const fullShippingAddress = computed(() => {
             </div>
 
             <div>
-                <Link :href="route('account.orders')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors w-full">
-                    查看所有訂單</Link>
+                <OutlineButton :tag="Link" :href="route('account.orders')" :preserve-state="false" class="mt-4 mb-2">
+                    查看所有訂單
+                </OutlineButton>
             </div>
         </div>
 
         <div>
-            <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                class="tracking-wide btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white">
+            <OutlineButton v-if="$page.props.auth.user" :tag="Link" :href="route('logout')" method="post" as="button">
                 登出
-            </Link>
+            </OutlineButton>
         </div>
     </div>
 
-    <div class="hidden md:block">
+    <div class="hidden md:block grid gap-4 px-2 md:px-0 pt-6">
         <h1 class="text-3xl font-medium text-heading mb-4">Hi, {{ user.name }}</h1>
+        <div class="border-t border-base-300"></div>
 
-        <div class="grid space-y-2 info border border-base-300 rounded-2xl bg-base-100 p-6">
+        <div class="grid space-y-2 info p-6">
             <p class="member-cache">一般會員</p>
 
             <div class="mt-4">
                 <label class="font-medium text-heading">姓名</label>
-                <span class="block mt-1 text-base-content/80">{{ user.name }}</span>
+                <span class="block mt-1 text-base-content/80 text-sm">{{ user.name }}</span>
             </div>
 
             <div class="mt-2">
                 <label class="font-medium text-heading">Email</label>
-                <span class="block mt-1 text-base-content/80">{{ user.email }}</span>
+                <span class="block mt-1 text-base-content/80 text-sm">{{ user.email }}</span>
             </div>
             <div class="mt-2">
                 <label class="font-medium text-heading">加入日期</label>
-                <span class="block mt-1 text-base-content/80">{{ createdDate }}</span>
+                <span class="block mt-1 text-base-content/80 text-sm">{{ createdDate }}</span>
             </div>
         </div>
     </div>
