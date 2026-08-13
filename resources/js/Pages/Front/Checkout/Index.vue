@@ -76,7 +76,7 @@ const submitCheckout = async () => {
                     </DeliveryForm>
                 </div>
             </div>
-            <div class="checkout-section checkout-right bg-base-300 ">
+            <div class="checkout-section checkout-right bg-surface-muted ">
                 <div class="sticky top-0">
                     <div class="content px-6 py-8 md:max-w-[480px] md:grid md:p-9">
                         <OrderSummary />

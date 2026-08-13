@@ -1,6 +1,6 @@
 <template>
     <div v-if="!items.length" class="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-4"
-        :class="layoutMode === 'drawer' ? 'bg-base-200' : ''">
+        :class="layoutMode === 'drawer' ? 'bg-surface-muted' : ''">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.25"
             stroke="currentColor" class="w-16 h-16 text-base-content/30">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -32,7 +32,7 @@
                         <div class="text-md font-semibold text-heading line-clamp-2">
                             {{ item.product_name }}
                         </div>
-                        <div class="text-xs font-medium text-base-content/60 line-clamp-2">
+                        <div class="text-xs font-medium text-base-content line-clamp-2">
                             {{ item.option_text }}
                         </div>
                     </div>
@@ -68,9 +68,9 @@
                     訂單摘要
                 </h2>
 
-                <div class="flex items-center justify-between text-sm mb-4">
-                    <span class="text-base-content/60">小計</span>
-                    <span class="font-semibold text-base-content">{{ formatTwd(subtotal) }}</span>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-base-content">小計</span>
+                    <span class="text-base font-semibold text-heading">{{ formatTwd(subtotal) }}</span>
                 </div>
 
                 <div v-if="layoutMode === 'page'" class="text-xs text-base-content/50 mb-4">
@@ -150,7 +150,7 @@ const listSectionClass = computed(() => {
     // Drawer 模式:佔滿剩餘空間並可滾動,footer 走一般 flex 排版貼在底部,不用 fixed
     // (fixed 定位曾經意外依賴 aside 本身常駐 translate-x-0 造成的 containing block 才會位置正確,
     // 換掉那個寫法後 fixed 會直接跳出去對齊整個 viewport,改成單純 flex-col 排版更穩)
-    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-[#f5f5f5]'
+    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-surface-muted'
 })
 
 // 3. 摘要區塊容器樣式
@@ -165,7 +165,7 @@ const summaryContainerClass = computed(() => {
 // 4. 摘要區塊內部卡片樣式 (讓 Page 版比較像一張卡片)
 const summaryCardClass = computed(() => {
     if (props.layoutMode === 'page') {
-        return 'bg-gray-50 border border-gray-200 rounded-xl p-6'
+        return 'bg-surface-muted border border-base-300 rounded-xl p-6'
     }
     return 'space-y-2'
 })
