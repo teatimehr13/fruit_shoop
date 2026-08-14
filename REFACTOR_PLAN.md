@@ -8,9 +8,9 @@
 
 - ✅ **Phase 0** — 關鍵 bug 修復 + 死碼清理
 - ✅ **Phase 1** — Design Token 系統建立(`resources/css/app.css`),前台範圍(`Pages/Front`、`Pages/Auth`、`Layouts`、`DaisyComponents/Front`)全面套用
-- 🔄 **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account 已完成;**訂單詳情頁(`order.show`)尚未開始**;**Auth 尚未開始**;`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫也還沒做(規劃隨改版頁面順便處理,不是獨立步驟)
+- 🔄 **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account、訂單詳情頁(`order.show`)已完成;**Auth 尚未開始**;`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫也還沒做(規劃隨改版頁面順便處理,不是獨立步驟)
 - ⬜ **Phase 3** — 後端 Service 層清理:整併 `CartService`/`Front/CartController` 重複邏輯、拆解 `CheckoutController::createOrderByCart`、補 FormRequest 驗證、補 return type hint、修 N+1
-- ⬜ **Phase 4** — 導入 Laravel Filament 後台:建立 Product/Category/Order/About 等 Resource,確認新舊後台功能對齊後刪除 `routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`
+- 🔄 **Phase 4** — 導入 Laravel Filament 後台:獨立分支 `feature/filament-admin`(從 `restructure` 切出)進行,不影響前台改版進度。已裝好 Filament 3.3,面板掛在 `/admin`(跟現有 `/back` Inertia 後台並存、路徑不衝突),`User::canAccessPanel()` 沿用既有 `is_admin` 判斷,跟 `AdminMiddleware` 邏輯一致。**CategoryResource(含 SubcategoriesRelationManager)、ProductResource(含 ProductOptions/ProductImages RelationManager)、OrderResource(唯讀+變更狀態)、ManageAbout 頁面皆已完成**,並補了 `tests/Feature/Filament/AdminPanelTest.php` 覆蓋 reorder/唯一性 scope/刪除守衛/主圖切換/單例更新等邏輯。確認新舊後台功能對齊後才刪除 `routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`
 - ⬜ **Phase 5** — ECPay 金流重新設計:URL 改 env 設定、`TradeDesc`/`ItemName` 逐項化、signed route 取代 session/re-login workaround、修復被註解掉的 retry 端點擁有者驗證、清死碼
 
 ## 關鍵決策
@@ -24,6 +24,7 @@
 - `--color-heading` token 只套用在淺底標題,深色/彩色底標題維持白字,不套用。
 - `/products` 分類頁不放 banner(已查證 Baymard/NN Group 對「大 banner 把商品擠到第一屏下面」的負評研究,生鮮雜貨屬於 pure navigation 類型,不是 editorial-heavy 類型)。
 - 相關商品查詢用「分類」層級,不用「子分類」層級——子分類底下常常只有一兩筆商品,範圍抓太窄區塊會直接空著。
+- Filament 後台重寫跟前台改版分屬兩條分支(`feature/filament-admin` vs `restructure`),避免高風險的框架導入工作污染前台的 commit 歷史;真的走不下去可以整條分支丟掉,不影響已完成的前台進度。
 
 ## 已知陷阱
 
@@ -33,7 +34,9 @@
 - `resources/js/Pages/Profile/Edit.vue` 與其 Partials、`AuthenticatedLayout.vue` 依賴的 `profile.edit`/`profile.destroy` 命名路由並未註冊(只有 `profile.update` 由 `Front/AccountProfileController` 提供),這組 Breeze 頁面已被 `Front/Account/Profile.vue` 取代但還沒刪除,會導致相關舊測試持續失敗。Phase 2 Auth 收尾時要一併刪除整組未使用的 Breeze `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue` 並清掉對應測試。
 - Nav 購物車角標與抽屜「購物車 (N)」數字容易對不上,根因是 `total_qty`(數量加總)vs `items.length`(不重複品項數)是兩個不同的數字。兩邊已改共用同一個 `ItemsCount`,之後新增計數邏輯要延用這個,不要各自重新計算。
 - `DaisyComponents/Front/OutlineButton.vue`(共用 outline 按鈕元件)的 `tag` 若不是 `'button'`(例如 `tag="a"` 或傳入 Inertia `Link`),不能把 `disabled` 直接綁上去——`<a>` 沒有真正的 `disabled` DOM 屬性,Vue 會字面寫成 `disabled="false"` 字串,DaisyUI 的 `.btn[disabled]` 規則只看屬性存不存在、不看值,會讓按鈕整個點不到。已修成 `:disabled="tag === 'button' ? disabled : undefined"`,以後改這個元件或抽類似的多標籤共用按鈕元件時要留意同樣的坑。
+- **`phpunit.xml` 原本沒設定獨立測試資料庫**(`DB_CONNECTION`/`DB_DATABASE` 的 sqlite 覆寫被註解掉),導致 `RefreshDatabase`(`AuthenticationTest`/`PasswordResetTest`/`ProfileTest` 等既有測試在用)直接對 `.env` 設定的正式 dev MySQL(`laravel` 資料庫)跑 migrate/truncate。2026-08-13 建 Filament 測試時跑了一次完整 `php artisan test`,直接把 dev DB 全部表清空,靠一份使用者自己備份的 Adminer dump(`kfnyuuqzsy.sql`,2026-08-09 20:14)才救回來,遺失了 8/9 之後到事發之間的異動。已修正:`phpunit.xml` 補上 `DB_CONNECTION=sqlite`、`DB_DATABASE=:memory:`,之後所有測試都跑在隔離的記憶體 DB,不會再動到 dev 資料庫。**教訓:這個專案裡任何情況都不要在沒有確認測試資料庫隔離之前執行 `php artisan test`(不帶 `--filter`)**,新加測試檔案也不要依賴 `::first()` 之類抓「現有資料」的寫法,一律在測試裡自己 seed 需要的 fixture。
+- `Order::boot()` 的 `creating` hook 在沒有明確帶 `order_status` 建立訂單時,會把 `array_search(...,  ORDER_STATUSES)` 的結果(int key,例如 `0`)寫進 `order_status` 欄位——但 `2025_12_12_034956_change_order_status_type_on_orders_table.php` 已經把這欄位改成字串型別,應該存的是 `'not_selected_payment'` 這種字串值,不是數字 key。目前線上流程都是明確帶入 `order_status`(結帳流程沒踩到),但這是個真實存在、還沒修的預設值 bug,之後如果有新的地方用 `Order::create()` 沒帶 `order_status` 會生出錯誤資料,要記得順手修掉。
 
 ## 下一步
 
-訂單詳情頁(`order.show`,`route('order.show', order_number)` 對應的頁面)的 layout 設計,尚未討論細節。Auth 頁面(登入/註冊/忘記密碼)改版仍在 Phase 2 待辦清單裡,順序排在這個之後。
+`feature/filament-admin` 分支:Resource 都建好了,接下來要實際登入 `/admin` 跑一輪操作,跟舊 `/back` 對照功能是否對齊,對齊後才進入刪除舊後台那一步。Auth 頁面(登入/註冊/忘記密碼)改版仍在 Phase 2 待辦清單裡,在 `restructure` 分支上繼續。

@@ -38,12 +38,12 @@ class OrderController extends Controller
                 'id' => $item->id,
                 'name' => $item->name,
                 'price' => (int) $item->price,
-                'qty' => (int) $item->quantity,
+                'qty' => (int) $item->qty,
                 'image' => $item->image,
                 'img_url' => $item->img_url,
                 'option_text' => $item->option_text,
                 'product_option_id' => $item->product_option_id,
-                'line_total' => (int) $item->price * (int) $item->quantity,
+                'line_total' => (int) $item->price * (int) $item->qty,
             ];
         });
 
