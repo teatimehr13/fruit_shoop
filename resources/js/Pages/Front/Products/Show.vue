@@ -168,9 +168,12 @@ const submitToCart = async () => {
     </section>
 
     <section v-if="relatedProducts?.length" class="mt-8 mb-16 md:mb-24 max-w-layout-wide mx-auto px-4">
-        <h2 class="text-xl md:text-2xl font-medium text-heading mb-6">你可能也喜歡</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            <ProductCard v-for="p in relatedProducts" :key="p.id" :product="p" />
+        <div class="border-t border-base-300"></div>
+        <div class="pt-8">
+            <h2 class="text-xl md:text-2xl font-medium text-heading mb-6">你可能也喜歡</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                <ProductCard v-for="p in relatedProducts" :key="p.id" :product="p" />
+            </div>
         </div>
     </section>
 </template>
