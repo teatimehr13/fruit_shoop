@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddToCartRequest;
+use App\Http\Requests\RemoveFromCartRequest;
+use App\Http\Requests\UpdateCartRequest;
 use App\Models\ProductOption;
+use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,13 +27,15 @@ class CartController extends Controller
         //
     }
 
-    public function store(Request $request)
+    public function store(AddToCartRequest $request)
     {
+        $data = $request->validated();
+
         if ($request->user()) {
-            return $this->addToDBCart($request);
+            return $this->addToDBCart($request->user(), $data);
         }
 
-        return $this->addToCookieCart($request);
+        return $this->addToCookieCart($data);
     }
 
     public function show(string $id)
@@ -42,14 +48,10 @@ class CartController extends Controller
         //
     }
 
-    public function update(Request $request)
+    public function update(UpdateCartRequest $request)
     {
         $user = $request->user();
-
-        $data = $request->validate([
-            'product_option_id' => 'required|integer|exists:product_options,id',
-            'qty' => 'required|integer|min:0'
-        ]);
+        $data = $request->validated();
 
         if (!$user) {
             return $this->updateToCookieCart($data);
@@ -58,13 +60,9 @@ class CartController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(RemoveFromCartRequest $request)
     {
-        $data = $request->validate([
-            'product_option_id' => 'required|integer|exists:product_options,id',
-        ]);
-
-        $optionId = $data['product_option_id'];
+        $optionId = $request->validated('product_option_id');
         $user     = $request->user();
 
         if ($user) {
@@ -72,29 +70,21 @@ class CartController extends Controller
         } else {
             return $this->deleteFromCookieCart($optionId);
         }
-
-        // return response()->noContent();
     }
 
 
-    private function addToDBCart(Request $request)
+    private function addToDBCart(User $user, array $data)
     {
         //來自app > Models > User.php裡面
-        $cart = $request->user()->getPurchaseCartOrCreate();
-        $productOptions =  $request->validate([
-            'qty' => 'required|integer|min:1',
-            'product_option_id' => 'required|integer|'
-        ]);
+        $cart = $user->getPurchaseCartOrCreate();
 
-        $qty = (int)$productOptions['qty'];
-        $optionId = (int)$productOptions['product_option_id'];
+        $qty = (int) $data['qty'];
+        $optionId = (int) $data['product_option_id'];
 
         $product_option = ProductOption::findOrFail($optionId);
         $cartItem = $cart->cartItems()->where('product_option_id', $product_option->id)->first();
 
         if ($cartItem) {
-            // $cartItem->qty += $qty;
-            // $cartItem->save();
             $cartItem->increment('qty', $qty);
         } else {
             $cartItem = $cart->cartItems()->create([
@@ -103,26 +93,17 @@ class CartController extends Controller
             ]);
         }
 
-        // $cartItem->load([
-        //     'productOption.product.primaryImage',
-        // ]);
-
         return response()->json([
             'data' => $cartItem
         ]);
     }
 
-    public function addToCookieCart(Request $request)
+    private function addToCookieCart(array $data)
     {
         $cookieCart = $this->cartService->readCookieCart();
-        $productOptions =  $request->validate([
-            'qty' => 'required|integer|min:1',
-            'product_option_id' => 'required|integer|exists:product_options,id'
-        ]);
 
-
-        $qty = (int)$productOptions['qty'];
-        $optionId = (int)$productOptions['product_option_id'];
+        $qty = (int) $data['qty'];
+        $optionId = (int) $data['product_option_id'];
 
         if (isset($cookieCart[$optionId])) {
             $cookieCart[$optionId] += $qty;
@@ -135,7 +116,7 @@ class CartController extends Controller
     }
 
 
-    private function updateToDBCart($user, $data)
+    private function updateToDBCart(User $user, array $data)
     {
         $qty = (int) $data['qty'];
         $optionId = (int) $data['product_option_id'];
@@ -158,7 +139,7 @@ class CartController extends Controller
         return response()->noContent();
     }
 
-    private function updateToCookieCart($data)
+    private function updateToCookieCart(array $data)
     {
         $qty = (int) $data['qty'];
         $optionId = (int) $data['product_option_id'];
@@ -179,7 +160,7 @@ class CartController extends Controller
         return response()->noContent();
     }
 
-    private function deleteFromDBCart($user, $optionId)
+    private function deleteFromDBCart(User $user, int $optionId)
     {
         $cart = $user->getPurchaseCartOrCreate();
         $cartItem = $cart->cartItems()
@@ -191,7 +172,7 @@ class CartController extends Controller
         }
     }
 
-    private function deleteFromCookieCart($optionId)
+    private function deleteFromCookieCart(int $optionId)
     {
         $cart = $this->cartService->readCookieCart();
         if (isset($cart[$optionId])) {
