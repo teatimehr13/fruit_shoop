@@ -21,10 +21,7 @@ class PaymentController extends Controller
 
         abort_unless($orderModel->user_id === auth()->id(), 403);
 
-        $html = $this->ecpay->generateCheckoutHtml(
-            $orderModel->order_number,
-            (int) $orderModel->amount
-        );
+        $html = $this->ecpay->generateCheckoutHtml($orderModel, $orderModel->order_number);
 
         return response($html);
     }
@@ -135,7 +132,7 @@ class PaymentController extends Controller
         $paymentToken = 'RE' . $order->id . now()->format('His');
         $order->update(['payment_token' => $paymentToken]);
 
-        $html = $this->ecpay->generateCheckoutHtml($paymentToken, (int) $order->amount);
+        $html = $this->ecpay->generateCheckoutHtml($order, $paymentToken);
         return response($html);
     }
 
