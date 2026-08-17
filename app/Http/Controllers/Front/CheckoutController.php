@@ -8,8 +8,7 @@ use Inertia\Inertia;
 use App\Http\Requests\CheckoutRequest;
 use App\Models\Order;
 use App\Services\CartService;
-use App\Services\EcpayPaymentService;
-use Illuminate\Support\Facades\DB;
+use App\Services\OrderService;
 use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
@@ -56,9 +55,28 @@ class CheckoutController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CheckoutRequest $request, CartService $cartService, EcpayPaymentService $ecpay)
+    public function store(CheckoutRequest $request, CartService $cartService, OrderService $orderService)
     {
-        $order = $this->createOrderByCart($request, $cartService, $ecpay);
+        $user = $request->user();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'auth' => '請先登入後再結帳',
+            ]);
+        }
+
+        $checkoutItems = $cartService->getSharedCartItems($request);
+        $items = $checkoutItems['items'] ?? collect();
+
+        if ($items->isEmpty()) {
+            throw ValidationException::withMessages([
+                'cart' => '購物車是空的，無法建立訂單',
+            ]);
+        }
+
+        $subtotal = (int) ($checkoutItems['subtotal'] ?? 0);
+
+        $order = $orderService->createFromCart($user, $request->validated(), $items, $subtotal);
 
         return response()->json([
             'pay_url' => route('ecpay.checkout', ['order' => $order->order_number]),
@@ -97,70 +115,4 @@ class CheckoutController extends Controller
         //
     }
 
-    private function createOrderByCart($request, $cartService, $ecpay)
-    {
-        $validated = $request->validated();
-        $user = $request->user();
-
-        if (!$user) {
-            throw ValidationException::withMessages([
-                'auth' => '請先登入後再結帳',
-            ]);
-        }
-
-        $checkoutItems = $cartService->getSharedCartItems($request);
-        $items = $checkoutItems['items'] ?? collect();
-
-        if ($items->isEmpty()) {
-            throw ValidationException::withMessages([
-                'cart' => '購物車是空的，無法建立訂單',
-            ]);
-        }
-
-        //總金額（商品總額 + 運費）
-        $subtotal = (int)($checkoutItems['subtotal'] ?? 0);
-        $shippingFee = Order::calculateShippingFee($subtotal);
-        $total = $subtotal + $shippingFee;
-
-        // 建立 Order
-        return DB::transaction(function () use ($user, $validated, $items, $total, $shippingFee) {
-            $order = Order::create([
-                'user_id' => $user->id,
-                'amount' => $total,
-                'shipping_email' => $validated['shipping_email'],
-                'shipping_city' => $validated['shipping_city'],
-                'shipping_district' => $validated['shipping_district'],
-                'shipping_zip_code' => $validated['shipping_zip_code'],
-                'shipping_address_detail' => $validated['shipping_address_detail'],
-                'address' => '0',
-                'recipient_phone' => $validated['recipient_phone'],
-                'recipient_name' => $validated['recipient_name'],
-                'note' => $validated['note'] ?? null,
-                'order_status' => Order::NOT_SELECTED_PAYMENT,
-            ]);
-
-            $paymentToken = 'RE' . $order->id . now()->format('His') . random_int(10, 99);
-            $order->update(['payment_token' => $paymentToken]);
-
-            foreach ($items as $item) {
-                $order->orderItems()->create([
-                    'name' => $item['product_name'],
-                    'option_text' => $item['option_text'],
-                    'price' => $item['price'],
-                    'qty' => $item['qty'],
-                    'image' => $item['image'],
-                    'product_option_id' => $item['product_option_id'],
-                ]);
-            }
-
-            $optionIds = $items->pluck('product_option_id')->filter()->unique()->values()->all();
-
-            if (!empty($optionIds)) {
-                $cart = $user->getPurchaseCartOrCreate();
-                $cart->cartItems()->whereIn('product_option_id', $optionIds)->delete();
-            }
-
-            return $order;
-        });
-    }
 }
