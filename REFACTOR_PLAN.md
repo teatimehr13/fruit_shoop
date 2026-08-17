@@ -31,7 +31,7 @@
 - 祖先元素只要有 `transform`(例如 Tailwind 的 `translate-y-0`),就會變成子孫 `position:fixed` 的新 containing block,子孫的 fixed 定位會相對這個祖先算、不是相對 viewport。所有 modal/offcanvas/選單類元件都要 `<Teleport to="body">`,之後遇到 fixed 定位跑掉先檢查這個。
 - Flex 容器裡要讓子層 `overflow-y-auto` 真正可以捲動,子層必須同時給 `flex-1` **和** `min-h-0`(flex 預設 `min-height:auto` 會讓內容撐高,光給 `flex-1` 不夠)。
 - Section 間距:每個 section 自己負責完整的 `py`(上下都設),不要靠單邊 `pb`/`pt` 接鄰居;相鄰兩區的 `py` 會相加,數值要抓小一點補償。
-- `resources/js/Pages/Profile/Edit.vue` 與其 Partials、`AuthenticatedLayout.vue` 依賴的 `profile.edit`/`profile.destroy` 命名路由並未註冊(只有 `profile.update` 由 `Front/AccountProfileController` 提供),這組 Breeze 頁面已被 `Front/Account/Profile.vue` 取代但還沒刪除,會導致相關舊測試持續失敗。**還沒刪**,之後要處理再一併刪除整組未使用的 Breeze `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue` 並清掉對應測試。
+- **已解決**:Breeze 殘留的 `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue`、`Welcome.vue` 連同對應的 `ProfileController`/`ProfileUpdateRequest`/`web.php` 死路由/`ProfileTest.php` 已全部刪除(查證過 `ProfileController::edit/update/destroy` 完全沒有路由指向、`/dashboard` 沒有任何連結、`Welcome.vue` 的 `/` 路由被 `front.php` 後續註冊的同名路由蓋掉連不到)。清理過程中額外發現 `tests/Feature/Auth/AuthenticationTest.php`(送 `email`/`password` 但 `LoginRequest` 早已改成統一 `login` 欄位)、`PasswordResetTest.php`(斷言會寄出通知信,但 `demo_mode` 故意攔掉通知改成畫面顯示連結)兩組測試因為程式碼行為後來改了而持續失敗,跟死碼無關,是「測試沒跟上新行為」,還沒處理。
 - Nav 購物車角標與抽屜「購物車 (N)」數字容易對不上,根因是 `total_qty`(數量加總)vs `items.length`(不重複品項數)是兩個不同的數字。兩邊已改共用同一個 `ItemsCount`,之後新增計數邏輯要延用這個,不要各自重新計算。
 - `DaisyComponents/Front/OutlineButton.vue`(共用 outline 按鈕元件)的 `tag` 若不是 `'button'`(例如 `tag="a"` 或傳入 Inertia `Link`),不能把 `disabled` 直接綁上去——`<a>` 沒有真正的 `disabled` DOM 屬性,Vue 會字面寫成 `disabled="false"` 字串,DaisyUI 的 `.btn[disabled]` 規則只看屬性存不存在、不看值,會讓按鈕整個點不到。已修成 `:disabled="tag === 'button' ? disabled : undefined"`,以後改這個元件或抽類似的多標籤共用按鈕元件時要留意同樣的坑。
 - **`phpunit.xml` 原本沒設定獨立測試資料庫**(`DB_CONNECTION`/`DB_DATABASE` 的 sqlite 覆寫被註解掉),導致 `RefreshDatabase`(`AuthenticationTest`/`PasswordResetTest`/`ProfileTest` 等既有測試在用)直接對 `.env` 設定的正式 dev MySQL(`laravel` 資料庫)跑 migrate/truncate。2026-08-13 建 Filament 測試時跑了一次完整 `php artisan test`,直接把 dev DB 全部表清空,靠一份使用者自己備份的 Adminer dump(`kfnyuuqzsy.sql`,2026-08-09 20:14)才救回來,遺失了 8/9 之後到事發之間的異動。已修正:`phpunit.xml` 補上 `DB_CONNECTION=sqlite`、`DB_DATABASE=:memory:`,之後所有測試都跑在隔離的記憶體 DB,不會再動到 dev 資料庫。**教訓:這個專案裡任何情況都不要在沒有確認測試資料庫隔離之前執行 `php artisan test`(不帶 `--filter`)**,新加測試檔案也不要依賴 `::first()` 之類抓「現有資料」的寫法,一律在測試裡自己 seed 需要的 fixture。
@@ -39,4 +39,4 @@
 
 ## 下一步
 
-Phase 2 前台改版(含 Auth、About)外觀已全部完成。`feature/filament-admin` 領先 `restructure` 10 個 commit(Phase 4 全部工作 + 這批前台微調/Auth 改版/死碼清理),要決定何時把這分支併回 `restructure`/`main`,分支差距越拖越大之後合併風險越高。接下來可以動的:Phase 3(後端 Service 層清理)、Phase 5(ECPay),或是清掉已知陷阱裡記著的 Breeze `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue` 殘留。
+`feature/filament-admin` 已合併回 `restructure` 並 push(merge commit `01ab897`),分支保留著沒刪。Phase 2 前台改版(含 Auth、About)外觀全部完成,Breeze 殘留死碼也清完了。接下來可以動的:Phase 3(後端 Service 層清理)、Phase 5(ECPay),或是處理上面新記的兩組「行為改了但測試沒跟上」的 Auth 測試失敗。
