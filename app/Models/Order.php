@@ -70,10 +70,9 @@ class Order extends Model
             // 結果範例: LPB20231211102030123
             $query->order_number = $query->order_number ?? 'LPB' . now()->format('YmdHis') . str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
 
-            // 狀態預設值：直接用 array_search 查找 Key (0, 1, 2...)
-            // 如果沒傳狀態，預設為 0 (NOT_SELECTED_PAYMENT)
+            // 如果沒傳狀態，預設為 NOT_SELECTED_PAYMENT
             if (is_null($query->order_status)) {
-                $query->order_status = array_search(self::NOT_SELECTED_PAYMENT, self::ORDER_STATUSES);
+                $query->order_status = self::NOT_SELECTED_PAYMENT;
             }
 
             $query->payment_order_number = $query->payment_order_number ?? null;
