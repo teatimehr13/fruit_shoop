@@ -147,7 +147,7 @@ class CartService
 
 
     //將訪客購物車移至資料庫(login後)
-    public function syncCookieCartToDBCart(User $user)
+    public function syncCookieCartToDBCart(User $user): void
     {
         $items = $this->getItemsFromCookie();  
 

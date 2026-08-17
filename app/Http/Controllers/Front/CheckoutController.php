@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\CheckoutRequest;
@@ -10,13 +11,15 @@ use App\Models\Order;
 use App\Services\CartService;
 use App\Services\OrderService;
 use Illuminate\Validation\ValidationException;
+use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CheckoutController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, CartService $cartService)
+    public function index(Request $request, CartService $cartService): SymfonyResponse|InertiaResponse
     {
         $user = $request->user();
 
@@ -47,7 +50,7 @@ class CheckoutController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): void
     {
         //
     }
@@ -55,7 +58,7 @@ class CheckoutController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CheckoutRequest $request, CartService $cartService, OrderService $orderService)
+    public function store(CheckoutRequest $request, CartService $cartService, OrderService $orderService): JsonResponse
     {
         $user = $request->user();
 
@@ -86,7 +89,7 @@ class CheckoutController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): void
     {
         //
     }
@@ -94,7 +97,7 @@ class CheckoutController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): void
     {
         //
     }
@@ -102,7 +105,7 @@ class CheckoutController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): void
     {
         //
     }
@@ -110,7 +113,7 @@ class CheckoutController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): void
     {
         //
     }

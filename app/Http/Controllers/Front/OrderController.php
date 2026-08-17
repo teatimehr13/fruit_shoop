@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 class OrderController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): InertiaResponse
     {
         $user = $request->user();
         $orders = Order::query()
@@ -24,14 +25,17 @@ class OrderController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(): void
     {
         //
     }
 
-    public function store(Request $request) {}
+    public function store(Request $request): void
+    {
+        //
+    }
 
-    public function show(Order $order)
+    public function show(Order $order): InertiaResponse
     {
         $items = $order->orderItems->map(function ($item) {
             return [
@@ -60,17 +64,17 @@ class OrderController extends Controller
         ]);
     }
 
-    public function edit(string $id)
+    public function edit(string $id): void
     {
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): void
     {
         //
     }
 
-    public function destroy(string $id)
+    public function destroy(string $id): void
     {
         //
     }
