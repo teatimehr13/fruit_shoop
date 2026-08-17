@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\ProductOption;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Cookie;
 
 class CartService
 {
-    protected $shipping_free = 2000;
     public function getSharedCartItems(Request $request): array
     {
         $user = $request->user();
@@ -26,7 +26,7 @@ class CartService
             return ($item['price'] ?? 0) * ($item['qty'] ?? 1);
         });
 
-        $shipping_fee = (int)$subtotal >= $this->shipping_free ? 0 : 100;
+        $shipping_fee = Order::calculateShippingFee($subtotal);
 
         return [
             'items'          => $items->values(),

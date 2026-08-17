@@ -119,7 +119,7 @@ class CheckoutController extends Controller
 
         //總金額（商品總額 + 運費）
         $subtotal = (int)($checkoutItems['subtotal'] ?? 0);
-        $shippingFee = $this->calculateShippingFee($subtotal);
+        $shippingFee = Order::calculateShippingFee($subtotal);
         $total = $subtotal + $shippingFee;
 
         // 建立 Order
@@ -162,10 +162,5 @@ class CheckoutController extends Controller
 
             return $order;
         });
-    }
-
-    private function calculateShippingFee($subtotal)
-    {
-        return $subtotal <= 0 ? 0 : ($subtotal >= 2000 ? 0 : 100);
     }
 }

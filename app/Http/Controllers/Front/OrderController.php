@@ -48,7 +48,7 @@ class OrderController extends Controller
         });
 
         $subtotal = $items->sum('line_total');
-        $shippingFee = $this->calculateShippingFee($subtotal);
+        $shippingFee = Order::calculateShippingFee($subtotal);
         $total = $subtotal + $shippingFee;
 
         return Inertia::render('Front/Order/Show', [
@@ -75,8 +75,4 @@ class OrderController extends Controller
         //
     }
 
-    private function calculateShippingFee($subtotal)
-    {
-        return $subtotal <= 0 ? 0 : ($subtotal >= 2000 ? 0 : 100);
-    }
 }
