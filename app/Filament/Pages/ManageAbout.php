@@ -42,7 +42,7 @@ class ManageAbout extends Page implements HasForms
                     ->maxLength(255),
                 TiptapEditor::make('content')
                     ->label('內容')
-                    ->tools(['bold', 'italic', 'underline', 'bullet-list', 'ordered-list', 'hr', 'link', 'oembed', '|', 'color', 'highlight']),
+                    ->tools(['bold', 'italic', 'underline', 'lead', 'small', 'bullet-list', 'ordered-list', 'hr', 'link', 'oembed', '|', 'color', 'highlight']),
                 FileUpload::make('image')
                     ->label('圖片')
                     ->disk('public')
