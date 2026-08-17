@@ -35,8 +35,13 @@ class OrderController extends Controller
         //
     }
 
-    public function show(Order $order): InertiaResponse
+    public function show(Request $request, Order $order): InertiaResponse
     {
+        // 允許兩種身分：訂單本人登入查看，或是持有簽章過的臨時連結（例如 ECPay 付款完成導回）
+        $isOwner = $request->user() && $request->user()->id === $order->user_id;
+
+        abort_unless($isOwner || $request->hasValidSignature(), 403);
+
         $items = $order->orderItems->map(function ($item) {
             return [
                 'id' => $item->id,
