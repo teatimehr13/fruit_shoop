@@ -10,7 +10,7 @@
 - ✅ **Phase 1** — Design Token 系統建立(`resources/css/app.css`),前台範圍(`Pages/Front`、`Pages/Auth`、`Layouts`、`DaisyComponents/Front`)全面套用
 - 🔄 **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account、訂單詳情頁(`order.show`)已完成;**Auth 尚未開始**;`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫也還沒做(規劃隨改版頁面順便處理,不是獨立步驟)
 - ⬜ **Phase 3** — 後端 Service 層清理:整併 `CartService`/`Front/CartController` 重複邏輯、拆解 `CheckoutController::createOrderByCart`、補 FormRequest 驗證、補 return type hint、修 N+1
-- 🔄 **Phase 4** — 導入 Laravel Filament 後台:獨立分支 `feature/filament-admin`(從 `restructure` 切出)進行,不影響前台改版進度。已裝好 Filament 3.3,面板掛在 `/admin`(跟現有 `/back` Inertia 後台並存、路徑不衝突),`User::canAccessPanel()` 沿用既有 `is_admin` 判斷,跟 `AdminMiddleware` 邏輯一致。**CategoryResource(含 SubcategoriesRelationManager)、ProductResource(含 ProductOptions/ProductImages RelationManager)、OrderResource(唯讀+變更狀態)、ManageAbout 頁面皆已完成**,並補了 `tests/Feature/Filament/AdminPanelTest.php` 覆蓋 reorder/唯一性 scope/刪除守衛/主圖切換/單例更新等邏輯。確認新舊後台功能對齊後才刪除 `routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`
+- ✅ **Phase 4** — 導入 Laravel Filament 後台:獨立分支 `feature/filament-admin`(從 `restructure` 切出)進行。已裝好 Filament 3.3,面板掛在 `/admin`,`User::canAccessPanel()` 沿用既有 `is_admin` 判斷,跟 `AdminMiddleware` 邏輯一致。CategoryResource(含 SubcategoriesRelationManager)、ProductResource(含 ProductOptions/ProductImages RelationManager)、OrderResource(唯讀+變更狀態)、ManageAbout 頁面皆已完成,並補了 `tests/Feature/Filament/AdminPanelTest.php` 覆蓋 reorder/唯一性 scope/刪除守衛/主圖切換/單例更新等邏輯。**新舊後台功能對齊驗收後,舊 Inertia 後台已刪除**(`routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`),後台品牌名稱也改成中文、拿掉主控台 Filament 資訊區塊
 - ⬜ **Phase 5** — ECPay 金流重新設計:URL 改 env 設定、`TradeDesc`/`ItemName` 逐項化、signed route 取代 session/re-login workaround、修復被註解掉的 retry 端點擁有者驗證、清死碼
 
 ## 關鍵決策
@@ -24,7 +24,7 @@
 - `--color-heading` token 只套用在淺底標題,深色/彩色底標題維持白字,不套用。
 - `/products` 分類頁不放 banner(已查證 Baymard/NN Group 對「大 banner 把商品擠到第一屏下面」的負評研究,生鮮雜貨屬於 pure navigation 類型,不是 editorial-heavy 類型)。
 - 相關商品查詢用「分類」層級,不用「子分類」層級——子分類底下常常只有一兩筆商品,範圍抓太窄區塊會直接空著。
-- Filament 後台重寫跟前台改版分屬兩條分支(`feature/filament-admin` vs `restructure`),避免高風險的框架導入工作污染前台的 commit 歷史;真的走不下去可以整條分支丟掉,不影響已完成的前台進度。
+- Filament 後台重寫跟前台改版分屬兩條分支(`feature/filament-admin` vs `restructure`),避免高風險的框架導入工作污染前台的 commit 歷史。Phase 4 已在該分支完成並驗收,尚未併回 `restructure`/`main`。
 
 ## 已知陷阱
 
@@ -39,4 +39,4 @@
 
 ## 下一步
 
-`feature/filament-admin` 分支:Resource 都建好了,接下來要實際登入 `/admin` 跑一輪操作,跟舊 `/back` 對照功能是否對齊,對齊後才進入刪除舊後台那一步。Auth 頁面(登入/註冊/忘記密碼)改版仍在 Phase 2 待辦清單裡,在 `restructure` 分支上繼續。
+Phase 4(Filament 後台)已完成,舊後台已刪除。`feature/filament-admin` 領先 `restructure` 5 個 commit(含 Phase 4 全部工作,以及兩筆本屬 Phase 2 的前台微調:商品列表新增按鈕中文 label、商品詳情頁相關商品區塊分隔線),要決定何時把這分支併回 `restructure`/`main`。Auth 頁面(登入/註冊/忘記密碼)改版仍在 Phase 2 待辦清單裡,尚未開始。
