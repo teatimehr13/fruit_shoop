@@ -8,8 +8,8 @@
 
 - ✅ **Phase 0** — 關鍵 bug 修復 + 死碼清理
 - ✅ **Phase 1** — Design Token 系統建立(`resources/css/app.css`),前台範圍(`Pages/Front`、`Pages/Auth`、`Layouts`、`DaisyComponents/Front`)全面套用
-- 🔄 **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account、訂單詳情頁(`order.show`)、About、**Auth(Login/Register/ForgotPassword/ResetPassword,已套用卡片容器+`field-label`/`input`+共用 `PrimaryButton` 樣式,對齊 Checkout/Account 既有慣例)皆已完成**。VerifyEmail/ConfirmPassword 兩頁經查證屬未啟用功能的死路由,已直接連同 Controller/路由/舊測試一併刪除。剩 `Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫還沒做(規劃隨改版頁面順便處理,不是獨立步驟),以及下面已知陷阱裡記著的 `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue` 整組 Breeze 殘留還沒清
-- ⬜ **Phase 3** — 後端 Service 層清理:整併 `CartService`/`Front/CartController` 重複邏輯、拆解 `CheckoutController::createOrderByCart`、補 FormRequest 驗證、補 return type hint、修 N+1
+- ✅ **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account、訂單詳情頁(`order.show`)、About、Auth(Login/Register/ForgotPassword/ResetPassword,已套用卡片容器+`field-label`/`input`+共用 `PrimaryButton` 樣式,對齊 Checkout/Account 既有慣例)皆已完成。VerifyEmail/ConfirmPassword 及整組 Breeze 殘留(`Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue`、`Welcome.vue`)經查證皆為死路由,已連同 Controller/路由/舊測試一併刪除。`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫這個次要項目還沒做,但範圍已經很小(Breeze 那組原生元件已隨死碼清理刪光,只剩零星地方需要對齊)
+- ✅ **Phase 3** — 後端 Service 層清理:運費計算統一改呼叫 `Order::calculateShippingFee()`(原本 `CartService`/`CheckoutController`/`OrderController` 各自重複一份、且對空購物車的邊界處理不一致);購物車 cookie 讀寫整併進 `CartService::readCookieCart()`/`writeCookieCart()`;新增 `App\Services\OrderService` 承接原本塞在 `CheckoutController::createOrderByCart` 的建單邏輯;`CartController` 補上 `AddToCartRequest`/`UpdateCartRequest`/`RemoveFromCartRequest` 三個 FormRequest;Cart/Checkout/Order 相關 controller 與 service 補齊 return type hint。N+1 查證過 Cart/Checkout/Order 這幾支沒有實際案例,eager loading 都正確使用 `with()`。
 - ✅ **Phase 4** — 導入 Laravel Filament 後台:獨立分支 `feature/filament-admin`(從 `restructure` 切出)進行。已裝好 Filament 3.3,面板掛在 `/admin`,`User::canAccessPanel()` 沿用既有 `is_admin` 判斷,跟 `AdminMiddleware` 邏輯一致。CategoryResource(含 SubcategoriesRelationManager)、ProductResource(含 ProductOptions/ProductImages RelationManager)、OrderResource(唯讀+變更狀態)、ManageAbout 頁面皆已完成,並補了 `tests/Feature/Filament/AdminPanelTest.php` 覆蓋 reorder/唯一性 scope/刪除守衛/主圖切換/單例更新等邏輯。**新舊後台功能對齊驗收後,舊 Inertia 後台已刪除**(`routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`),後台品牌名稱也改成中文、拿掉主控台 Filament 資訊區塊
 - ⬜ **Phase 5** — ECPay 金流重新設計:URL 改 env 設定、`TradeDesc`/`ItemName` 逐項化、signed route 取代 session/re-login workaround、修復被註解掉的 retry 端點擁有者驗證、清死碼
 
@@ -38,4 +38,4 @@
 
 ## 下一步
 
-`feature/filament-admin` 已合併回 `restructure` 並 push(merge commit `01ab897`),分支保留著沒刪。Phase 2 前台改版(含 Auth、About)外觀全部完成,Breeze 殘留死碼清完,連帶修好的 `AuthenticationTest`/`PasswordResetTest`/`ExampleTest` 也讓全套 36 個測試都是綠的。接下來可以動的:Phase 3(後端 Service 層清理)或 Phase 5(ECPay)。
+`feature/filament-admin` 已合併回 `restructure` 並 push(merge commit `01ab897`),分支保留著沒刪。Phase 2、Phase 3 皆已完成。剩下唯一還沒動的是 **Phase 5(ECPay 金流重做)**——風險最高,牽涉金流,裡面還藏著 `Order::boot()` 那個已知但沒修的預設值 bug(見上面已知陷阱)。
