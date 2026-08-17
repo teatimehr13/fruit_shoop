@@ -19,6 +19,8 @@ class PaymentController extends Controller
     {
         $orderModel = Order::where('order_number', $order)->firstOrFail();
 
+        abort_unless($orderModel->user_id === auth()->id(), 403);
+
         $html = $this->ecpay->generateCheckoutHtml(
             $orderModel->order_number,
             (int) $orderModel->amount
@@ -122,9 +124,9 @@ class PaymentController extends Controller
     public function retry(Order $order)
     {
         // 確保是本人訂單
-        // abort_unless($order->user_id === auth()->id(), 403);
+        abort_unless($order->user_id === auth()->id(), 403);
 
-        if ($order->order_status === 'paid') {
+        if ($order->order_status === Order::PAID) {
             return redirect()
                 ->route('order.show', ['order' => $order->order_number])
                 ->with('error', '此訂單無需補繳');
