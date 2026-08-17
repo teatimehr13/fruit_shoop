@@ -42,7 +42,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m9 12h3.75M16.5 18a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0m-9 0H12m-8.25-6H12m8.25 0h-3" />
             </svg>
-            篩選
+            {{ activeCategory === 'ALL' ? '全部' : activeCategory }}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-3.5 h-3.5 transition-transform" :class="isOpen ? 'rotate-180' : ''">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
