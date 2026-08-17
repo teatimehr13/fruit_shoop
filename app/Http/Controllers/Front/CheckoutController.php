@@ -147,7 +147,7 @@ class CheckoutController extends Controller
                     'name' => $item['product_name'],
                     'option_text' => $item['option_text'],
                     'price' => $item['price'],
-                    'quantity' => $item['qty'],
+                    'qty' => $item['qty'],
                     'image' => $item['image'],
                     'product_option_id' => $item['product_option_id'],
                 ]);

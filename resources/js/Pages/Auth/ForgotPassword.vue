@@ -1,10 +1,6 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue';
+import { useForm } from '@inertiajs/vue3';
 import FrontLayout from '@/Layouts/FrontLayout.vue';
 defineOptions({ layout: FrontLayout })
 
@@ -26,33 +22,51 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="mt-[108px] lg:pt-8 3xl:pt-12 max-w-[460px] my-[50px] mx-auto p-5">
-        <p class="text-3xl leading-[2] mb-4 font-semibold">
-            忘記密碼 ?
-        </p>
-        <div class="mb-4 text-sm text-gray-600">
-            我們會寄送一封電子郵件給你，用來重設密碼。
-        </div>
-        <form @submit.prevent="submit" class="grid gap-4">
-            <div>
-                <input id="email" type="text"
-                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.email"
-                    required autofocus autocomplete="username" placeholder="Email">
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+    <div class="mt-[var(--spacing-header-space)] lg:pt-8 3xl:pt-12 max-w-[460px] my-[50px] mx-auto p-5">
+        <div class="border border-base-300 rounded-2xl bg-base-100 p-6">
+            <h1 class="text-2xl md:text-3xl font-medium text-heading pb-4 mb-6 border-b border-base-300">
+                忘記密碼?
+            </h1>
 
-            <div class="text-center">
-                <button class="btn btn-sm w-full border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]
-                cursor-pointer" role="button" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <p class="text-sm text-base-content/70 mb-4">
+                我們會寄送一封電子郵件給你，用來重設密碼。
+            </p>
+
+            <form @submit.prevent="submit" class="grid gap-4">
+                <div>
+                    <label for="email" class="field-label">Email</label>
+                    <input id="email" type="email" class="input input-primary w-full border-base-300 rounded-lg"
+                        v-model="form.email" required autofocus autocomplete="username" placeholder="example@mail.com"
+                        :class="{ 'input-error': form.errors.email }" />
+                    <p v-if="form.errors.email" class="errors-hint">{{ form.errors.email }}</p>
+                </div>
+
+                <PrimaryButton type="submit" :disabled="form.processing">
                     提交
-                </button>
+                </PrimaryButton>
+            </form>
+
+            <div v-if="demo_mode && reset_link" class="mt-4 p-3 text-sm text-base-content/60">
+                <div class="font-medium text-heading">Demo 模式：重設連結</div>
+                <a :href="reset_link" class="underline break-all">{{ reset_link }}</a>
             </div>
-        </form>
-
-
-        <div v-if="demo_mode && reset_link" class="mt-4 p-3 text-gray-400">
-            <div class="font-semibold">Demo 模式：重設連結</div>
-            <a :href="reset_link" class="underline break-all">{{ reset_link }}</a>
         </div>
     </div>
 </template>
+
+<style scoped>
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
+}
+
+.errors-hint {
+    margin-left: .25rem;
+    margin-top: .25rem;
+    font-size: .75rem;
+    color: oklch(71% .194 13.428);
+}
+</style>

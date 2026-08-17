@@ -1,11 +1,6 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue';
+import { Link, useForm } from '@inertiajs/vue3';
 import FrontLayout from '@/Layouts/FrontLayout.vue';
 defineOptions({ layout: FrontLayout })
 
@@ -33,48 +28,68 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="mt-[108px] lg:pt-8 3xl:pt-12 max-w-[460px] my-[50px] mx-auto p-5">
-        <p class="text-3xl leading-[2] mb-4 font-semibold">
-            登入
-        </p>
-        <form @submit.prevent="submit" class="grid gap-4">
-            <div>
-                <input id="email" type="text"
-                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.login"
-                    required autofocus autocomplete="username" placeholder="Email或手機號碼">
-                <InputError class="mt-2" :message="form.errors.login" />
-            </div>
+    <div class="mt-[var(--spacing-header-space)] lg:pt-8 3xl:pt-12 max-w-[460px] my-[50px] mx-auto p-5">
+        <div class="border border-base-300 rounded-2xl bg-base-100 p-6">
+            <h1 class="text-2xl md:text-3xl font-medium text-heading pb-4 mb-6 border-b border-base-300">
+                登入
+            </h1>
 
-            <div>
-                <input id="password" type="password"
-                    class="mt-1 block w-full rounded-[12px] border border-neutral/50 py-2 px-4" v-model="form.password"
-                    required autofocus autocomplete="username" placeholder="密碼">
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+            <form @submit.prevent="submit" class="grid gap-4">
+                <div>
+                    <label for="login" class="field-label">Email 或手機號碼</label>
+                    <input id="login" type="text"
+                        class="input input-primary w-full border-base-300 rounded-lg" v-model="form.login"
+                        required autofocus autocomplete="username" placeholder="example@mail.com"
+                        :class="{ 'input-error': form.errors.login }" />
+                    <p v-if="form.errors.login" class="errors-hint">{{ form.errors.login }}</p>
+                </div>
 
-            <div class="text-center">
-                <button class="btn btn-sm w-full border-primary text-primary hover:text-white rounded-[4px] hover:bg-primary transition-colors bg-white text-[14px]
-                cursor-pointer" role="button">
+                <div>
+                    <label for="password" class="field-label">密碼</label>
+                    <input id="password" type="password"
+                        class="input input-primary w-full border-base-300 rounded-lg" v-model="form.password"
+                        required autocomplete="current-password" placeholder="請輸入密碼"
+                        :class="{ 'input-error': form.errors.password }" />
+                    <p v-if="form.errors.password" class="errors-hint">{{ form.errors.password }}</p>
+                </div>
+
+                <label class="flex items-center gap-2 text-sm text-base-content cursor-pointer select-none">
+                    <input type="checkbox" v-model="form.remember" class="checkbox checkbox-sm checkbox-primary">
+                    記住我
+                </label>
+
+                <PrimaryButton type="submit" :disabled="form.processing">
                     登入
-                </button>
-            </div>
-        </form>
+                </PrimaryButton>
+            </form>
 
-        <div class="mt-8 grid gap-4">
-            <div class="text-center">
-                <Link v-if="canResetPassword" :href="route('password.request')"
-                    class="tracking-wider underline text-sm text-primary hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <div class="mt-6 grid gap-3 text-center text-sm">
+                <Link v-if="canResetPassword" :href="route('password.request')" class="text-primary hover:underline">
                     忘記密碼?
                 </Link>
-            </div>
 
-            <div class="text-center">
-                <span>還不是會員? </span>
-                <Link v-if="canResetPassword" :href="route('register')"
-                    class="tracking-wider underline text-sm text-primary hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    前往註冊
-                </Link>
+                <p class="text-base-content/70">
+                    還不是會員?
+                    <Link :href="route('register')" class="text-primary hover:underline">前往註冊</Link>
+                </p>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
+}
+
+.errors-hint {
+    margin-left: .25rem;
+    margin-top: .25rem;
+    font-size: .75rem;
+    color: oklch(71% .194 13.428);
+}
+</style>

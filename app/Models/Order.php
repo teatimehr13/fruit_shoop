@@ -50,6 +50,11 @@ class Order extends Model
         self::CANCELLED => '已取消',
     ];
 
+    // 含 send_before_paid,給後台「變更狀態」動作用;一般篩選/顯示用 ORDER_STATUS_LABELS 就好
+    const ALL_ORDER_STATUS_LABELS = self::ORDER_STATUS_LABELS + [
+        self::SEND_BEFORE_PAID => '已出貨（未付款）',
+    ];
+
     const PAYMENT_PENDING_STATUSES = [
         self::NOT_SELECTED_PAYMENT,
         self::WAITING_FOR_THE_TRANSFER,
@@ -78,6 +83,11 @@ class Order extends Model
     public static function orderStatusesIndex($targetName)
     {
         return array_search($targetName, self::ORDER_STATUSES);
+    }
+
+    public static function calculateShippingFee($subtotal)
+    {
+        return $subtotal <= 0 ? 0 : ($subtotal >= 2000 ? 0 : 100);
     }
 
 
