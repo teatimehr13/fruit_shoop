@@ -90,15 +90,9 @@ class CartService
 
     protected function getItemsFromCookie(): Collection
     {
-        $jsonCart = Cookie::get('cart');
+        $data = $this->readCookieCart();
 
-        if (is_null($jsonCart)) {
-            return collect();
-        }
-
-        $data = json_decode($jsonCart, true);
-
-        if (!is_array($data) || empty($data)) {
+        if (empty($data)) {
             return collect();
         }
 
@@ -197,10 +191,34 @@ class CartService
 
     public function clearCookieCart(): void
     {
+        $this->writeCookieCart([]);
+    }
+
+    /**
+     * 讀取購物車 cookie，回傳原始的 [product_option_id => qty] 陣列。
+     */
+    public function readCookieCart(): array
+    {
+        $jsonCart = Cookie::get('cart');
+
+        if (is_null($jsonCart)) {
+            return [];
+        }
+
+        $data = json_decode($jsonCart, true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * 寫入購物車 cookie，接受 [product_option_id => qty] 陣列。
+     */
+    public function writeCookieCart(array $cart): void
+    {
         Cookie::queue(
             Cookie::make(
                 'cart',
-                json_encode([]),
+                json_encode($cart),
                 60 * 24 * 7,
                 '/',
                 null,

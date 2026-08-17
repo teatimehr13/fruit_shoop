@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\CartItem;
 use App\Models\ProductOption;
-use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CartController extends Controller
 {
+    public function __construct(private CartService $cartService)
+    {
+    }
+
     public function index(Request $request) {
         return Inertia::render('Front/Cart/Index');
     }
@@ -113,7 +114,7 @@ class CartController extends Controller
 
     public function addToCookieCart(Request $request)
     {
-        $cookieCart = $this->getCartFromCookie();
+        $cookieCart = $this->cartService->readCookieCart();
         $productOptions =  $request->validate([
             'qty' => 'required|integer|min:1',
             'product_option_id' => 'required|integer|exists:product_options,id'
@@ -129,7 +130,7 @@ class CartController extends Controller
             $cookieCart[$optionId] = $qty;
         }
 
-        $this->saveCookieCart($cookieCart);
+        $this->cartService->writeCookieCart($cookieCart);
         return response()->json(['msg' => '加入購物車成功']);
     }
 
@@ -161,7 +162,7 @@ class CartController extends Controller
     {
         $qty = (int) $data['qty'];
         $optionId = (int) $data['product_option_id'];
-        $cart = $this->getCartFromCookie();
+        $cart = $this->cartService->readCookieCart();
 
         if (!isset($cart[$optionId])) {
             return;
@@ -173,7 +174,7 @@ class CartController extends Controller
             unset($cart[$optionId]);
         }
 
-        $this->saveCookieCart($cart);
+        $this->cartService->writeCookieCart($cart);
 
         return response()->noContent();
     }
@@ -192,36 +193,11 @@ class CartController extends Controller
 
     private function deleteFromCookieCart($optionId)
     {
-        $cart = $this->getCartFromCookie();
+        $cart = $this->cartService->readCookieCart();
         if (isset($cart[$optionId])) {
             unset($cart[$optionId]);
         }
 
-        $this->saveCookieCart($cart);
+        $this->cartService->writeCookieCart($cart);
     }
-
-    //拿到cookie
-    public function getCartFromCookie()
-    {
-        $jsonCart = Cookie::get('cart');
-
-        if (is_null($jsonCart)) {
-            return [];
-        }
-
-        $data = json_decode($jsonCart, true);
-        Log::info($data);
-        return is_array($data) ? $data : [];
-    }
-
-    //寫入cookie
-    private function saveCookieCart($cookieCart)
-    {
-        $cartToJson = empty($cookieCart) ? "{}" : json_encode($cookieCart);
-        Cookie::queue(
-            Cookie::make('cart', $cartToJson, 60 * 24 * 7, '/', null, false, false)
-        );
-    }
-
-   
 }
