@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use App\Services\EcpayPaymentService;
 
 class PaymentController extends Controller
@@ -18,10 +19,9 @@ class PaymentController extends Controller
     {
         $orderModel = Order::where('order_number', $order)->firstOrFail();
 
-        $html = $this->ecpay->generateCheckoutHtml(
-            $orderModel->order_number,
-            (int) $orderModel->amount
-        );
+        abort_unless($orderModel->user_id === auth()->id(), 403);
+
+        $html = $this->ecpay->generateCheckoutHtml($orderModel, $orderModel->order_number);
 
         return response($html);
     }
@@ -89,29 +89,41 @@ class PaymentController extends Controller
     // 3) 綠界前端導回（OrderResultURL）
     public function frontOrderResultURL(Request $req)
     {
-        $merchantTradeNo = $req->input('MerchantTradeNo');
-
-        $order = Order::where('order_number', $merchantTradeNo)
-            ->orWhere('payment_token', $merchantTradeNo)
-            ->firstOrFail();
-
-        // 從 ECPay 返回時自動重新登入
-        if (!auth()->check() && $order->user_id) {
-            auth()->loginUsingId($order->user_id, true);
+        try {
+            $data = $this->ecpay->verifyReturn($req->all());
+        } catch (\Throwable $e) {
+            Log::warning('OrderResultURL 簽章驗證失敗', ['error' => $e->getMessage()]);
+            abort(400, '付款結果驗證失敗');
         }
 
-        return redirect()
-            ->route('order.show', ['order' => $order->order_number])
-            ->with('success', '付款完成！訂單已成立');
+        $merchantTradeNo = $data['MerchantTradeNo'] ?? null;
+
+        $order = $merchantTradeNo
+            ? Order::where('order_number', $merchantTradeNo)
+                ->orWhere('payment_token', $merchantTradeNo)
+                ->first()
+            : null;
+
+        abort_unless($order, 404);
+
+        // 不再用 session 自動登入使用者身分（那需要信任未驗證來源的資料）。
+        // 改發一個短效的簽章連結，讓瀏覽器不用登入也能看到「這一筆」剛付款完的訂單。
+        $signedUrl = URL::temporarySignedRoute(
+            'order.show',
+            now()->addMinutes(30),
+            ['order' => $order->order_number]
+        );
+
+        return redirect($signedUrl)->with('success', '付款完成！訂單已成立');
     }
 
     // 4) 補繳（站內功能）
     public function retry(Order $order)
     {
         // 確保是本人訂單
-        // abort_unless($order->user_id === auth()->id(), 403);
+        abort_unless($order->user_id === auth()->id(), 403);
 
-        if ($order->order_status === 'paid') {
+        if ($order->order_status === Order::PAID) {
             return redirect()
                 ->route('order.show', ['order' => $order->order_number])
                 ->with('error', '此訂單無需補繳');
@@ -120,7 +132,7 @@ class PaymentController extends Controller
         $paymentToken = 'RE' . $order->id . now()->format('His');
         $order->update(['payment_token' => $paymentToken]);
 
-        $html = $this->ecpay->generateCheckoutHtml($paymentToken, (int) $order->amount);
+        $html = $this->ecpay->generateCheckoutHtml($order, $paymentToken);
         return response($html);
     }
 

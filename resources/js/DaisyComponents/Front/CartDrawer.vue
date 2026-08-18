@@ -31,7 +31,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useSharedCart } from '@/Composables/useSharedCart'
 import CartContent from '@/DaisyComponents/Front/CartContent.vue'
@@ -42,8 +41,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const { cartItems } = useSharedCart()
-const itemCount = computed(() => cartItems.value?.items?.length ?? 0)
+// 跟 Nav.vue 的購物車圖示角標同一個來源（總數量 total_qty），不要各自算
+const { ItemsCount: itemCount } = useSharedCart()
 
 const goCheckout = () => {
   router.visit(route('checkout.index'))

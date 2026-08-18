@@ -7,6 +7,7 @@ import { Link, router, usePage } from '@inertiajs/vue3'
 import twCityData from '@/data/tw-zipcode.json';
 import axios from 'axios';
 import api from '@/Lib/apiFeedback';
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue';
 
 const cityOptions = computed(() => Object.keys(twCityData));
 
@@ -129,8 +130,6 @@ const createdDate = computed(() => {
     return String(v).slice(0, 10)
 })
 
-console.log(user);
-
 const save = async () => {
     const ok = await validateForm();
     if (!ok) return;
@@ -176,9 +175,9 @@ const save = async () => {
 
 <template>
     <div class="form-layout ">
-        <div class="grid gap-4 px-2 md:px-10 pt-6">
+        <div class="grid gap-4 px-2 md:px-0 pt-6">
             <div class="mb-2 md:hidden ">
-                <Link :href="route('account.index')" class="inline-flex">
+                <Link :href="route('account.index')" class="inline-flex text-heading">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 self-center mr-1">
                         <path fill-rule="evenodd"
                             d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
@@ -189,72 +188,78 @@ const save = async () => {
                     </span>
                 </Link>
             </div>
-            <h1 class="text-2xl md:text-3xl font-semibold">個人資訊</h1>
-            <div class="border-t border-neutral"></div>
-            <div class="pt-4 md:pt-6">
-                <div class="w-full md:w-[50%] grid space-y-4">
-                    <div>
-                        <input type="text" placeholder="姓名" class="input  input-lg w-full border-base-300 rounded-lg"
-                            v-model="form.name" @change="clearError('name')" :class="{ 'input-error': errors.name }"
-                            :ref="el => fieldRefs.name = el" />
-                        <p v-if="errors.name" class="errors-hint">{{ errors.name }}</p>
-                    </div>
+            <h1 class="text-2xl md:text-3xl font-medium text-heading">個人資訊</h1>
+            <div class="border-t border-base-300"></div>
+            <div class="">
+                <div class="w-full md:w-[50%]">
+                    <div class="border border-base-300 rounded-2xl bg-base-100 p-6 grid gap-4">
 
-                    <div>
-                        <input type="email" placeholder="Email"
-                            class="input input-lg w-full border-base-300 rounded-lg" v-model="form.email"
-                            @change="clearError('email')" :class="{ 'input-error': errors.email }"
-                            :ref="el => fieldRefs.email = el" />
-                        <p v-if="errors.email" class="errors-hint">{{ errors.email }}</p>
-                    </div>
-
-                    <div class="grid gap-4 grid-flow-col">
                         <div>
-                            <select class="select select-lg w-full border-base-300 rounded-lg" v-model="form.city"
-                                @change="clearError('city')" :class="{ 'input-error': errors.city }"
-                                :ref="el => fieldRefs.city = el">
-                                <option disabled selected value="">城市 / 縣</option>
-                                <option v-for="city in cityOptions" :value="city" :key="city">{{ city }}</option>
-                            </select>
-                            <p v-if="errors.city" class="errors-hint">{{ errors.city }}</p>
+                            <label for="profile-name" class="field-label">姓名</label>
+                            <input id="profile-name" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                                v-model="form.name" @change="clearError('name')" :class="{ 'input-error': errors.name }"
+                                :ref="el => fieldRefs.name = el" />
+                            <p v-if="errors.name" class="errors-hint">{{ errors.name }}</p>
                         </div>
 
                         <div>
-                            <select class="select select-lg w-full border-base-300 rounded-lg" v-model="form.district"
-                                @change="clearError('district')" :class="{ 'input-error': errors.district }"
-                                :ref="el => fieldRefs.district = el">
-                                <option disabled selected value="">地區</option>
-                                <option v-for="(zip, district) in districtOptions" :value="district" :key="zip">{{ zip +
-                                    ' ' +
-                                    district }}</option>
-                            </select>
-                            <p v-if="errors.district" class="errors-hint">{{ errors.district }}</p>
+                            <label for="profile-email" class="field-label">Email</label>
+                            <input id="profile-email" type="email"
+                                class="input input-primary input-lg w-full border-base-300 rounded-lg" v-model="form.email"
+                                @change="clearError('email')" :class="{ 'input-error': errors.email }"
+                                :ref="el => fieldRefs.email = el" />
+                            <p v-if="errors.email" class="errors-hint">{{ errors.email }}</p>
                         </div>
-                    </div>
 
-                    <div>
-                        <input type="text" placeholder="地址" class="input input-lg w-full border-base-300 rounded-lg"
-                            v-model="form.address_detail" @change="clearError('address_detail')"
-                            :class="{ 'input-error': errors.address_detail }"
-                            :ref="el => fieldRefs.address_detail = el" />
-                        <p v-if="errors.address_detail" class="errors-hint">{{ errors.address_detail }}</p>
-                    </div>
+                        <div class="grid gap-4 grid-flow-col">
+                            <div>
+                                <label for="profile-city" class="field-label">城市 / 縣</label>
+                                <select id="profile-city" class="select select-primary select-lg w-full border-base-300 rounded-lg" v-model="form.city"
+                                    @change="clearError('city')" :class="{ 'input-error': errors.city }"
+                                    :ref="el => fieldRefs.city = el">
+                                    <option disabled selected value="">城市 / 縣</option>
+                                    <option v-for="city in cityOptions" :value="city" :key="city">{{ city }}</option>
+                                </select>
+                                <p v-if="errors.city" class="errors-hint">{{ errors.city }}</p>
+                            </div>
 
-                    <div>
-                        <input type="text" placeholder="電話號碼" class="input input-lg w-full border-base-300 rounded-lg"
-                            v-model="form.phone" @change="clearError('phone')" :class="{ 'input-error': errors.phone }"
-                            :ref="el => fieldRefs.phone = el"
-                            @input="form.phone = $event.target.value.replace(/[^0-9]/g, '')" />
-                        <p v-if="errors.phone" class="errors-hint">{{ errors.phone }}</p>
+                            <div>
+                                <label for="profile-district" class="field-label">地區</label>
+                                <select id="profile-district" class="select select-primary select-lg w-full border-base-300 rounded-lg" v-model="form.district"
+                                    @change="clearError('district')" :class="{ 'input-error': errors.district }"
+                                    :ref="el => fieldRefs.district = el">
+                                    <option disabled selected value="">地區</option>
+                                    <option v-for="(zip, district) in districtOptions" :value="district" :key="zip">{{ zip +
+                                        ' ' +
+                                        district }}</option>
+                                </select>
+                                <p v-if="errors.district" class="errors-hint">{{ errors.district }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="profile-address" class="field-label">地址</label>
+                            <input id="profile-address" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                                v-model="form.address_detail" @change="clearError('address_detail')"
+                                :class="{ 'input-error': errors.address_detail }"
+                                :ref="el => fieldRefs.address_detail = el" />
+                            <p v-if="errors.address_detail" class="errors-hint">{{ errors.address_detail }}</p>
+                        </div>
+
+                        <div>
+                            <label for="profile-phone" class="field-label">電話號碼</label>
+                            <input id="profile-phone" type="text" class="input input-primary input-lg w-full border-base-300 rounded-lg"
+                                v-model="form.phone" @change="clearError('phone')" :class="{ 'input-error': errors.phone }"
+                                :ref="el => fieldRefs.phone = el"
+                                @input="form.phone = $event.target.value.replace(/[^0-9]/g, '')" />
+                            <p v-if="errors.phone" class="errors-hint">{{ errors.phone }}</p>
+                        </div>
+
+                        <PrimaryButton :disabled="saving" @click="save">
+                            {{ saving ? '儲存中...' : '儲存' }}
+                        </PrimaryButton>
                     </div>
                 </div>
-            </div>
-
-            <div class="block mt-8 w-full md:w-[50%]">
-                <button type="button" :disabled="saving" @click="save"
-                    class="btn btn-sm w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
-                    {{ saving ? '儲存中...' : '儲存' }}
-                </button>
             </div>
         </div>
     </div>
@@ -266,5 +271,13 @@ const save = async () => {
     margin-top: .25rem;
     font-size: .75rem;
     color: oklch(71% .194 13.428);
+}
+
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
 }
 </style>

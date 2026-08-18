@@ -1,6 +1,6 @@
 <template>
     <div v-if="!items.length" class="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-4"
-        :class="layoutMode === 'drawer' ? 'bg-base-200' : ''">
+        :class="layoutMode === 'drawer' ? 'bg-surface-muted' : ''">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.25"
             stroke="currentColor" class="w-16 h-16 text-base-content/30">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -32,7 +32,7 @@
                         <div class="text-md font-semibold text-heading line-clamp-2">
                             {{ item.product_name }}
                         </div>
-                        <div class="text-xs font-medium text-base-content/60 line-clamp-2">
+                        <div class="text-xs font-medium text-base-content line-clamp-2">
                             {{ item.option_text }}
                         </div>
                     </div>
@@ -68,20 +68,18 @@
                     訂單摘要
                 </h2>
 
-                <div class="flex items-center justify-between text-sm mb-4">
-                    <span class="text-base-content/60">小計</span>
-                    <span class="font-semibold text-base-content">{{ formatTwd(subtotal) }}</span>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-base-content">小計</span>
+                    <span class="text-base font-semibold text-heading">{{ formatTwd(subtotal) }}</span>
                 </div>
 
                 <div v-if="layoutMode === 'page'" class="text-xs text-base-content/50 mb-4">
                     運費與優惠代碼將於結帳步驟計算。
                 </div>
 
-                <button type="button" @click="handleButtonClick"
-                    class="btn w-full py-3 bg-primary border-primary text-primary-content hover:bg-primary/90 rounded-full transition-colors"
-                    :class="layoutMode === 'drawer' ? 'mt-4 mb-2' : ''">
+                <PrimaryButton @click="handleButtonClick" :class="layoutMode === 'drawer' ? 'mt-4 mb-2' : ''">
                     {{ layoutMode === 'drawer' ? '查看購物車' : '結帳' }}
-                </button>
+                </PrimaryButton>
             </div>
         </footer>
 
@@ -94,6 +92,7 @@ import { computed, inject } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useSharedCart } from '@/Composables/useSharedCart'
 import QuantityStepper from '@/DaisyComponents/Front/QuantityStepper.vue'
+import PrimaryButton from '@/DaisyComponents/Front/PrimaryButton.vue'
 
 
 
@@ -136,8 +135,11 @@ const containerClass = computed(() => {
     if (props.layoutMode === 'page') {
         return 'flex flex-col lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start'
     }
-    // Drawer 模式：維持原本的 Flex Column
-    return 'flex flex-col h-full'
+    // Drawer 模式：這個 div 本身是 CartDrawer.vue 那個 <aside flex flex-col> 底下的一個 flex item，
+    // 沒有 flex-1 的話它只會照內容自然高度撐開，商品一多整塊就會超出 aside 的 100vh 邊界，
+    // 把 footer 一起頂到畫面外。flex-1 讓它吃滿剩餘高度，min-h-0 解除 flexbox 預設的
+    // min-height:auto（否則裡面的 overflow-y-auto 商品列表沒辦法真正捲動，一樣會把整體撐高）
+    return 'flex flex-col flex-1 min-h-0'
 })
 
 // 2. 列表區塊樣式
@@ -148,7 +150,7 @@ const listSectionClass = computed(() => {
     // Drawer 模式:佔滿剩餘空間並可滾動,footer 走一般 flex 排版貼在底部,不用 fixed
     // (fixed 定位曾經意外依賴 aside 本身常駐 translate-x-0 造成的 containing block 才會位置正確,
     // 換掉那個寫法後 fixed 會直接跳出去對齊整個 viewport,改成單純 flex-col 排版更穩)
-    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-base-200'
+    return 'flex-1 overflow-y-auto px-2 space-y-3 py-4 bg-surface-muted'
 })
 
 // 3. 摘要區塊容器樣式
@@ -163,7 +165,7 @@ const summaryContainerClass = computed(() => {
 // 4. 摘要區塊內部卡片樣式 (讓 Page 版比較像一張卡片)
 const summaryCardClass = computed(() => {
     if (props.layoutMode === 'page') {
-        return 'bg-gray-50 border border-gray-200 rounded-xl p-6'
+        return 'bg-surface-muted border border-base-300 rounded-xl p-6'
     }
     return 'space-y-2'
 })

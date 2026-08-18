@@ -50,6 +50,11 @@ class Order extends Model
         self::CANCELLED => '已取消',
     ];
 
+    // 含 send_before_paid,給後台「變更狀態」動作用;一般篩選/顯示用 ORDER_STATUS_LABELS 就好
+    const ALL_ORDER_STATUS_LABELS = self::ORDER_STATUS_LABELS + [
+        self::SEND_BEFORE_PAID => '已出貨（未付款）',
+    ];
+
     const PAYMENT_PENDING_STATUSES = [
         self::NOT_SELECTED_PAYMENT,
         self::WAITING_FOR_THE_TRANSFER,
@@ -65,10 +70,9 @@ class Order extends Model
             // 結果範例: LPB20231211102030123
             $query->order_number = $query->order_number ?? 'LPB' . now()->format('YmdHis') . str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
 
-            // 狀態預設值：直接用 array_search 查找 Key (0, 1, 2...)
-            // 如果沒傳狀態，預設為 0 (NOT_SELECTED_PAYMENT)
+            // 如果沒傳狀態，預設為 NOT_SELECTED_PAYMENT
             if (is_null($query->order_status)) {
-                $query->order_status = array_search(self::NOT_SELECTED_PAYMENT, self::ORDER_STATUSES);
+                $query->order_status = self::NOT_SELECTED_PAYMENT;
             }
 
             $query->payment_order_number = $query->payment_order_number ?? null;
@@ -78,6 +82,11 @@ class Order extends Model
     public static function orderStatusesIndex($targetName)
     {
         return array_search($targetName, self::ORDER_STATUSES);
+    }
+
+    public static function calculateShippingFee($subtotal)
+    {
+        return $subtotal <= 0 ? 0 : ($subtotal >= 2000 ? 0 : 100);
     }
 
 

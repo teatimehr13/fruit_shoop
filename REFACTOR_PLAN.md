@@ -1,200 +1,40 @@
-# fruit_shoop 全端重構追蹤
+# fruit_shoop 全端重構
 
-本文件追蹤全端重構的階段進度。狀態:⬜ 未開始 / 🔄 進行中 / ✅ 完成
+## 目標與範圍
 
-## Phase 0 — 關鍵修復 + 死碼清理 ✅ 已完成
+全端重構 fruit_shoop:清死碼、統一 design token、前台逐頁改版、後端 Service 層清理、後台換 Filament、ECPay 金流重做。範圍排除:後台(`Back/*`)頁面樣式在 Phase 4 被 Filament 取代前不整理;既有 Breeze 殘留頁面(`Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue`)在 Phase 2 Auth 收尾前不動。
 
-- ✅ 修復 `OrderItem` qty/quantity 欄位不一致 bug(`CheckoutController` 建立時、`Front/Back OrderController` 讀取時)
-- ✅ 建立 `REFACTOR_PLAN.md` 追蹤文件
-- ✅ 刪除未使用的空殼 controller(`Front/CartItemController`、`OrderItemController`、`ProductImageController`、`ProductOptionController`、`SubcategoryController`、`CategoryController`、`ProfileController`)
-- ✅ 刪除前端死檔案(`Auth/*copy.vue`、`Test_draw.vue`、未使用的 `welcome.blade.php`)
-- ✅ 清除大段註解死程式碼(`CheckoutController`、`Ecpay/PaymentController`、`Back/ProductController`)
-- ✅ 驗證:`php artisan route:list`(87 條路由正常)、`php artisan test`(修改前後皆為 15 failed / 10 passed,無新增失敗,失敗皆為既有的 `profile.edit`/`profile.update` 死路由問題)、`npm run build`(編譯成功)
+## 工作項目與狀態
 
-**驗證時發現但未修復的既有問題**(記錄供之後階段處理):
-- `resources/js/Pages/Profile/Edit.vue` 與其 Partials(`UpdateProfileInformationForm.vue`、`DeleteUserForm.vue`)、`AuthenticatedLayout.vue` 依賴的 `profile.edit`/`profile.destroy` 命名路由並未註冊(只有 `profile.update` 由 `Front/AccountProfileController` 提供),導致 Breeze 預設的個人資料頁與 5 個既有測試失效。這組 Breeze 頁面已被 `Front/Account/Profile.vue` 取代,建議在 Phase 2(前端架構統一)一併處理:刪除整組未使用的 Breeze `Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue`,並清掉對應測試。
+- ✅ **Phase 0** — 關鍵 bug 修復 + 死碼清理
+- ✅ **Phase 1** — Design Token 系統建立(`resources/css/app.css`),前台範圍(`Pages/Front`、`Pages/Auth`、`Layouts`、`DaisyComponents/Front`)全面套用
+- ✅ **Phase 2** — 前端架構統一 + 前台改版:Home、Products(含商品詳情頁)、Cart、Checkout、Account、訂單詳情頁(`order.show`)、About、Auth(Login/Register/ForgotPassword/ResetPassword,已套用卡片容器+`field-label`/`input`+共用 `PrimaryButton` 樣式,對齊 Checkout/Account 既有慣例)皆已完成。VerifyEmail/ConfirmPassword 及整組 Breeze 殘留(`Profile/*`、`Dashboard.vue`、`AuthenticatedLayout.vue`、`Welcome.vue`)經查證皆為死路由,已連同 Controller/路由/舊測試一併刪除。`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫這個次要項目還沒做,但範圍已經很小(Breeze 那組原生元件已隨死碼清理刪光,只剩零星地方需要對齊)
+- ✅ **Phase 3** — 後端 Service 層清理:運費計算統一改呼叫 `Order::calculateShippingFee()`(原本 `CartService`/`CheckoutController`/`OrderController` 各自重複一份、且對空購物車的邊界處理不一致);購物車 cookie 讀寫整併進 `CartService::readCookieCart()`/`writeCookieCart()`;新增 `App\Services\OrderService` 承接原本塞在 `CheckoutController::createOrderByCart` 的建單邏輯;`CartController` 補上 `AddToCartRequest`/`UpdateCartRequest`/`RemoveFromCartRequest` 三個 FormRequest;Cart/Checkout/Order 相關 controller 與 service 補齊 return type hint。N+1 查證過 Cart/Checkout/Order 這幾支沒有實際案例,eager loading 都正確使用 `with()`。
+- ✅ **Phase 4** — 導入 Laravel Filament 後台:獨立分支 `feature/filament-admin`(從 `restructure` 切出)進行。已裝好 Filament 3.3,面板掛在 `/admin`,`User::canAccessPanel()` 沿用既有 `is_admin` 判斷,跟 `AdminMiddleware` 邏輯一致。CategoryResource(含 SubcategoriesRelationManager)、ProductResource(含 ProductOptions/ProductImages RelationManager)、OrderResource(唯讀+變更狀態)、ManageAbout 頁面皆已完成,並補了 `tests/Feature/Filament/AdminPanelTest.php` 覆蓋 reorder/唯一性 scope/刪除守衛/主圖切換/單例更新等邏輯。**新舊後台功能對齊驗收後,舊 Inertia 後台已刪除**(`routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`),後台品牌名稱也改成中文、拿掉主控台 Filament 資訊區塊
+- ✅ **Phase 5** — ECPay 金流重新設計:查證過程中發現比原本記的更嚴重的洞——`order.show` 完全沒有 auth middleware(任何人知道訂單號就能看到別人的完整訂單),`checkout()` 也沒有擁有者驗證(不只 `retry()`),`frontOrderResultURL()` 用 `auth()->loginUsingId()` 且完全沒驗證綠界回傳簽章,等於能被偽造請求冒用登入成任意訂單擁有者。已修正:`order.show` 改用「本人登入或持有效簽章連結」雙軌驗證,`frontOrderResultURL()` 拿掉自動登入改發 30 分鐘效期的 signed route,先驗證 `verifyReturn()` 簽章;`checkout()`/`retry()` 都補上 `auth` middleware + 擁有者檢查。金流網址改依 `ECPAY_ENV` 切換正式/測試站,`ClientBackURL` 接上 config;`TradeDesc`/`ItemName` 改成從訂單明細逐項組成,不再是「Laravel 測試訂單」/「測試商品」佔位字。新增 3 個測試檔(`OrderShowTest`、`PaymentAuthorizationTest`、`OrderTest`)覆蓋以上情境,全套 49 個測試通過。
 
-## Phase 1 — Design Token 系統 ✅ 已完成
+## 關鍵決策
 
-- ✅ 修 `app.css` 語法 bug(`--spacing-padding-content` 缺分號)
-- ✅ 建立完整 color token(延續品牌綠 `#82ae46`)、spacing、typography、radius、shadow token
-- ✅ 設定 DaisyUI theme 對齊 token,取代 Front 範圍(Pages/Front、Pages/Auth、Layouts、DaisyComponents/Front,共 32 檔)全部 262 處寫死 hex 中屬於此範圍的部分
-- ✅ 統一 `tailwind.config.js` 為 v4 風格(刪除該檔,content/@source、fontFamily/maxWidth/width、forms plugin 全部搬進 `app.css` CSS-first 設定)
+- 前台改版參考 [Econis](https://econis.wpbingosite.com/home-7/)(生鮮電商 demo)。Primary 沿用品牌綠 `#82ae46`;Accent 珊瑚橘 `#fc5d3d` **只用於特價標籤/CTA 強調**,不當 primary 用。
+- 保留 DaisyUI,不拆除改純 Tailwind——`btn`/`input`/`select` 等 class 用量太大,拆除成本遠高於用 theme 系統套 token。
+- 資料異動模式:一律走 `apiFeedback.js`(axios 攔截器 + 自動 toast);只有 Auth/Profile 這種需要顯示欄位驗證錯誤狀態的表單才用 `useForm`。
+- 按鈕圓角規則:功能性按鈕(篩選/排序/表單/加購)用 `rounded-[4px]`,行銷/CTA 按鈕(Hero/CTA/promo)用 `rounded-full`。兩者不用統一成一種,但要照這個系統性規則套,不能隨手挑數字。
+- 按鈕實心/outline 規則:實心 = 一個畫面裡**唯一**的主要動作,outline = 次要/一般動作,一畫面盡量只留一顆實心主要按鈕。共用元件 `DaisyComponents/Front/PrimaryButton.vue`(功能性主要動作)對應 `CtaButton.vue`(行銷按鈕)。
+- 標題字重:字級越小字重要越重,不然小字撐不住;h1~h3 統一 `font-medium`(500),新頁面沿用此上限。
+- `--color-heading` token 只套用在淺底標題,深色/彩色底標題維持白字,不套用。
+- `/products` 分類頁不放 banner(已查證 Baymard/NN Group 對「大 banner 把商品擠到第一屏下面」的負評研究,生鮮雜貨屬於 pure navigation 類型,不是 editorial-heavy 類型)。
+- 相關商品查詢用「分類」層級,不用「子分類」層級——子分類底下常常只有一兩筆商品,範圍抓太窄區塊會直接空著。
+- Filament 後台重寫跟前台改版分屬兩條分支(`feature/filament-admin` vs `restructure`),避免高風險的框架導入工作污染前台的 commit 歷史。Phase 4 已在該分支完成並驗收,尚未併回 `restructure`/`main`。
 
-**範圍說明**:`Back/*`(後台)與 `Welcome.vue`(未使用的 Breeze 首頁殘留)刻意排除,前者將於 Phase 4 由 Filament 取代,後者待後續確認路由用途再處理。
+## 已知陷阱
 
-**Token 對照表**(`resources/css/app.css`):
-| 語意角色 | 值 | 取代的舊寫死色 |
-|---|---|---|
-| `primary` | `#82ae46` | `#82ae46`、`#0000ee`(誤用瀏覽器預設連結藍,順手修正) |
-| `accent` | `#fc5d3d` | (新增,尚未有頁面使用,留給 Phase 2 特價標籤/CTA) |
-| `base-content` | `#67645e` | `#67645e`、`#333` |
-| `base-100` | `#ffffff` | `#fff`/`#ffffff` |
-| `base-200` | `#f1f0ed` | `#f1f0ed`、`#f9f7f2`、`#fafafa` |
-| `base-300` | `#eeeeee` | `#EDEDED`、`#eeeeee`、`#f5f5f5`、`#f0f0f0`、`#e5e5e5` |
-| `neutral` | `#c4c4c4` | `#c4c4c4`、`#d8d8d8`(`neutral/50` 取代 `#cccccc80`) |
-| `feature-pink`/`feature-tan`/`feature-blue`/`feature-olive` | `#e4b2d6`/`#dcc698`/`#a2d1e1`/`#dcd691` | 同值,僅正式收編為 token(`_Feature.vue` 四個特色圖示裝飾色,非語意色) |
-| `--radius-field` | `0.75rem`(12px) | 對應決策的「中等圓角」 |
-| `--depth: 0` / `--noise: 0` | — | 關閉 DaisyUI 元件內建的立體光影效果,走乾淨風格(⚠️ 見下方更正:Econis 實際上不是完全無陰影) |
-| `--font-sans` | Poppins | 取代 Figtree(`app.blade.php` 字體連結、DaisyUI 均已切換) |
+- 祖先元素只要有 `transform`(例如 Tailwind 的 `translate-y-0`),就會變成子孫 `position:fixed` 的新 containing block,子孫的 fixed 定位會相對這個祖先算、不是相對 viewport。所有 modal/offcanvas/選單類元件都要 `<Teleport to="body">`,之後遇到 fixed 定位跑掉先檢查這個。
+- Flex 容器裡要讓子層 `overflow-y-auto` 真正可以捲動,子層必須同時給 `flex-1` **和** `min-h-0`(flex 預設 `min-height:auto` 會讓內容撐高,光給 `flex-1` 不夠)。
+- Section 間距:每個 section 自己負責完整的 `py`(上下都設),不要靠單邊 `pb`/`pt` 接鄰居;相鄰兩區的 `py` 會相加,數值要抓小一點補償。
+- Nav 購物車角標與抽屜「購物車 (N)」數字容易對不上,根因是 `total_qty`(數量加總)vs `items.length`(不重複品項數)是兩個不同的數字。兩邊已改共用同一個 `ItemsCount`,之後新增計數邏輯要延用這個,不要各自重新計算。
+- `DaisyComponents/Front/OutlineButton.vue`(共用 outline 按鈕元件)的 `tag` 若不是 `'button'`(例如 `tag="a"` 或傳入 Inertia `Link`),不能把 `disabled` 直接綁上去——`<a>` 沒有真正的 `disabled` DOM 屬性,Vue 會字面寫成 `disabled="false"` 字串,DaisyUI 的 `.btn[disabled]` 規則只看屬性存不存在、不看值,會讓按鈕整個點不到。已修成 `:disabled="tag === 'button' ? disabled : undefined"`,以後改這個元件或抽類似的多標籤共用按鈕元件時要留意同樣的坑。
+- **`phpunit.xml` 原本沒設定獨立測試資料庫**(`DB_CONNECTION`/`DB_DATABASE` 的 sqlite 覆寫被註解掉),導致 `RefreshDatabase`(`AuthenticationTest`/`PasswordResetTest`/`ProfileTest` 等既有測試在用)直接對 `.env` 設定的正式 dev MySQL(`laravel` 資料庫)跑 migrate/truncate。2026-08-13 建 Filament 測試時跑了一次完整 `php artisan test`,直接把 dev DB 全部表清空,靠一份使用者自己備份的 Adminer dump(`kfnyuuqzsy.sql`,2026-08-09 20:14)才救回來,遺失了 8/9 之後到事發之間的異動。已修正:`phpunit.xml` 補上 `DB_CONNECTION=sqlite`、`DB_DATABASE=:memory:`,之後所有測試都跑在隔離的記憶體 DB,不會再動到 dev 資料庫。**教訓:這個專案裡任何情況都不要在沒有確認測試資料庫隔離之前執行 `php artisan test`(不帶 `--filter`)**,新加測試檔案也不要依賴 `::first()` 之類抓「現有資料」的寫法,一律在測試裡自己 seed 需要的 fixture。
 
-**驗證**:`npm run build` 成功;抽查編譯後 CSS 確認 `bg-primary`/`text-base-content`/`border-neutral\/50`/`bg-feature-pink` 等 utility 皆正確產生對應 CSS 變數。`php artisan test` 此次因環境 MySQL 連線問題(`Access denied for user 'root'`)整批失敗,與本次純前端 CSS/Vue 改動無關,未進一步排查(本階段沒有動任何 PHP/DB 相關程式碼)。
+## 下一步
 
-## Phase 2 — 前端架構統一 + 前台頁面改版
-
-- ✅ 決定資料異動/通知模式:`useForm` 給有驗證錯誤狀態需求的表單(Auth/Profile)、`apiFeedback.js`(axios 攔截器 + 自動 toast)給其他所有資料異動。裸 axios 無錯誤處理的寫法(`DaisyComponents/Front/CartContent.vue`、`Pages/Front/Products/Show.vue`)全部淘汰,改走 apiFeedback。實際套用會跟著各頁改版一起做,不是獨立一步
-- ✅ 剩餘 Options API 檔案:盤點結果為 **0 個**,`Pages`/`DaisyComponents` 底下全部已是 `<script setup>`,此項目不需動作
-- ⬜ 整併 `Components/`(Breeze)與 `DaisyComponents/` 為單一元件庫 —— 盤點發現 `Components/` 13 個檔案全部還在用,對應到 Auth + Profile + Dashboard 這條還沒 DaisyUI 化的線,不是死程式碼。這個整併會跟著「逐頁改版」該頁面時一起做(改到 Auth/Profile 時順便把 Breeze 元件換成 DaisyComponents),不是分開的獨立步驟
-- 🔄 套用新 token 逐頁改版前台(Layouts → Home → Products → Cart → Checkout → Account → Auth),每頁改版時一併套用上面兩項決定(元件庫、資料異動模式)。**Home 已完成**(2026-08-11,詳見下方決策紀錄),其餘頁面尚未開始
-- 註:後台(`Back/*`)頁面故意跳過,將於 Phase 4 由 Filament 取代
-
-**Econis 版面規格參考**(2026-08-09 額外拉 Elementor 產生的實際 CSS 檔案(`post-14148.css`、`elementor/frontend.min.css`)量出來的具體數值,不是憑肉眼猜的,供 Phase 2 動工時對照):
-
-| 項目 | 數值 | 備註 |
-|---|---|---|
-| 容器最大寬度 | `1140px` | 剛好等於本專案既有的 `--max-w-layout-normal`(71.25rem),不用新增 token |
-| Grid/區塊間距 | `30px` | 多個 grid 區塊一致用這個 gap |
-| 卡片/圖片區塊圓角 | `20px` | 跟按鈕的 9999px 全圓角是分開的規格 |
-| 大型膠囊/標籤圓角 | `50px` | 次常見,用在較大的膠囊型元素 |
-| 圓形元素 | `50%` | icon/頭像類 |
-| 卡片陰影 | `0 9px 15px 0 rgba(0,0,0,.05)`、`0 8px 21px 3px rgba(0,0,0,.05)` | **更正 Phase 1 決策紀錄裡「扁平無陰影」的說法**:Econis 其實有用陰影,只是很淡(5% 透明度的黑),不是完全沒有陰影。Phase 1 設的 `--depth: 0` 只影響 DaisyUI 元件自帶的立體光影,不影響 Phase 2 卡片可以自訂這種淡陰影 |
-| 標題字級 | `82px`(hero 大標)/`50px`(區塊標題)/`34px`/`30px`(次標題) | |
-| 內文字級 | `25px`/`22px`/`20px`/`18px`(卡片標題/內文)/`16px`/`14px`/`12px`(輔助文字) | |
-| Section 水平內距 | `0 15px`(最常見)、`0 30px`、`0 7.5px` | |
-
-## Phase 3 — 後端 Service 層清理
-
-- ⬜ 整併 `CartService` 與 `Front/CartController` 重複邏輯
-- ⬜ 拆解 `CheckoutController::createOrderByCart` 到 Service
-- ⬜ 補齊缺少的 FormRequest 驗證
-- ⬜ 補齊 return type hint、修 N+1 風險
-
-## Phase 4 — 導入 Laravel Filament 後台
-
-- ⬜ 安裝 Filament,設定 panel provider 與管理員權限
-- ⬜ 建立 Product(含 Options/Images)、Category/Subcategory、Order、About 的 Filament Resource
-- ⬜ 比對新舊後台功能無遺漏後,刪除 `routes/back.php`、`Back/*Controller`、`Pages/Back/*`、`LayoutBack.vue`
-
-## Phase 5 — ECPay 金流重新設計
-
-- ⬜ stage/production URL 改用 env 設定
-- ⬜ `TradeDesc`/`ItemName` 改為逐項化
-- ⬜ 用 signed route 取代目前脆弱的 session/re-login workaround
-- ⬜ 修復 retry 端點的擁有者驗證(目前被註解掉)
-- ⬜ 清除 `PaymentController`/`EcpayPaymentService` 死程式碼
-- ⬜ 於 ECPay stage 環境完整測試付款/返回/查詢流程
-
-## 決策與變更紀錄
-
-依時間順序記錄每次的設計決策與功能改動,作為各 Phase checklist 之外的補充脈絡(checklist 記錄「做了什麼」,這裡記錄「為什麼這樣做、什麼時候定案」)。
-
-### 2026-08-09
-
-- **[決策]** 前台改版參考 theme 確定為 [Econis](https://econis.wpbingosite.com/home-7/)(生鮮水果電商 demo),不再新增其他候選。風格:有機生鮮、大量留白、淺色區塊底、扁平無陰影。
-- **[決策]** Primary 色維持 `#82ae46`(現有品牌綠)不變;新增 Accent 色為珊瑚橘 `#fc5d3d`,僅用於特價標籤/CTA 強調。
-- **[決策]** 字體統一改為 Poppins,取代 `tailwind.config.js` 目前的 Figtree;不採用參考站的無襯線/襯線對比做法。
-- **[決策]** 按鈕圓角採中等圓角(約 12px),不採用參考站的全圓角膠囊型。
-- **[決策]** 保留 DaisyUI,不拆除。理由:`btn`/`input`/`select` 等 class 已用在 63/81/39 處以上,拆除成本遠高於用 DaisyUI theme 系統套 token 的作法。
-- **[改動]** Phase 0 完成並 commit `98f349b`:修復 `OrderItem` qty/quantity 欄位不一致 bug、刪除 7 個空殼 Front controller 與 6 個前端死檔案、清除大段註解死程式碼。詳見上方 Phase 0 區塊。
-- **[決策]** Design token 語意色票命名與對照表定案,詳見上方 Phase 1 區塊的表格。灰階系列刻意合併(如 `f9f7f2`/`fafafa`/`f1f0ed` 三色合併成 `base-200`)以減少色彩雜訊,這是 token 化的核心目的之一。
-- **[改動]** Phase 1 完成(尚未 commit):`app.css` 語法修正、建立完整 DaisyUI custom theme token、刪除 `tailwind.config.js` 改用 CSS-first 設定、字體換 Poppins、Front 範圍(32 檔)寫死 hex 全數換成 token class、順手修掉 `OrderInfo.vue` 誤用瀏覽器預設連結藍(`#0000ee`)與兩處死程式碼註解(`QuantityStepper`/`QuantityStepper_Product` 的殘留 comment)。詳見上方 Phase 1 區塊。
-- **[決策]** Phase 2 資料異動模式定案:`useForm` 只給 Auth/Profile 這種需要驗證錯誤狀態的表單用,其餘資料異動(購物車等)統一走 `apiFeedback.js`(axios 攔截器 + 自動 toast),淘汰目前 `CartContent.vue`/`Products/Show.vue` 那種裸 axios 無錯誤處理的寫法。盤點也發現 Options API 已 0 殘留、`Components/`(Breeze)沒有死程式碼,是 Auth/Profile/Dashboard 這條還沒 DaisyUI 化的線,整併會跟著逐頁改版一起做,不獨立成一步。
-- **[改動]** Phase 2 開工,Layouts 第一輪:`Nav.vue`/`Footer.vue` 容器寬度從 1440px(`max-w-layout-wide`)改成 Econis 實測的 1140px(`max-w-layout-normal`),Header 陰影換成 Econis 淡陰影值。
-- **[決策]** 使用者反饋前兩輪(Layouts、Home 第一輪)的 token 對應/微調「一點意義也沒有」,要求直接照 Econis 實際畫面重建結構,不要只在既有排版上套規格數值。改用 BeautifulSoup 解析 Econis home-7 完整 DOM(15 個 `elementor-top-section`),取得真實區塊順序與內容:Hero slider → Hot categories(6 色塊)→ 分類 grid(6 張圖+名稱)→ 2 欄 promo banner → Top products 標題 → 商品 grid → 「Wake Up Early」三圖示 feature+banner → Best seller/Top Rated/On Sale 分頁商品 grid → Testimonials → 品牌 logo 條 → Newsletter banner → Footer。
-- **[改動]** 依上述結構重建 Home 頁 Hot Categories 區塊:`_Category.vue` 從「不對稱拼貼圖+單一行銷文案」改成真正的分類方塊 grid,每格對應一個真實 `Category`、連到 `categories.products` 路由。順手在 `ProductController::index`(Home 用的方法)多查一次 `categories` 傳給前端(3 個已啟用分類:蔬菜/水果/果汁),因為原本 Home 頁完全沒有接分類資料。原本的行銷文案(FRESH-PICK 果蔬箱促銷)是真實內容不是佔位文字,移到新建的 `_Promo.vue` 保留下來,不是刪掉。
-- 待辦(下一輪):Econis 首頁還有 Testimonials、品牌 logo 條、Newsletter banner、Best seller 分頁式商品 grid 這幾個區塊 fruit_shoop 完全沒有對應元件或資料,需要新建;Top products 目前是 carousel 呈現,Econis 是靜態 grid,要不要改成 grid 待確認。
-- **[決策]** 使用者進一步反饋:不要在既有首頁上繼續改,要一個**跟 Econis 畫面、內容、圖片都一樣**的全新頁面,之後使用者自己再改。改用預覽路由 `/home-preview`(`front.home-preview`)、新頁面 `resources/js/Pages/Front/HomePreview/Index.vue`,不動 `/`(正式首頁)。
-- **[決策]** 使用者反饋 `/home-preview` 「80% 接近但還是不太一樣」。改用 Read 工具直接打開下載下來的圖片檢查內容(先前只看檔名/CSS 數值,沒真的看過圖片長什麼樣),發現兩個系統性誤判:(1) Hero 底圖 `hero-bg.jpg` 其實是淺色插畫背景(日出造型+蔬果線稿),不是照片,原本套「深色漸層遮罩+白字」完全套錯方向,實際應該是淺底+深色文字+產品去背圖層(果汁瓶+果汁潑濺去背圖)組成;(2) 分類方塊圖片(`cat-*.jpg`)本身已經是「白/淺紫底+置中商品去背照」的成品圖,不是滿版照片,原本套「object-cover 滿版+深色漸層+白字」也套錯,實際應該是淺底卡片+置中圖+一般深色文字說明。這次改版之前已經用同一套「照片+深色漸層+白字」樣板套用在多個區塊,沒有先看過圖片內容驗證,這是這次抓到落差的根本原因。
-- **[決策]** 使用者提供 Econis 首頁的實際截圖(Windows 端截圖,透過 WSL `/mnt/c/...` 路徑讀取)後,對照發現 Hero 跟 Hot categories 兩處結構判斷錯誤:Hero 不是左右兩欄,是置中疊放(Organic 徽章+分隔線+「Always be yourself」文字列 → Shop now 按鈕 → 產品去背構圖,由上而下置中),且大標語文案是「Always be yourself」不是「Wake Up Early...」(那句屬於後面的 feature 區塊沒錯,只是 Hero 本身文案抓錯);Hot categories 不是方形卡片 grid,是圓形色塊泡泡(圖片裁圓,名稱+「N products」在下方,單排 6 個)。已依截圖重建,promo banner 也拿掉不需要的深色遮罩,文字直接疊在圖片本身自帶的留白區域。
-- **[決策]** 討論「不想跟 Econis 一模一樣但自己想不出設計」的問題,建議兩條路:(1)多找幾個同類型參考站混搭(已用 WebSearch 找到 Thrive Market/Misfits Market/無毒農 三個不同調性的參考,無毒農因為在地食安訴求跟 fruit_shoop 情境最接近);(2)保留 Econis 骨架,刻意改掉幾個識別度最高的招牌特徵。使用者選(1)。
-- **[改動]** 使用者提供 3 支免費素材庫影片(採摘水果 4K 6s、柑橘沖水 1080p 10s、果籃莓果 1080p 13s),用 ffmpeg 各裁出精華片段、統一 1920x1080/30fps、去音軌,接成一支 18 秒迴圈,再壓成 1280 寬、faststart 的 web 用版本(`public/videos/hero-fruit.mp4`,3MB)+ poster 圖(`hero-fruit-poster.jpg`)。套進 `/home-preview` 的 Hero 區塊測試真實影片背景的效果,取代原本的 Econis 插畫底圖+去背產品構圖+捲動縮放效果那組(這組互動邏輯因此被移除,如果最後決定不用影片、要改回插畫版本,需要重寫)。:用 BeautifulSoup 逐區解析出真實文案(含 Econis demo 本身用的 placeholder 文字,如 testimonials 的醫學名詞假文、features 的拉丁文假文——這是參考站自己就用佔位文字,不是我方便省事)與圖片網址,下載 28 張圖存到 `public/images/econis-ref/`(hero 背景、6 個分類圖、2 張促銷 banner、7 張商品圖、2 張裝飾圖、3 張大頭貼、4 個品牌 logo、1 個小圖示)。頁面涵蓋 Econis 首頁全部 11 個內容區塊:Hero → Hot categories(6格)→ 促銷 banner(2欄)→ Top products(4格)→ 標語+3 icon features → Best seller/Top Rated/On Sale 分頁 grid(7 商品,分頁點擊還沒接篩選邏輯,純視覺)→ Testimonials(4人)→ 品牌 logo 條 → Newsletter banner。Header/Footer 沿用既有 `FrontLayout`。頁面內資料全部寫死在元件裡,不接資料庫,純視覺參考用。
-- **[改動]** 自我審查發現並修復一個 Phase 1 造成的迴歸 bug:`tailwind.config.js` 遷移到 CSS-first `@theme` 時,`maxWidth` token 命名成 `--max-w-8xl`/`--max-w-9xl`,但 Tailwind v4 要產生 `max-w-*` utility 必須用完整的 `--max-width-*` 命名,不能縮寫成 `--max-w-*`。命名錯誤導致 3 個 Hero 元件(`Home/_HomeHero.vue`、`Products/_HomeHero.vue`、`Home/_PageHero.vue`)裡的 `max-w-8xl` class 完全失效。已修正命名(連帶 `--max-w-layout-wide`/`--max-w-layout-normal` 一併改成 `--max-width-*`),並把原本 12 個檔案裡「`max-w-[var(--max-w-layout-wide)]` 這種為了繞過命名錯誤而寫的冗長 arbitrary-value 寫法」簡化成乾淨的 `max-w-layout-wide` bare class;順手移除 `_HomeHero.vue` 裡 `max-w-8xl` 與 `max-w-layout-wide` 同時出現在同一個 div、互相打架的殘留寫法。另外新增 `--shadow-soft` token 取代 Nav.vue 裡寫死的陰影 rgba 值,避免 Phase 2 後續頁面重複複製貼上同一組陰影數字。
-
-### 2026-08-10
-
-- **[改動]** `Nav.vue` 補上 hero 穿透狀態的正確寫法:原本是「固定掛 `text-base-content` + 條件疊加 `text-base-100`」,在 hero 內兩個 class 會同時存在,改成 `isInHeroState ? 'text-base-100' : 'text-base-content'` 二選一,避免同時掛兩個顏色 class。
-- **[改動]** `/home-preview` Hero 改用使用者提供的 3 支免費素材庫影片剪輯而成,取代原本的插畫版本(細節見上則紀錄的補充)。之後接上 `heroRef`(`FrontLayout` 既有的 hero 穿透機制,之前有幾個頁面的 `setHeroRef` 是註解掉的死程式碼,這次是真的接上並驗證),Hero 改成 `100vh`、Nav 在 hero 範圍內透明背景+白字,離開後自動變回白底樣式。
-- **[決策]** Hot categories 區塊使用者確認拿掉(fruit_shoop 只有 3 個真實分類,套 Econis 6 顆泡泡的排版會太空)。原本嘗試直接換成既有的 `Home/_Feature.vue` 元件,但使用者要求「文字排版風格維持 Hot categories 原樣、只有圓圈內容換成 Feature 圖示」,所以最後是重新刻一版:保留 Hot categories 的標題(現在文案是「我們的承諾」)與卡片結構,圓圈換成 Feature 的 4 色 SVG 遮罩圖示。卡片結構後來又用 BeautifulSoup 挖出 Econis 實際的 `.item-title`(18px)/`.item-count`(12px,後改 14px)/`.product-cat-content`(卡片 10px 圓角、圖片用負 margin 疊在卡片上緣)真實 CSS 數值校正過,不是用猜的。
-- **[決策]** Hero 標語/按鈕文案定案為中文:「嚴選新鮮蔬果，讓日常採買更簡單。」+「立即選購 →」,取代 Econis 原本的「Always be yourself」/「Shop now」。按鈕 hover 色從主色綠改成 accent 珊瑚橘(`hover:bg-accent`),這是 Phase 1 就定義但一直沒地方用到的 token,第一次實際套用。
-- **[改動]** 使用者反饋中文字出現後「整個 low 掉」,查出根本原因:`--font-sans` 字體堆疊裡完全沒有指定中文字體,Poppins 不含中文字,一路 fallback 到系統預設字體(通常是 Windows 微軟正黑體),沒特別挑過所以不協調。解法:透過 bunny.net 額外載入 **Noto Sans TC**(思源黑體),插在 Poppins 後面、其他 fallback 之前(`app.blade.php` 字體連結、`app.css` 的 `--font-sans`)。這是全域字體設定,影響全站不只 `/home-preview`。
-- **[決策]** 使用者確認不採用 `"IBM Plex Mono"` 當全站字體:等寬字體會犧牲內文可讀性、跟品牌溫暖調性衝突,且中文字仍會 fallback 導致英文等寬、中文正常寬度混排的問題。
-- **[決策]** 標題字重系統定案:h1~h3 統一改 `font-medium`(500),不是全部同一個字重憑感覺選的——字級越小字重要越重,不然小字撐不住(這個原則供之後其他頁面套用參考,目前只套在 `/home-preview`)。Hero 那句主標語也從 `<p>` 改成語意正確的 `<h1>`(這頁原本沒有 h1)。
-- **[改動]** 新增 `--color-heading: #3e4a5e` token(`app.css`),取代原本重複打的 `text-[#3e4a5e]`(10 處),之後要調這個顏色只要改一個地方。此顏色只套用在淺底標題,Hero(影片背景)、Newsletter(綠底,已刪除)這種深色/彩色底的標題維持白字,沒有跟著套用。
-- **[改動]** 新建共用元件 `HomePreview/_CtaButton.vue`(膠囊圓角、主色綠、hover 變 accent 橘、`tracking-[0.06em]`、`font-medium`),取代重複複製貼上的按鈕 class 字串,Hero/Promo banner/Feature banner 共 4 處按鈕改用這個元件,支援 `:as="'span'"` 給包在 `<a>` 裡面不能嵌 `<button>` 的情境。
-- **[決策]** 「我們的承諾」「精選商品」這兩個區塊標題確立一套樣式公式:上面一行小字英文標語(兩側配葉子裝飾圖、14px、`text-primary`)+ 下面中文主標(`text-heading`、500 字重)。使用者提醒不要每個區塊標題都套這個公式,只用在有特別安排的一兩處,避免變成制式模板感。
-- **[改動]** Promo banner(蔬菜/果汁)換成使用者提供的真實去背/留白構圖照片(`public/images/promo/`),文案更正為「分類層級的促銷入口」(不是特定商品),整張卡片改成連到 `categories.products` 路由的可點擊連結,按鈕文字「選購去 →」。
-- **[決策]** 使用者反饋 Promo banner 不應該是特定商品(如「冬季產地蔬果箱」這種限定品項),而是分類層級的促銷入口(蔬菜類/果汁類目前有什麼活動),照 Econis 原本模板的邏輯調整文案跟連結目標。
-- **[改動]** 依使用者提供的參考截圖,把 Top products 卡片樣式從「圖片+名稱+價格」的簡化版,改成完整電商卡片:收藏愛心按鈕、Hot 標記、星等評分+評論數、分類標籤(大寫小字)、加入購物車圓形按鈕。`topProducts` 資料補上 `category`/`rating`/`reviews`/`hot` 欄位,商品名稱/圖片本身仍是 Econis 佔位資料,之後要換真實商品。
-- **[改動]** 使用者要求「Top products 只留下,其他下面(Feature banner、Best seller 分頁、Testimonials、品牌 logo 條、Newsletter)都刪掉」,已刪除並清掉對應的未使用 script 資料(`features`/`bestSellers`/`tabs`/`currentTab`/`testimonials`/`brands`)與未使用的 `ref` import。目前 `/home-preview` 頁面到 Top products 結束。
-- **[改動]** 依附圖新增 CTA 區塊(深色底,左側「GOOD TASTE & GREAT CRUNCHY」小標語 + 大標題「Wake Up Early, Eat Fresh & Healthy」+ 橘色圓形播放鍵 + 綠色「Shop now」按鈕),放在 Top products 之後,不含下方 4 個 feature icon(使用者明確表示只要上半部)。新建共用元件 `HomePreview/_CtaButton.vue` 統一按鈕樣式並套用到 Hero/Promo banner/Feature banner/CTA 共用。
-- **[決策]** 嘗試在 CTA 上下加波浪 divider(SVG path,背景色代表其中一側、path fill 代表另一側,`my-[-1px]` 接合避免縫隙),過程中換過兩種波浪路徑(divider1 單一山丘、divider2 多層次弧線),也修過「波浪寬度貼滿整個螢幕、跟 1440px viewBox 比例不合導致形狀跑掉」的 bug(改成 `max-w-layout-wide mx-auto` 鎖寬)。最終使用者反饋「不對,改成最初的樣子」,**整個 CTA 波浪實驗回退**,CTA 區塊恢復成最初的深色實色背景版本,不含波浪。保留這個過程的紀錄,提醒之後若要再嘗試波浪造型,SVG 寬度務必跟 viewBox 原生比例對齊,不要貼滿整個 100vw。
-- **[改動]** `_CtaButton.vue` 在特定深色/彩色背景上會跟背景融在一起(例如同為 `bg-primary` 時完全看不出按鈕形狀),目前做法是在使用端額外疊加 `!bg-[#fff] !text-primary` 這類 `!important` class 覆蓋,同時要記得補上 `hover:!bg-accent hover:!text-accent-content` 覆蓋 hover 狀態,不然 `!important` 的底色會連 hover 也一起蓋掉,踩過這個坑。「鮮榨果汁」promo banner 的按鈕目前是白底綠字、hover 橘底白字;「蔬菜嚴選」維持元件預設的綠底白字。
-
-### 2026-08-11
-
-- **[改動]** `_CtaButton.vue` 基礎 class 拿掉 `border-none`(原本是死 class,daisyUI `.btn` 預設 border-width 就是 0,不影響既有畫面),CTA 區按鈕改用 `!border !border-[#fff]` 疊加白色邊框。曾一度加上 `hover:!border-primary` 又依使用者要求改回去,維持 hover 只變 `!bg-primary`/`!text-primary-content`,border 固定白色。
-- **[決策]** 「選購去」兩顆 promo banner 按鈕也補上 `!border !border-[#fff]`。用 Playwright 實際渲染+讀 computed style 排查後確認**不是 class 打架**:border 確實有套用(`border-width:1px`、`border-color:#fff`),「蔬菜嚴選」(綠底)邊框看得出來,「鮮榨果汁」是因為按鈕本身 `!bg-[#fff]` 白底配白框,顏色本身沒對比度才看起來像沒加。使用者決定維持現狀不處理對比度問題。
-- **[決策]** 這兩顆按鈕一度改成 `as="button"`(拿掉 `as="span"`)想解決上述「看起來沒套上」的疑慮,後來確認問題跟 tag 種類無關(span/button computed style 一致),使用者要求改回 `as="span"`——因為外層本來就是 `<a>` 包整張卡片當連結,裡面不該再嵌 `<button>`(interactive content 巢狀,不合法 HTML),用 `<span>` 純視覺呈現才對。
-- **[改動]** CTA 區改版:播放鍵(橘色圓形 play icon)整個移除,「立即選購」按鈕改放到原本播放鍵的位置(標題正下方),原本在右側獨立的按鈕拿掉,CTA 區變成單欄(左側文字+按鈕,右側完全露出背景圖)。
-- **[改動]** CTA 區背景加上使用者提供的蔬果空拍照(`public/images/cta/veggie-flatlay.webp`,深色桌面棚拍)。查了 CTA 背景圖融合手法(mask-image 漸層淡出、深色/主色疊色、clip-path 有機造型、縮小當裝飾插圖四種方向),採用「mask-image 淡出 + 深色漸層疊色」:圖片佔右側 70% 寬,左緣用 `mask-image: linear-gradient(to right, transparent, black 35%)` 融入 `#0d0d0d` 底色,另疊一層 `bg-gradient-to-r from-[#0d0d0d] via-[#0d0d0d]/55 to-[#0d0d0d]/15` 壓住原圖過雜的顏色、確保文字對比度,圖片本身加 `saturate-[0.85] brightness-90` 微降飽和度/亮度。之後使用者要求加 `background-attachment: fixed` 做視差,因為這個屬性只對 CSS `background-image` 生效、對 `<img>` 標籤無效,改把原本的 `<img>` 換成帶 `bg-[url(...)] bg-cover bg-center bg-fixed` 的 `<div>` 才能套用(iOS Safari 不支援 `bg-fixed`,會 fallback 成 `scroll`,不影響版面只是沒有視差效果)。
-- **[改動]** Hero 按鈕文案「立即選購 →」改成「探索更多 →」,因為使用者確認這顆按鈕實際行為是往下捲動頁面(不是導去購買流程),用「探索更多」比較符合實際行為,避免文不對題。
-- **[改動]** CTA 區英文標語換成中文,並來回調整多輪:「Good taste & great crunchy」/「Wake Up Early, Eat Fresh & Healthy」→「嚴選好滋味」/「早起吃新鮮,健康每一天」→「從產地到餐桌」/「把新鮮,帶回家」(使用者嫌太短)→「嚴選新鮮,安心每一口」/「把健康好味道,帶進日常生活」(使用者仍嫌不夠好,方向是想強調**自然/有機**,還在挑選中,截至目前尚未定案)。同時把標題字重從 `font-bold`/`font-semibold` 降到 `font-medium`(500),使用者要求字重不超過 500。
-- **[專案脈絡]** 使用者提到 `/home-preview` 這個頁面本質是「作品集」性質的參考頁(不是要接真實資料的正式頁面),內容大致告一段落。之後如果要正式套用到 `/`(正式首頁),需要重新對照 Phase 2 的既有 checklist 規劃時程,不是這次順便做。
-- **[改動]** 兩顆「選購去」按鈕一度加上 `shadow-[...]` 讓白色 border 在淺色背景上也看得出輪廓(排查發現 border 疊在照片淺色區域時,白框跟背景同色,人眼分不出交界,hover 時也一樣,因為 hover 只改按鈕內部填色、不影響按鈕外側貼著的照片顏色)。後續使用者陸續要求拿掉、加回、只留「蔬菜嚴選」一顆、透明度從 0.35 調輕到 0.18,來回調整過程都記錄在 commit 前的對話,最終狀態:只有「蔬菜嚴選」那顆有淡陰影(`shadow-[0_2px_8px_rgba(0,0,0,0.18)]`),「鮮榨果汁」沒有。
-- **[改動]** `Footer.vue` 容器寬度從 `max-w-layout-normal`(1140px)改成 `max-w-layout-wide`(1440px),對齊 `Nav.vue` 的寬度。這是共用元件,影響全站所有頁面,不只 `/home-preview`。
-- **[改動]** 人氣商品從 4 個佔位商品擴充到 8 個(2 排 x 4 欄),因為 Econis 佔位素材只有 4 張商品圖,後 4 筆重複沿用同一批圖片配上不同的佔位名稱/價格(`Cold Pressed Green Juice`/`Daily Multivitamin Pack`/`Herbal Wellness Tea`/`Free-Range Turkey Breast`),之後接真實商品時要一併換掉,不要誤認成真實資料。
-- **[改動]** 五個 `<section>` 都補上 `id`(`hero`/`features`/`promo`/`products`/`cta`),方便之後錨點導覽或除錯時定位。
-- **[決策]** 使用者反饋各區塊間距「感覺不夠」,盤點發現問題是**不一致**而非全部太窄:多數區塊只單邊設 `pb`(靠下一個區塊完全沒有 `pt` 硬接),只有 CTA(深色底,不能借用鄰居顏色)兩邊都有 padding,導致中間幾段間距 64-80px、CTA 前後卻疊加到 256px,節奏忽緊忽鬆。查了業界作法後(見下方 WebSearch 來源),結論是每個 section 應該自己負責完整的 `py`(上下都設),不要靠單邊 `pb`/`pt` 接鄰居——這樣每個區塊獨立、可預測,以後調順序/插入新區塊不用重算鄰居數值,唯一要注意的是相鄰兩區的 `py` 會相加,數值要抓小一點補償。
-- **[改動]** 依上述結論,`features`/`promo`/`products`/`cta` 四個區塊全部改成各自獨立的三段式響應 `pt`/`pb`(mobile / `md:` / `lg:`),取代原本部分區塊沒有 `pt` 或沒有 lg 斷點的舊寫法。過程中來回調了非常多輪具體數值(CTA 從 `py-20 md:py-32` 先降到 `md:py-28` 再補上 `lg:py-28`、mobile/md 分別降到 `py-12 md:py-20`;`features` 的 `pt` 單獨拉到 `pt-28` 又降回 `pt-24`,理由是「128px 感覺太高」;`products` 的 `pb` 為了 CTA 前的留白特別加大到 `pb-20`(lg),但沒有跟著加到 128px,因為疊加 CTA 自己的 `pt` 後會變 240px、太誇張;`promo`/`products` 中間兩段原本 `lg` 都是 16(64px)相加 128px,使用者覺得偏大,最後拿掉 `lg:` override 讓它們沿用 `md:` 的 14(56px),兩兩相加變 112px)。最終定案(mobile / md / lg,單位 px):
-  | 區塊 | pt | pb |
-  |---|---|---|
-  | `#features` | 48/64/96 | 40/56/56(無 lg override,沿用 md)|
-  | `#promo` | 40/56/56(無 lg override) | 40/56/56 |
-  | `#products` | 40/56/56(無 lg override) | 48/56/80 |
-  | `#cta` | 48/80/112 | 48/80/112 |
-  - Hero 本身跟 Footer 的 `p-10` 刻意沒有跟進這套三段式(Hero 全螢幕影片背景、Footer 米色底,使用者認為顏色邊界本身已經有區隔,不需要額外留白撐開),只有中間四個同為白底的區塊需要靠 padding 做視覺區隔。
-- **[改動]** 「人氣商品」`h2` 的 `mb-8 md:mb-16` 改成 `mb-8 md:mb-12`,跟標題下方的間距配合上面 products 區重新調整過的 padding 一起微調。
-
-**WebSearch 參考來源**(2026-08-11,section spacing 業界作法):[Web Design Spacing and Sizing Best Practices](https://www.conceptfusion.co.uk/post/web-design-spacing-and-sizing-best-practices)、[Automatic CSS - Section Padding Classes](https://docs.automaticcss.com/spacing/section-padding-classes)、[FED Mentor - padding vs margin](https://fedmentor.dev/posts/padding-margin/)、[Elementor - Margin vs Padding](https://elementor.com/blog/margin-vs-padding/)
-
-- **[決策]** 查了業界作法後(多個主流電商平台 Shopify/WooCommerce/Avada 都把「查看全部商品」做成精選商品區塊的內建功能),確認是常見慣例,在人氣商品 8 張卡片下方新增「查看全部商品 →」連結,連到 `products.index` 路由(對應 Nav 的「所有商品」)。樣式用外框膠囊按鈕(`btn btn-outline border-primary text-primary`,非實心),避免跟上面 CtaButton 的主色實心按鈕搶視覺重量。過程中踩到一個坑:一開始加了 `inline-block` 想讓 `<a>` 置中,結果蓋掉 daisyUI `.btn` 內建的 `inline-flex` + `items-center` `justify-center`,導致文字沒有垂直置中——`.btn` 本身已經處理好置中,不需要再疊加 display 相關 class。
-- **[改動]** 把「查看全部商品」這顆外框按鈕的樣式,同步套到 Promo banner 兩顆「選購去」按鈕,統一視覺語言。「蔬菜嚴選」改成透明底+綠框綠字、hover 實心綠底白字(拿掉了原本疊加的陰影)。「鮮榨果汁」試過白字白框版本,使用者反饋「不搭」改回原本白底綠字白框、hover 綠底白字的版本。
-- **[改動]** Hero「探索更多」、CTA「立即選購」、Promo banner 兩顆按鈕,hover 時的 border 統一補上 `hover:!border-primary`(原本 hover 只變 bg/text,border 停留在原色沒跟著變,現在 hover 時 border 會融進新背景色)。Hero 按鈕另外把預設狀態從白底綠字改成透明底白字+白框,呼應 CTA 按鈕在深色/影片底的樣式邏輯。
-- **[改動]** `/home-preview` 的設計正式套到 `/`(正式首頁),串接真實後端資料。動工前用 EnterPlanMode 走完整探索+規劃流程,對照舊 `Front/Home/Index.vue`(5 個舊子元件:`_HomeHero`/`_Feature`/`_Category`/`_Promo`/`_TopPicks`)發現一個既有 bug:`_HomeHero.vue` 的 `heroRef` inject 是註解掉的死程式碼,Nav 穿透效果原本沒作用,這次順手修正(用 Playwright 實際捲動驗證過:在 hero 內文字是白色 `rgb(255,255,255)`,捲出 hero 後變回 `rgb(103,100,94)` = `--color-base-content`)。
-- **[決策]** 動工前跟使用者確認 4 個範圍問題:①人氣商品的「Hot」標記沒有真實熱門判斷依據(沒有銷量統計,只有手動設的 `is_featured`/`featured_sort`),**直接拿掉**;②商品卡右下角購物車圖示**先不接**快速加購(`CartController@store` 目前只吃 `product_option_id`,沒有用商品 id 找最低價選項的邏輯),整張卡改成 `<a>` 點進商品頁,圖示改成純裝飾 `<span>`(不能是巢狀 `<button>`);③促銷 banner(蔬菜嚴選/鮮榨果汁)**維持手動指定 2 個分類**+自訂文案圖片,不改成迴圈全部分類(DB 目前 3 個分類:蔬菜/水果/果汁,promo 本來就是行銷精選入口不是列表功能);④`/home-preview` **保留當草稿頁**,不刪除。
-- **[改動]** `_CtaButton.vue` 從 `Pages/Front/HomePreview/` 搬到共用元件目錄 `DaisyComponents/Front/CtaButton.vue`(跟 Nav/Footer 同一層),`/home-preview` 與新 `Home/` 子元件共用同一份,避免重複。
-- **[改動]** `ProductController@home()` 查詢調整:拿掉沒人用的 `$categories` 查詢(新版首頁沒有分類磚區塊);`$featured` 改名 `$popularProducts`,補 `cheapestOption:id,product_id,price` 一起 eager load、`limit` 從 9 改成 8(**DB 現況剛好有 8 筆 `is_featured=1` 的已上架商品**,跟新版 8 張卡片版面吻合),map 補出 `name`/`price`;順手把原本 `->filter()`(沒帶 callback,對陣列恆真、實際沒在過濾)改成 `->filter(fn($p) => $p['image'] && $p['price'])` 真正過濾掉缺圖/缺價的商品,這是既有小 bug 一併修正,不是本次功能需求。
-- **[改動]** `Pages/Front/Home/` 資料夾:刪除 5 個舊子元件(`_HomeHero`/`_Feature`/`_Category`/`_Promo`/`_TopPicks`)+ 1 個已經沒被 `Index.vue` 引用的既有 dead code(`_PageHero.vue`,跟 `Products/_PageHero.vue` 是不同檔案,同名巧合);新建 `_Hero`/`_Features`/`_Promo`/`_TopProducts`/`_Cta` 五個子元件,內容照搬 `/home-preview` 定案版面,`_TopProducts.vue` 吃 `popularProducts` prop 顯示真實商品。確認 `Pages/Front/Products/` 底下也有同名的 `_HomeHero.vue`/`_Feature.vue`/`_Category.vue`/`_TopPicks.vue`(各自獨立檔案,相對路徑 import,互不影響),這次只動 `Home/` 底下的。
-- **[改動]** `formatTwd` 價格格式化沿用 `Products/Index.vue` 既有的 per-page 慣例(`` `$ ${price?.toLocaleString() || 0}` ``,專案裡沒有共用 currency 工具,每頁各自複製一份)。
-- **[驗證]** 用 Playwright 實際訪問 `/` 截圖+點擊驗證:8 張人氣商品卡顯示真實商品(紅石榴汁 $599、韓國麝香葡萄 $450、日本草莓 $1200、胡蘿蔔 $75、小黃瓜 $60、羽衣甘藍 $62、洋蔥 $100、番茄 $100),點卡片正確導到對應商品頁;促銷 banner 點擊正確導到 `/categories/蔬菜` 並列出該分類 8 個商品;`npm run build` 編譯成功、無 console 錯誤/警告。
-- **[改動]** Hero 標題+按鈕補上進場動畫(淡入+上滑,標題延遲 0.1s、按鈕延遲 0.4s,0.8s CSS keyframes,`_Hero.vue` 用 `<style scoped>`)。原本也幫影片+遮罩加了 1.2s 淡入,使用者反饋「有點閃眼睛」,已拿掉,只留文字的進場動畫。
-- **[改動]** 人氣商品卡右下角的購物車圖示,hover 效果從跟著整張卡片的 `group-hover`(hover 卡片任何地方圖示都會變色)改成圖示自己的 `hover:`(只有滑鼠停在圖示正上方才變色),使用者要求兩者的 hover 效果要分開。
-- **[決策]** 使用者提醒 `Products/Index.vue`(`resources/js/Pages/Front/Products/Index.vue:105-153` + 對應滑出面板 UI)早就有一套「快速加入購物車,多規格時彈出選擇面板」的完整實作(仿別的網站做的),購物車按鈕是圖片連結旁邊的獨立 `<button>`,不是包在卡片的 `<a>` 裡面,`CartController@store` 本來就吃 `product_option_id`,完全不用動後端邏輯。原本規劃 Home 改版時因為卡片整個包成一顆 `<a>` 沒把這套搬過來,圖示只是裝飾。使用者確認要補上,於是把 `_TopProducts.vue` 卡片結構改成:圖片是獨立 `<a>` 連結,名稱/價格/購物車按鈕在下面,購物車按鈕觸發 `quickAddToCart`——只有 1 個規格直接加入,多規格則滑出選擇面板(`selectToCartId` 控制哪張卡的面板打開、`.absolute` + `translate-y-full/0` 做滑動,`overflow-hidden` 卡在卡片圓角範圍內),confirm 後呼叫 `cart.store`、`inject('openCart')` 開抽屜、`router.reload({only:['cartItems']})` 刷新購物車數字,整套邏輯跟 UI(含 `.options-close`/`.bg-select-arrow` 這兩個非 scoped 全域 CSS,跟 `Products/Index.vue` 一樣需要在自己檔案內重複定義一份,不同頁面各自 code-split 不會共用)都是照抄 `Products/Index.vue` 的既有寫法,不是重新設計。同步調整 `ProductController@home()`:`$featured` map 改成回傳 `product_options`(`id/product_id/option_text/price`,關聯本身已經照 price asc 排序,前端直接拿第一筆當預設選中規格,不用再多 eager load `cheapestOption`),過濾條件也從「有沒有 image+price」改成「有沒有 image+至少 1 個規格」。用 Playwright 驗證過兩種情境:單規格商品(番茄)點擊直接加入、購物車抽屜打開;雙規格商品(羽衣甘藍,選項「100g」/「100g(有機)」)點擊會滑出面板,切換選項後確認按鈕文字/金額正確更新,送出後抽屜正常打開,全程無 console 錯誤。
-- **[改動]** 人氣商品規格選擇面板的 `<select>` 樣式從原本照抄 `Products/Index.vue` 的底線 underline 樣式,改成有邊框的圓角方框(`border border-base-300 rounded-lg bg-base-100`),只改這個頁面,`Products/Index.vue` 原本的樣式不動。
-- **[改動]** 人氣商品 grid 的 `gap-[30px]` 改成響應式 `gap-4 md:gap-6`(手機 16px、桌機 24px)。
-- **[改動]** `Nav.vue` 手機選單(`DaisyComponents/Front/Nav.vue`)兩處調整,動手前先 WebSearch 查過 2026 年手機選單動畫的常見做法(見下方來源):①面板展開時連結原本是同時瞬間出現,改成逐一錯開淡入+上滑(`.mobile-nav-link`/`.mobile-nav-link--in` 兩個 class,每個連結用 inline `transitionDelay` 錯開 0.06 秒,搭配 `@media (prefers-reduced-motion: reduce)` 給動態敏感的使用者退回純淡入),面板本身的 JS 高度撐開機制不動;②連結樣式從純文字 `space-y-8` 改成 `rounded-xl` 卡片式,補上 `hover:bg-primary/10 hover:text-primary` 與 `active:scale-[0.98]` 的互動回饋。用 Playwright 在 250ms/430ms 兩個時間點截圖,確認錯開效果確實有跑出來(250ms 時第一個連結已完全顯示、最後一個還在淡入)。
-
-**WebSearch 參考來源**(2026-08-11,手機選單動畫做法):[Mobile Navigation Design: 8 Types, Examples & Best Practices (2026)](https://www.uxpin.com/studio/blog/mobile-navigation-examples/)、[7 CSS Staggered Animation Examples](https://freefrontend.com/css-staggered-animation/)、[CSS Animation Example: Staggered List Slide](https://www.quackit.com/css/animations/examples/css_animation_staggered_list_slide.cfm)、[Animate a Mobile Hamburger Bar Menu Using CSS and Just a Hint of JavaScript](https://blog.bitsrc.io/animate-a-mobile-hamburger-bar-menu-using-css-and-just-a-hint-of-javascript-f31f928eb992)
-
-- **[決策]** 使用者不滿意上面那版手機選單動畫的做法(inline `transitionDelay` + class 手動切換),要求整個打掉重寫,先上網查一輪。查到的共識是用 Vue 內建的 `<Transition>`/`<TransitionGroup>` 取代手刻的 JS 高度量測(見下方來源:Headless UI 的 TransitionRoot/TransitionChild 模式、Vue 官方 TransitionGroup 文件、staggered list transition 範例)。
-- **[改動]** `Nav.vue` 手機選單整個重寫:拿掉 `wrapperRef`/`contentRef`/`mobileNavRef` + `watch(isOpen, ...)` 手動量 `scrollHeight` 撐 `wrapper.style.height` 的舊機制,改成 `<Transition>` 包一個 `v-if="isOpen"` 的面板(淡入淡出)、面板內連結用 `<TransitionGroup>` + 每個連結 inline `transitionDelay` 做錯開進場,面板本身跟連結清單合併成一個 `mobileNavLinks` computed(首頁+navLinks 一起算,不用兩段重複的 template)。
-- **[改動]** 重寫過程中踩到一個經典 CSS 坑並修正:面板原本用 `position: fixed` 想直接蓋滿螢幕,結果完全不會顯示——因為 `<header>` 本身的 class 裡有 `translate-y-0`(Tailwind transform utility),任何祖先元素只要有 `transform`,就會變成子孫 `position:fixed` 的新 containing block,子孫的 fixed 定位會相對這個 header 算,不是相對 viewport,導致面板尺寸/位置整個跑掉、完全看不到。**這很可能就是原作者當初捨棄 `fixed`、改用 JS 手動算 `absolute` 高度的真正原因**。解法是用 `<Teleport to="body">` 把面板整個傳送到 `<body>` 底下渲染,跳出 header 的 transform 影響範圍,`position: fixed` 才能正常相對 viewport 定位。這是 modal/dialog/選單覆蓋層的標準做法(對話框元件幾乎都會 teleport 到 body),不是這次特例才用的技巧。
-- **[改動]** 重寫過程中發現並修掉一個既有真實 bug:原本 `toggleMenu()` 關閉選單時會執行 `customNav.value = false`,但 `customNav`這個變數在整個檔案裡從來沒有宣告過,實際測試(Playwright 開啟選單後再點一次關閉)證實**每次關閉手機選單都會噴 `customNav is not defined` 的 JS 錯誤**,是先前就存在、沒被發現的 bug。重寫後這行直接拿掉(本來就是無效的殘留程式碼)。順手清掉檔案內其他既有未使用的 import(`onMounted`/`onUnmounted`/`inject`/`Link`,這些在重寫前就沒被用到,不是這次重寫造成的)。
-- **[驗證]** 用 Playwright 在手機視窗(390x844)測試開啟(200ms 截圖確認連結錯開淡入中、600ms 確認全部顯示完成)、關閉(確認 `body.style.overflow` 正確恢復、且不再噴 `customNav` 錯誤)兩種情境,全程 console 無錯誤;桌機視窗(1400x1000)另外截圖確認桌面版 nav 不受影響。`npm run build` 編譯成功。
-- **[決策]** 使用者反饋上面那版(從 header 下方往下展開的滿版面板)不是他要的,要求改成 **offcanvas 抽屜**,設計也要一併換掉,不只是動畫機制。改成:背景半透明+模糊遮罩(點擊可關閉)+ 從漢堡圖示同一側(左邊)滑入的抽屜卡片(`w-[80%] max-w-xs`,白底、`shadow-2xl`),抽屜內有自己的 header(logo+關閉按鈕)跟連結清單(每個連結補上右側 chevron icon 暗示可點擊),連結進場動畫維持 `<TransitionGroup>` 錯開淡入+這次改成從左側滑入(`-translate-x-3`)呼應抽屜本身從左滑入的方向。遮罩跟抽屜是兩個獨立的 `<Transition>`,各自有進出場時間差(遮罩淡入 300ms/淡出 200ms,抽屜滑入 300ms/滑出 250ms),`<Teleport to="body">` 沿用上一版的做法繼續用(理由不變:header 的 transform 會讓 fixed 定位跑掉)。用 Playwright 驗證:150ms 截圖確認抽屜正在滑入、遮罩正在變暗;550ms 確認完全展開;點擊遮罩(非抽屜範圍)確認會關閉且 `body.style.overflow` 正確恢復,全程無 console 錯誤。
-- **[改動]** 拿掉「打開手機選單時強制把 header 切成白底 sticky 樣式」的舊邏輯(`isInHeroOverride.value = false/null` + `showMenuHeader` 那組),因為現在選單是獨立 teleport 到 body 的 offcanvas 抽屜,自己有白底背景跟遮罩,不再需要靠 header 本身變色來襯托。改完後 header 在選單開關時维持它原本該有的自然狀態(還在 hero 內就繼續透明)。`toggleMenu()` 簡化成只切 `isOpen` + `body.style.overflow`,header 的 `:class` 綁定也拿掉 `showMenuHeader` 相關條件,連帶清掉不再使用的 `isInHeroOverride` destructure。用 Playwright 驗證:在 hero 範圍內(未捲動)開啟選單,截圖+讀 `header.className` 確認 `Header__sticky`/`Header__hidden` 都沒有被觸發,header 維持透明。
-- **[改動]** 使用者要求購物車抽屜(`CartDrawer.vue`)的出現方式跟裡面樣式一起改,動手前先 WebSearch 查過 2026 年 cart drawer 的業界作法(見下方來源:右側滑出、line item 卡片結構含縮圖/名稱/單價/數量/移除、底部 sticky 摘要+明確 CTA、可搭配全頁購物車做 hybrid)。查到的整體結構(右側抽屜+line item 卡片+底部摘要)跟原本就有的架構其實已經吻合,這次改動聚焦在「出現方式」的實作機制跟「裡面樣式」的視覺細節:
-  - `CartDrawer.vue` 出現方式改成跟 Nav.vue offcanvas 同一套寫法:遮罩+抽屜各自獨立的 `<Transition>`(拿掉原本用 `pointer-events-auto/none` + `delay-100` 手動湊出來的顯示/隱藏技巧),header 補上商品數量(「購物車 (2)」)、關閉按鈕換成統一的 X SVG icon(原本是純文字「✕」字元)。
-  - `CartContent.vue` 樣式:商品卡從扁平 `border` 白框改成 `rounded-2xl shadow-soft`(沿用既有的 `--shadow-soft` token);移除按鈕原本是容易跟「減少數量」搞混的綠色圓圈減號圖示,換成清楚的垃圾桶圖示、hover 變紅色(`hover:text-error`),語意上「刪除」跟「減量」的顏色/圖示分開;金額改成主色綠字加粗;空購物車狀態補上購物車線稿 icon,不再只有純文字;結帳/去逛逛按鈕從外框改成實心主色填滿,對應查到的「clear CTA button」原則。
-  - `QuantityStepper.vue` 順手修掉一個既有 bug:減少按鈕的 SVG 用了 JSX 語法(`strokeWidth={1.5}`、`className="size-6"`),在 Vue template 裡這兩個都不是合法屬性,導致減號圖示沒套到正確的 `stroke-width`/`class`,增加按鈕那顆當時是用正確的 `stroke-width`/`class` 寫法,兩顆圖示原本套用結果不一致。改完後也補上減少按鈕原本缺的 `:disabled="modelValue <= min"`(增加按鈕本來就有 `:disabled="modelValue >= max"`,減少按鈕沒有對應判斷)。外層容器改成 `rounded-full border` 膠囊造型。
-  - 過程中踩到一個延續 Nav.vue 那次教訓的坑:摘要區塊原本用 `fixed w-full bottom-0` 貼底,結果換成 `<Transition>` 之後完全跑版(小計金額、結帳按鈕文字被裁切、位置跑到整個 viewport 寬)——因為原本 `fixed` 能正確定位,是**意外依賴**了舊寫法裡 `<aside>` 恆定套用 `translate-x-0`(即使「已完全展開」也還留著這個 class)所產生的 transform containing block,`<Transition>` 完成進場後會把所有進場 class 拿掉、恢復無 transform 狀態,於是 `fixed` 直接跳出去對齊真正的 viewport 而不是抽屜本身。改成放棄 `fixed` 定位,單純讓摘要區塊當 `flex-col` 容器裡最後一個一般區塊、自然貼底,同時拿掉原本用來讓商品列表不被固定摘要擋住的 `mb-[190px]` 魔術數字(不需要了)。
-  - 順手修掉 `CartContent.vue` 裡一個既有的 HTML 標籤不平衡:單一商品卡片的最外層 `<div v-for>` 少了一個對應的收尾 `</div>`(原本直接接 `</section>`),補上。
-  - 用 Playwright 驗證:快速加購後抽屜自動打開,商品卡/金額/數量調整/垃圾桶移除都正常;點擊遮罩關閉、`body.style.overflow` 正確恢復;獨立的 `/cart` 全頁購物車(`layoutMode="page"`)也一併截圖確認空購物車新樣式沒有壞掉,`npm run build` 編譯成功,全程無 console 錯誤。
-
-**WebSearch 參考來源**(2026-08-11,cart drawer 設計/UX 做法):[17+ Best eCommerce Cart Drawers](https://www.commercegurus.com/best-ecommerce-cart-drawers/)、[10 Ecommerce Shopping Cart Flyouts We Love - Rebuy](https://www.rebuyengine.com/blog/cart-flyouts-we-love)、[eCommerce Cart Drawers – Examples, Technologies & UX Best Practices | Vervaunt](https://vervaunt.com/ecommerce-cart-drawers-examples-technologies-ux-best-practices)、[Mini-cart UX: 3 design patterns from leading retailers](https://ecommerceguide.com/patterns/mini-cart/)
-
-- **[改動]** 全首頁健檢一輪(build、route:list、所有連結 curl 200 檢查、桌機/手機截圖、完整互動流程 console 錯誤檢查),確認沒有明顯問題後,追加幾個小修正:①人氣商品「快速加入購物車」圖示按鈕補上 `cursor-pointer`——原因是 Tailwind Preflight 會把 `<button>` 的預設游標重置成 `default`,daisyUI 的 `.btn` class 有另外補回 `cursor:pointer`,但這顆按鈕沒套 `.btn`、純 Tailwind class,漏了這個補償,滑鼠移上去不會變成手指;②商品卡圖片 `max-w-[70%] max-h-[70%]` 改成 `75%`。
-- **[改動]** 人氣商品規格選擇面板在手機上的滑出行為修正:原本用 `absolute left-0 bottom-0`,不管螢幕大小都固定卡在卡片自己底部滑出;使用者指出這跟既有的 `Products/Index.vue`(`/products` 頁)行為不一致——那裡的面板是 `fixed left-0 md:absolute bottom-0`,手機版故意用 `fixed` 做成「貼螢幕底部的 bottom sheet」,只有桌機(`md:`以上)才改回卡在卡片底部。過程中一度用 Playwright/Chromium 測不出使用者說的「從畫面底部滑出」現象(因為我以為使用者在講 Home 頁,量出來 Home 頁的面板明明正確卡在卡片底部),後來使用者補了截圖,才發現他截的其實是 `/products` 頁——原來使用者要的不是「修掉一個 bug」,是「把 Home 頁改成跟 /products 頁一樣的既有行為」。改成 `fixed left-0 md:absolute bottom-0` 後用 Playwright 分別驗證手機(390x844,面板 `x:0 width:390` 貼滿螢幕寬度、底部對齊 viewport 底部)、桌機(1400x1000,`position:absolute`、面板寬度/底部對齊卡片自己的邊界)都正確。
-- **[改動]** 人氣商品規格面板樣式來回調了好幾輪:①手機版原本半透明背景(`bg-base-100/95`)在新的 fixed bottom sheet 下顯示不清楚,先改實心 `bg-base-100`+陰影+頂部圓角;②使用者反饋「陰影不明顯」,把陰影從 `shadow-[0_-8px_24px...]` 收緊成負 spread 的 `shadow-[0_-6px_16px_-4px...]`,同時面板加高(`px-4 pt-5 pb-6`)、內距加大(`gap-4`);③使用者再要求整個陰影拿掉,改補 `border border-base-300` 做視覺分隔;④加了一層獨立的手機專用背景遮罩(`fixed inset-0 bg-black/40`,`Transition` 進出場,點擊可關閉,桌機 `md:hidden`);⑤使用者釐清原本講的「加 opacity 和 blur」是指**面板本身**(玻璃感 `bg-base-100/85 backdrop-blur-md`)不是遮罩,照改;⑥後來又要求面板的 opacity/blur 全部拿掉退回實心,遮罩的 blur 也拿掉只留 `bg-black/40`。同時间使用者發現面板搬到 Home 頁時漏帶了 `Products/Index.vue` 原本就有的產品縮圖,補回 `w-14 h-14` 縮圖(`p.image`)。
-- **[改動]** CTA 標題「把健康好味道,帶進日常生活」:字級 `text-4xl md:text-6xl` 降到 `text-3xl md:text-5xl`(使用者覺得太大),拿掉句中逗號。手機版背景遮罩改動時踩到一個 Tailwind 陷阱並修正:一開始用同一個 `<div>` 疊 `bg-black/60 md:bg-gradient-to-r ...` 想做「手機純黑、桌機漸層」,但 `bg-black/60` 是 `background-color`、`bg-gradient-to-r` 是 `background-image`,兩個不同 CSS 屬性不會互相取代、只會疊加,導致桌機版意外被額外加深。使用者發現桌機畫面跟印象不同,要求「其他斷點不要改」,改成兩個各自獨立、用 `md:hidden`/`hidden md:block` 互斥切換的 `<div>` 才徹底分開,不互相污染。
-- **[決策]** 使用者覺得 CTA 標題文字「有點醜」,要求上網查 CJK 排版做法再調整。查到的結論:中文字彼此緊貼、需要比英文更寬鬆的字距/行距才不會看起來像瀏覽器預設硬擠;小標語本來就有 `tracking-[0.15em]` 但主標題完全沒設字距,風格不一致。改動:主標題補上 `tracking-[0.02em]`、行距從 `leading-[1.3]/[1.15]` 放寬到 `leading-[1.45]/[1.3]`(手機/桌機)、加淡淡 `text-shadow` 增加跟背景照片的層次感。字重維持 `font-medium`(500)不動,因為使用者先前明確要求標題字重上限 500。
+**Phase 0~5 全部完成。** `feature/filament-admin` 已合併回 `restructure` 並 push。目前還沒做、屬於次要項目的:`Components/`(Breeze)與 `DaisyComponents/` 整併成單一元件庫(範圍已經很小)。真正金流要能動起來還需要使用者自己在 `.env` 填入真實的 `ECPAY_*` 憑證(目前留白,只是把接口都接對)。`restructure` 什麼時候要併回 `main` 是使用者要決定的事,不在這份計畫的範圍內。

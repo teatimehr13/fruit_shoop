@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\ProductOption;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Cookie;
 
 class CartService
 {
-    protected $shipping_free = 2000;
     public function getSharedCartItems(Request $request): array
     {
         $user = $request->user();
@@ -26,7 +26,7 @@ class CartService
             return ($item['price'] ?? 0) * ($item['qty'] ?? 1);
         });
 
-        $shipping_fee = (int)$subtotal >= $this->shipping_free ? 0 : 100;
+        $shipping_fee = Order::calculateShippingFee($subtotal);
 
         return [
             'items'          => $items->values(),
@@ -90,15 +90,9 @@ class CartService
 
     protected function getItemsFromCookie(): Collection
     {
-        $jsonCart = Cookie::get('cart');
+        $data = $this->readCookieCart();
 
-        if (is_null($jsonCart)) {
-            return collect();
-        }
-
-        $data = json_decode($jsonCart, true);
-
-        if (!is_array($data) || empty($data)) {
+        if (empty($data)) {
             return collect();
         }
 
@@ -153,7 +147,7 @@ class CartService
 
 
     //將訪客購物車移至資料庫(login後)
-    public function syncCookieCartToDBCart(User $user)
+    public function syncCookieCartToDBCart(User $user): void
     {
         $items = $this->getItemsFromCookie();  
 
@@ -197,10 +191,34 @@ class CartService
 
     public function clearCookieCart(): void
     {
+        $this->writeCookieCart([]);
+    }
+
+    /**
+     * 讀取購物車 cookie，回傳原始的 [product_option_id => qty] 陣列。
+     */
+    public function readCookieCart(): array
+    {
+        $jsonCart = Cookie::get('cart');
+
+        if (is_null($jsonCart)) {
+            return [];
+        }
+
+        $data = json_decode($jsonCart, true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * 寫入購物車 cookie，接受 [product_option_id => qty] 陣列。
+     */
+    public function writeCookieCart(array $cart): void
+    {
         Cookie::queue(
             Cookie::make(
                 'cart',
-                json_encode([]),
+                json_encode($cart),
                 60 * 24 * 7,
                 '/',
                 null,

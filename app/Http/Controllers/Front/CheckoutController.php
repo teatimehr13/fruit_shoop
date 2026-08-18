@@ -3,21 +3,23 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\CheckoutRequest;
 use App\Models\Order;
 use App\Services\CartService;
-use App\Services\EcpayPaymentService;
-use Illuminate\Support\Facades\DB;
+use App\Services\OrderService;
 use Illuminate\Validation\ValidationException;
+use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CheckoutController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, CartService $cartService)
+    public function index(Request $request, CartService $cartService): SymfonyResponse|InertiaResponse
     {
         $user = $request->user();
 
@@ -48,7 +50,7 @@ class CheckoutController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): void
     {
         //
     }
@@ -56,50 +58,8 @@ class CheckoutController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CheckoutRequest $request, CartService $cartService, EcpayPaymentService $ecpay)
+    public function store(CheckoutRequest $request, CartService $cartService, OrderService $orderService): JsonResponse
     {
-        $order = $this->createOrderByCart($request, $cartService, $ecpay);
-
-        return response()->json([
-            'pay_url' => route('ecpay.checkout', ['order' => $order->order_number]),
-        ]);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    private function createOrderByCart($request, $cartService, $ecpay)
-    {
-        $validated = $request->validated();
         $user = $request->user();
 
         if (!$user) {
@@ -117,55 +77,45 @@ class CheckoutController extends Controller
             ]);
         }
 
-        //總金額（商品總額 + 運費）
-        $subtotal = (int)($checkoutItems['subtotal'] ?? 0);
-        $shippingFee = $this->calculateShippingFee($subtotal);
-        $total = $subtotal + $shippingFee;
+        $subtotal = (int) ($checkoutItems['subtotal'] ?? 0);
 
-        // 建立 Order
-        return DB::transaction(function () use ($user, $validated, $items, $total, $shippingFee) {
-            $order = Order::create([
-                'user_id' => $user->id,
-                'amount' => $total,
-                'shipping_email' => $validated['shipping_email'],
-                'shipping_city' => $validated['shipping_city'],
-                'shipping_district' => $validated['shipping_district'],
-                'shipping_zip_code' => $validated['shipping_zip_code'],
-                'shipping_address_detail' => $validated['shipping_address_detail'],
-                'address' => '0',
-                'recipient_phone' => $validated['recipient_phone'],
-                'recipient_name' => $validated['recipient_name'],
-                'note' => $validated['note'] ?? null,
-                'order_status' => Order::NOT_SELECTED_PAYMENT,
-            ]);
+        $order = $orderService->createFromCart($user, $request->validated(), $items, $subtotal);
 
-            $paymentToken = 'RE' . $order->id . now()->format('His') . random_int(10, 99);
-            $order->update(['payment_token' => $paymentToken]);
-
-            foreach ($items as $item) {
-                $order->orderItems()->create([
-                    'name' => $item['product_name'],
-                    'option_text' => $item['option_text'],
-                    'price' => $item['price'],
-                    'quantity' => $item['qty'],
-                    'image' => $item['image'],
-                    'product_option_id' => $item['product_option_id'],
-                ]);
-            }
-
-            $optionIds = $items->pluck('product_option_id')->filter()->unique()->values()->all();
-
-            if (!empty($optionIds)) {
-                $cart = $user->getPurchaseCartOrCreate();
-                $cart->cartItems()->whereIn('product_option_id', $optionIds)->delete();
-            }
-
-            return $order;
-        });
+        return response()->json([
+            'pay_url' => route('ecpay.checkout', ['order' => $order->order_number]),
+        ]);
     }
 
-    private function calculateShippingFee($subtotal)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id): void
     {
-        return $subtotal <= 0 ? 0 : ($subtotal >= 2000 ? 0 : 100);
+        //
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id): void
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id): void
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id): void
+    {
+        //
+    }
+
 }

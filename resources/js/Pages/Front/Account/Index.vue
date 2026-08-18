@@ -4,6 +4,7 @@ defineOptions({ layout: AccountLayout })
 
 import { computed, onMounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import OutlineButton from '@/DaisyComponents/Front/OutlineButton.vue'
 
 const user = computed(() => usePage().props.auth.user);
 
@@ -30,98 +31,102 @@ const fullShippingAddress = computed(() => {
 
 <template>
     <!-- mobile -->
-    <div class="md:hidden grid gap-4 px-2 md:px-10 pt-6">
+    <div class="md:hidden grid gap-4 px-2 pt-6">
         <div>
-            <h1 class="text-2xl font-semibold ">
+            <h1 class="text-2xl font-medium text-heading">
                 Hi, {{ user.name }}
             </h1>
         </div>
 
-        <div class="grid space-y-2 info border-t border-neutral pt-4">
+        <div class="grid space-y-2 info border border-base-300 rounded-2xl bg-base-100 p-4">
 
             <div>
-                <span class="text-lg font-semibold ">
+                <span class="text-lg font-medium text-heading">
                     個人資訊
                 </span>
                 <span class="member-cache ml-2 text-xs">一般會員</span>
             </div>
 
             <div class="mt-2">
-                <label class="font-semibold">姓名</label>
-                <span class="block mt-1">{{ user.name }}</span>
+                <label class="font-medium text-heading">姓名</label>
+                <span class="block mt-1 text-base-content/80">{{ user.name }}</span>
             </div>
 
             <div>
-                <label class="font-semibold">Email</label>
-                <span class="block mt-1">{{ user.email }}</span>
+                <label class="font-medium text-heading">Email</label>
+                <span class="block mt-1 text-base-content/80">{{ user.email }}</span>
             </div>
 
             <div>
-                <label class="font-semibold">電話</label>
-                <span class="block mt-1">{{ user.phone }}</span>
+                <label class="font-medium text-heading">電話</label>
+                <span class="block mt-1 text-base-content/80">{{ user.phone }}</span>
             </div>
 
             <div>
-                <label class="font-semibold">地址</label>
-                <span class="block mt-1">{{ fullShippingAddress }}</span>
+                <label class="font-medium text-heading">地址</label>
+                <span class="block mt-1 text-base-content/80">{{ fullShippingAddress }}</span>
             </div>
 
             <div>
-                <Link :href="route('account.profile')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors w-full">
+                <OutlineButton :tag="Link" :href="route('account.profile')" :preserve-state="false" class="mt-4 mb-2">
                     編輯個人資訊
-                </Link>
+                </OutlineButton>
 
             </div>
         </div>
 
-        <div class="grid space-y-2 order border-t border-neutral pt-4">
+        <div class="grid space-y-2 order border border-base-300 rounded-2xl bg-base-100 p-4">
             <div>
-                <span class="text-lg font-semibold">
+                <span class="text-lg font-medium text-heading">
                     訂單
                 </span>
             </div>
 
             <div>
-                <!-- <button
-                    class="tracking-wide btn mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors">
+                <OutlineButton :tag="Link" :href="route('account.orders')" :preserve-state="false" class="mt-4 mb-2">
                     查看所有訂單
-                </button> -->
-                <Link :href="route('account.orders')" :preserve-state="false"
-                    class="tracking-wide btn btn-sm mt-4 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors w-full">
-                    查看所有訂單</Link>
+                </OutlineButton>
             </div>
         </div>
 
-        <div class="border-t border-neutral">
-            <Link v-if="$page.props.auth.user" :href="route('logout')" method="post" as="button"
-                class="tracking-wide btn btn-sm mt-8 mb-2 w-full py-3 border-primary text-primary hover:text-white rounded-[40px] hover:bg-primary transition-colors bg-white"
-                :class="{ 'text-base-100': isInHeroState }">
+        <div>
+            <OutlineButton v-if="$page.props.auth.user" :tag="Link" :href="route('logout')" method="post" as="button">
                 登出
-            </Link>
+            </OutlineButton>
         </div>
     </div>
 
-    <div class="hidden md:block px-10 pt-6">
-        <h1 class="text-3xl font-semibold mb-4">Hi, {{ user.name }}</h1>
+    <div class="hidden md:block grid gap-4 px-2 md:px-0 pt-6">
+        <h1 class="text-3xl font-medium text-heading mb-4">Hi, {{ user.name }}</h1>
+        <div class="border-t border-base-300"></div>
 
-        <div class="grid space-y-2 info border-t border-neutral pt-6">
+        <div class="grid space-y-2 info py-4">
             <p class="member-cache">一般會員</p>
 
             <div class="mt-4">
-                <label class="font-semibold">姓名</label>
-                <span class="block mt-1">{{ user.name }}</span>
+                <label class="field-label">姓名</label>
+                <span class="block mt-1  text-base-content">{{ user.name }}</span>
             </div>
 
             <div class="mt-2">
-                <label class="font-semibold">Email</label>
-                <span class="block mt-1">{{ user.email }}</span>
+                <label class="field-label">Email</label>
+                <span class="block mt-1 text-base-content">{{ user.email }}</span>
             </div>
             <div class="mt-2">
-                <label class="font-semibold">加入日期</label>
-                <span class="block mt-1">{{ createdDate }}</span>
+                <label class="field-label">加入日期</label>
+                <span class="block mt-1 text-base-content">{{ createdDate }}</span>
             </div>
         </div>
     </div>
 
 </template>
+
+<style scoped>
+.field-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--color-heading);
+}
+</style>

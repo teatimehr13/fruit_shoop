@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Order;
 use Ecpay\Sdk\Factories\Factory;
 use Ecpay\Sdk\Response\VerifiedArrayResponse;
 
 class EcpayPaymentService
 {
+    private const PRODUCTION_ACTION_URL = 'https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5';
+    private const STAGE_ACTION_URL = 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5';
+
     private function factory(): Factory
     {
         return new Factory([
@@ -17,7 +21,7 @@ class EcpayPaymentService
         ]);
     }
 
-    public function generateCheckoutHtml(string $merchantTradeNo, int $amount): string
+    public function generateCheckoutHtml(Order $order, string $merchantTradeNo): string
     {
         $factory = $this->factory();
         $autoSubmit = $factory->create('AutoSubmitFormWithCmvService');
@@ -27,18 +31,17 @@ class EcpayPaymentService
             'MerchantTradeNo'   => $merchantTradeNo,
             'MerchantTradeDate' => now()->format('Y/m/d H:i:s'),
             'PaymentType'       => 'aio',
-            'TotalAmount'       => (int) $amount,
-            'TradeDesc'         => urlencode('Laravel 測試訂單'),
-            'ItemName'          => '測試商品',
+            'TotalAmount'       => (int) $order->amount,
+            'TradeDesc'         => urlencode('Vegefoods 訂單付款'),
+            'ItemName'          => $this->buildItemName($order),
             'ReturnURL'         => config('services.ecpay.return_url'),
             'OrderResultURL'    => config('services.ecpay.front_url'),
-            'ClientBackURL'     => route('account.orders'),
+            'ClientBackURL'     => config('services.ecpay.client_back_url') ?: route('account.orders'),
             'ChoosePayment'     => 'Credit',
             'EncryptType'       => 1,
         ];
 
-        $action = 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5';
-        return $autoSubmit->generate($params, $action);
+        return $autoSubmit->generate($params, $this->actionUrl());
     }
 
     public function verifyReturn(array $payload): array
@@ -46,5 +49,24 @@ class EcpayPaymentService
         $factory = $this->factory();
         $verifier = $factory->create(VerifiedArrayResponse::class);
         return $verifier->get($payload);
+    }
+
+    private function actionUrl(): string
+    {
+        return config('services.ecpay.env') === 'production'
+            ? self::PRODUCTION_ACTION_URL
+            : self::STAGE_ACTION_URL;
+    }
+
+    /**
+     * ECPay 的 ItemName 是用 # 分隔的逐項清單，例如「南瓜 x2#紅蘿蔔 x1」。
+     */
+    private function buildItemName(Order $order): string
+    {
+        $itemName = $order->orderItems
+            ->map(fn ($item) => trim($item->name . ($item->option_text ? "（{$item->option_text}）" : '')) . " x{$item->qty}")
+            ->implode('#');
+
+        return $itemName !== '' ? $itemName : '商品';
     }
 }
